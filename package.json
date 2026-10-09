@@ -1,0 +1,26 @@
+{
+  "name": "one-piece-jdr",
+  "private": true,
+  "type": "module",
+  "workspaces": [
+    "packages/*",
+    "apps/*",
+    "tools/*"
+  ],
+  "scripts": {
+    "dev:joueur": "vite apps/joueur",
+    "dev:mj": "vite apps/mj",
+    "check": "svelte-check --workspace packages/core --tsconfig ./tsconfig.json && svelte-check --workspace apps/joueur --tsconfig ./tsconfig.app.json && tsc -p apps/joueur/tsconfig.node.json && svelte-check --workspace apps/mj --tsconfig ./tsconfig.app.json && tsc -p apps/mj/tsconfig.node.json",
+    "test": "vitest run"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@tsconfig/svelte": "^5.0.8",
+    "@types/node": "^24.19.1",
+    "svelte": "^5.57.2",
+    "svelte-check": "^4.7.6",
+    "typescript": "~6.0.3",
+    "vite": "^8.3.3",
+    "vitest": "^5.0.3"
+  }
+}

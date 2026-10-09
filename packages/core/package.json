@@ -1,0 +1,19 @@
+{
+  "name": "@onepiece/core",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Code partagé des deux applis : modèle, règles, composants Svelte. Consommé depuis les sources (pas de build).",
+  "exports": {
+    ".": "./src/index.ts",
+    "./ui/*": "./src/ui/*",
+    "./theme.css": "./src/ui/theme.css"
+  },
+  "scripts": {
+    "check": "svelte-check --tsconfig ./tsconfig.json",
+    "test": "vitest run"
+  },
+  "peerDependencies": {
+    "svelte": "^5.57.0"
+  }
+}
