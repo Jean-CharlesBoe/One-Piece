@@ -1,5 +1,6 @@
+import type { Fruit } from '../model/fruit'
 import { newId } from '../model/ids'
-import { isSkillOrigin } from '../model/identity'
+import { isFruitType, isSkillOrigin } from '../model/identity'
 import type { CustomResource, Resource } from '../model/resources'
 import type { Skill } from '../model/skills'
 import { emptyStats, isStatKey, STATS, type Stats, type TempBonus } from '../model/stats'
@@ -82,4 +83,16 @@ export function normalizeCustomResources(raw: unknown, w: string[], who = ''): C
       const nom = str(r.nom, LIMITS.textShort)
       return { ...normalizeResource(r, nom || 'Ressource', w, who), id: id(r.id), nom, regle: str(r.regle, LIMITS.textMedium) }
     })
+}
+
+/** Fruit du démon : absent (ou illisible) = null. */
+export function normalizeFruit(raw: unknown): Fruit | null {
+  if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return null
+  const r = obj(raw)
+  return {
+    nom: str(r.nom, LIMITS.textShort),
+    type: isFruitType(r.type) ? r.type : '',
+    description: str(r.description, LIMITS.textLong),
+    eveil: str(r.eveil, LIMITS.textLong),
+  }
 }

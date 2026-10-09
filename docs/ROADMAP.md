@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **J1 — Onglet Fiche** (code fait, à essayer sur téléphone). Ensuite : J2 (fruit). C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
+Étape en cours : **J2 — Fruit du démon** (code fait, à essayer sur téléphone). Ensuite : J3 (compétences), bloquée par Q-J4. C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -17,8 +17,8 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | # | Étape | Contenu | Bloquée par | Statut |
 |---|---|---|---|---|
 | J0 | Socle Android | Capacitor, `appId`, SQLite + repository + repli web, accueil (liste), CI `joueur.yml`, APK debug, clé de signature | — | fait |
-| J1 | Onglet Fiche | identité, caracs, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition), ressources perso, XP, équipement, inventaire, modes jeu/édition, sauvegarde auto | — | en cours (code fait, test téléphone à faire) |
-| J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | à faire |
+| J1 | Onglet Fiche | identité, caracs, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition), ressources perso, XP, équipement, inventaire, modes jeu/édition, sauvegarde auto | — | fait |
+| J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | en cours (code fait, test téléphone à faire) |
 | J3 | Compétences | SkillList, coût en Endurance, origine + filtre | Q-J4 | à faire |
 | J4 | Compagnons | liste + fiche compagnon | — | à faire |
 | J5 | Mémos | boutons « i », aide-mémoire | Q-J5 | à faire |
@@ -107,3 +107,10 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Retours du MJ après J1 :
   - **Clé de debug fixe** (D-T8) : `apps/joueur/android/debug.keystore` versionné et branché dans `build.gradle` ; les APK de debug successifs s'installent par-dessus (il fallait désinstaller à chaque run, Android refusant une signature différente). Une dernière désinstallation est nécessaire pour passer à cette clé.
   - **Palier de dé retiré** (D-J8 abandonnée) : plus de sélecteur ni de pastille, champ `palierDe` retiré du modèle (perdu à la lecture, sans migration) ; la Classe prend toute la largeur du formulaire. L'aide-mémoire (J5) montrera les trois paliers. `PALIERS` / `PALIER_INFO` restent dans core pour les mémos.
+
+### Session 4 · 2026-10-09 (J1 close, J2 — fruit du démon)
+- J1 terminée : APK de debug (clé fixe) testé sur téléphone par le MJ.
+- `packages/core` : `model/fruit.ts` (`Fruit`, `createFruit`), `rules/fruit.ts` (`addFruit`, `removeFruit`, `isFruitEmpty`, `fruitTechniques` = compétences d'origine « fruit », `FRUIT_RAPPEL`), `normalizeFruit` ; couleur `--fruit` (magenta) au thème. Le type `Fruit` quitte le modèle joueur pour core (utile à l'appli MJ).
+- `apps/joueur` : `FruitBlock` sous l'identité. Édition : « + Fruit du démon », nom, type (Paramecia / Zoan / Logia / Inconnu), description, éveil, « Retirer le fruit » en deux temps. Jeu : bloc masqué si vide, replié (titre, nom, pastille du type), déplié d'un tap (description, éveil, rappel « ne sait pas nager »). Lien « Voir les techniques (n) » affiché dès qu'une compétence d'origine « fruit » existe : il ouvre l'onglet Compétences (le filtre « Fruit » viendra avec J3).
+- Vérifié : check, 39 tests, parcours complet dans le navigateur à 360 × 780 (création, rechargement, dépliage, lien, retrait), console sans erreur. Nom du fruit qui était tronqué à 360 px : titre du bloc passé au-dessus.
+- Prochaine étape : J3 (compétences), qui attend la réponse à **Q-J4** (retirer l'Endurance d'un tap long sur le coût d'une compétence, ou ajustement à la main du losange comme dans Sans Nom).

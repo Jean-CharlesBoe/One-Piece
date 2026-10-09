@@ -119,7 +119,8 @@
     <p class="error" role="alert">{error}</p>
   {:else if character}
     {#if tab === 'fiche'}
-      <FicheTab {character} {editing} />
+      <!-- Le filtre « Fruit » de l'onglet Compétences arrive avec J3. -->
+      <FicheTab {character} {editing} onShowTechniques={() => (tab = 'competences')} />
     {:else if tab === 'competences'}
       <p class="soon">Les compétences arrivent à l'étape J3.</p>
     {:else}

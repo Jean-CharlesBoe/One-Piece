@@ -9,7 +9,7 @@ import {
   newId,
   type Classe,
   type CustomResource,
-  type FruitType,
+  type Fruit,
   type Race,
   type Resource,
   type Skill,
@@ -19,13 +19,6 @@ import {
 } from '@onepiece/core'
 
 export const SCHEMA_VERSION = 1
-
-export interface Fruit {
-  nom: string
-  type: FruitType | ''
-  description: string
-  eveil: string
-}
 
 export interface Compagnon {
   id: string

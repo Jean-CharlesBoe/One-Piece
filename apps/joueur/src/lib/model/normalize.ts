@@ -1,12 +1,12 @@
 import {
   createResource,
   isClasse,
-  isFruitType,
   isRace,
   isTribu,
   LIMITS,
   clampInt,
   normalizeCustomResources,
+  normalizeFruit,
   normalizeResource,
   normalizeSkills,
   normalizeStats,
@@ -19,7 +19,6 @@ import {
   SCHEMA_VERSION,
   type Character,
   type Compagnon,
-  type Fruit,
 } from './character'
 
 const { obj, arr, str, num, date, id } = read
@@ -61,7 +60,7 @@ export function normalizeCharacter(raw: unknown): { character: Character; warnin
     ambition: normalizeResource(res.ambition, 'Ambition', w, '', createResource(10)),
   }
   c.ressourcesPerso = normalizeCustomResources(r.ressourcesPerso, w)
-  c.fruit = fruit(r.fruit)
+  c.fruit = normalizeFruit(r.fruit)
   c.xp = clampInt(num(r.xp, 0), 0, LIMITS.xpMax)
   c.equipement = str(r.equipement, LIMITS.textLong)
   c.inventaire = str(r.inventaire, LIMITS.textLong)
@@ -71,16 +70,6 @@ export function normalizeCharacter(raw: unknown): { character: Character; warnin
   return { character: c, warnings: w }
 }
 
-function fruit(raw: unknown): Fruit | null {
-  if (!raw || typeof raw !== 'object') return null
-  const r = obj(raw)
-  return {
-    nom: str(r.nom, LIMITS.textShort),
-    type: isFruitType(r.type) ? r.type : '',
-    description: str(r.description, LIMITS.textLong),
-    eveil: str(r.eveil, LIMITS.textLong),
-  }
-}
 
 function compagnon(raw: unknown, w: string[]): Compagnon {
   const r = obj(raw)
