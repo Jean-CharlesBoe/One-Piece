@@ -10,7 +10,6 @@ import {
   type Classe,
   type CustomResource,
   type FruitType,
-  type Palier,
   type Race,
   type Resource,
   type Skill,
@@ -54,7 +53,6 @@ export interface Character {
   tribu: Tribu
   /** L'écran n'en propose qu'une (D-J9). */
   classes: Classe[]
-  palierDe: Palier
   /** Le rêve du personnage (texte). */
   reve: string
   stats: Stats
@@ -91,7 +89,6 @@ export function createCharacter(nom: string): Character {
     race: '',
     tribu: '',
     classes: [],
-    palierDe: 'D10',
     reve: '',
     stats: emptyStats(),
     bonusTemporaires: [],

@@ -25,7 +25,7 @@ Fiche de personnage sur téléphone, rapide à consulter et à mettre à jour **
 | Onglet **Invocations** | **Compagnons** | ressources Vitalité / Endurance |
 | 8 caracs + avantages + bonus temporaires | **identique** | — |
 | Vie / Âme / Mana | Vitalité / Endurance / Rêve / Ambition + ressources perso | voir §4.4 |
-| Race (liste fermée), élément, pratiques | Race, tribu, classes, palier de dé, rêve | voir §4.1 |
+| Race (liste fermée), élément, pratiques | Race, tribu, classes, rêve | voir §4.1 |
 | — | mémos « i » + aide-mémoire | nouveau (D-J7) |
 
 ## 4. Écrans
@@ -47,11 +47,10 @@ Menu de la fiche (⋮ en haut à droite) : **Aide-mémoire** (§4.6), Dupliquer,
 | Race | liste fermée | Humain, Homme-Poisson, Skypiéen, Tontata, Mink (Skypiéen = « Anges », Q-R3 ; les Lunariens ne sont pas jouables, Q-R6) |
 | Tribu | liste (Humain seulement) | Aucune, Longs bras, Longues jambes, Long cou |
 | Classe | liste fermée, **une seule** à l'écran | les 11 classes de la règle ; le modèle stocke une liste pour pouvoir en autoriser plusieurs plus tard sans migration (Q-J1) |
-| Palier de dé | D10 / D20 / D100 | sert aux mémos (D-J8) |
 | Rêve | texte long | la raison de prendre la mer |
 | Prime | nombre (berries), facultatif | **[Q-J2]** |
 
-Mode jeu : bloc compact (titre en italique, « Race · Classes · âge », pastille du palier de dé, rêve replié sur une ligne, dépliable).
+Mode jeu : bloc compact (titre en italique, « Race · Tribu · Classes · âge », rêve replié sur une ligne, dépliable).
 
 ### 4.2 Fiche — Caractéristiques
 **Identique à Sans Nom** : 8 caracs en grille 3 colonnes (3 + 3 + 2), cercle = valeur finale, pastille d'avantages signés, + / − en mode édition, tap = détail (valeur, bonus, total, description de la carac). Bonus temporaires (carac, ±N, origine), ajout rapide, suppression d'un tap, « Tout retirer ».
@@ -109,7 +108,7 @@ Fiche compagnon : nom, type (suggestions : Animal, Monture, Den Den Mushi, Autre
 
 ### 4.9 Mémos et aide-mémoire (D-J7, proposée)
 - Bouton **« i »** (petit, discret, désactivable dans les réglages) sur : chaque carac (description), chaque ressource (règle), Rêve, Ambition, Transfert, XP, Compétences (barème des coûts d'Endurance), Fruit.
-- **Aide-mémoire** (menu ⋮) : seuils de difficulté, critiques **du palier choisi** (mis en avant), coûts d'XP, coûts d'Endurance, attaque de base 1D6 + modificateur, règle des avantages.
+- **Aide-mémoire** (menu ⋮) : seuils de difficulté, critiques des trois paliers de dé (D10, D20, D100 : pas de palier sur la fiche, D-J8 abandonnée), coûts d'XP, coûts d'Endurance, attaque de base 1D6 + modificateur, règle des avantages.
 - Textes dans `packages/core/src/rules/memos.ts`, rédigés à partir de [REGLES_ONE_PIECE.md](../REGLES_ONE_PIECE.md). Aucun texte de règle en dur dans un composant.
 
 ## 5. Règles appliquées par l'app
@@ -137,7 +136,6 @@ interface Character {
   race: Race | ''                 // 'Humain' | 'Homme-Poisson' | 'Skypiéen' | 'Tontata' | 'Mink'
   tribu: '' | 'longs-bras' | 'longues-jambes' | 'long-cou'
   classes: Classe[]               // liste fermée de packages/core ; l'UI n'en édite qu'une (Q-J1)
-  palierDe: 'D10' | 'D20' | 'D100'
   reve: string                    // le rêve (texte)
   prime: number | null; berries: number | null
   stats: Record<StatKey, { valeur: number; avantages: number }>

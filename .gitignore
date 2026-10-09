@@ -25,6 +25,8 @@ apps/*/android/capacitor-cordova-android-plugins/build
 # Clé de signature : ne JAMAIS la versionner
 *.jks
 *.keystore
+# Clé de debug fixe, volontairement versionnée (sans valeur, voir docs/RELEASE.md)
+!apps/*/android/debug.keystore
 keystore.properties
 
 # Contenu du monde : jamais dans le dépôt public (D-T6)

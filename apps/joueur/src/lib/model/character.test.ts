@@ -3,12 +3,11 @@ import { createCharacter, createCompagnon, summarize } from './character'
 import { normalizeCharacter } from './normalize'
 
 describe('personnage', () => {
-  it('démarre avec Rêve et Ambition à 10 / 10, Vitalité et Endurance à 0, palier D10', () => {
+  it('démarre avec Rêve et Ambition à 10 / 10, Vitalité et Endurance à 0', () => {
     const c = createCharacter('Osmo')
     expect(c.ressources.reve).toMatchObject({ cur: 10, max: 10 })
     expect(c.ressources.ambition).toMatchObject({ cur: 10, max: 10 })
     expect(c.ressources.vitalite).toMatchObject({ cur: 0, max: 0 })
-    expect(c.palierDe).toBe('D10')
     expect(c.stats.robustesse.valeur).toBe(0)
   })
 
@@ -43,7 +42,7 @@ describe('normalizeCharacter', () => {
       race: 'Lunarien',
       tribu: 'long-nez',
       classes: ['Capitaine', 'Pirate', 'Capitaine'],
-      palierDe: 'D12',
+      palierDe: 'D20',
       stats: { expression: { valeur: -4 } },
       ressources: { endurance: { cur: 130, max: 110 } },
       ressourcesPerso: [{ nom: 'Chance', cur: 9, max: 5 }],
@@ -53,7 +52,7 @@ describe('normalizeCharacter', () => {
     expect(character.race).toBe('')
     expect(character.tribu).toBe('')
     expect(character.classes).toEqual(['Capitaine'])
-    expect(character.palierDe).toBe('D10')
+    expect(character).not.toHaveProperty('palierDe')
     expect(character.stats.expression.valeur).toBe(0)
     expect(character.ressources.endurance).toMatchObject({ cur: 110, max: 110 })
     expect(character.ressources.reve).toMatchObject({ cur: 10, max: 10 })

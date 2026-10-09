@@ -25,7 +25,7 @@ npm run android:joueur        # build web + copie dans apps/joueur/android
 npm run android:joueur:open   # ouvre Android Studio → bouton ▶ « Run »
 ```
 
-Sans câble : installer l'APK de debug produit par la CI (onglet **Actions** du dépôt → dernier run vert « Vivre Card (joueur) » → artefact `vivrecard-debug-apk`, à dézipper sur le téléphone). Chaque run signe le debug avec une clé différente : désinstaller l'ancien debug avant d'en installer un plus récent.
+Sans câble : installer l'APK de debug produit par la CI (onglet **Actions** du dépôt → dernier run vert « Vivre Card (joueur) » → artefact `vivrecard-debug-apk`, à dézipper sur le téléphone). Les APK de debug sont tous signés par la même clé de debug (`apps/joueur/android/debug.keystore`, versionnée, D-T8) : un debug plus récent s'installe **par-dessus** le précédent et garde les fiches. (Exception : les APK de debug antérieurs au 2026-10-09 étaient signés par une clé jetable ; il faut les désinstaller une dernière fois.)
 
 ### Que vérifier (J0)
 - Créer un personnage, l'ouvrir, revenir à la liste (flèche et bouton retour Android ; depuis la liste, le bouton retour quitte l'app).

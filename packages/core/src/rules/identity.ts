@@ -1,4 +1,4 @@
-import type { Classe, Palier, Race, Tribu } from '../model/identity'
+import type { Classe, Race, Tribu } from '../model/identity'
 
 // Identité d'un personnage. Changer de race ne perd rien : les valeurs propres à l'ancienne race
 // (tribu, Ambition) sont seulement masquées, pour qu'une erreur de sélection soit sans conséquence.
@@ -7,7 +7,6 @@ interface HasIdentity {
   race: Race | ''
   tribu: Tribu
   classes: Classe[]
-  palierDe: Palier
 }
 
 /** L'Ambition est propre aux Humains (REGLES §3, D-J3). */

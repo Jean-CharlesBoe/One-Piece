@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import type { Classe, Palier, Race, Tribu } from '../model/identity'
+import type { Classe, Race, Tribu } from '../model/identity'
 import { createResource, type CustomResource } from '../model/resources'
 import { hasAmbition, hasTribu, mainClasse, setClasse, setRace } from './identity'
 import { moveItem, removeById } from './lists'
@@ -11,7 +11,6 @@ const perso = () => ({
   race: '' as Race | '',
   tribu: '' as Tribu,
   classes: [] as Classe[],
-  palierDe: 'D10' as Palier,
 })
 
 describe('identité', () => {

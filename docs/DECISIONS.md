@@ -37,6 +37,10 @@ Comme Sans Nom : les joueurs téléchargent l'APK depuis les Releases sans compt
 - Les scripts racine appellent directement les outils (`vite apps/joueur`, `svelte-check --workspace …`, `vitest run` avec `projects`).
 **Pourquoi** : pas de build intermédiaire à oublier en dev ; et un npm 6 présent sur le poste (`C:\node_modules`) se retrouve sur le PATH des scripts et boucle sur `npm run … --workspaces`.
 
+### D-T8 · 2026-10-09 · Clé de debug fixe, versionnée — *validée*
+Les APK de debug sont signés par `apps/<app>/android/debug.keystore` (alias `androiddebugkey`, mots de passe publics `android`), versionné malgré le dépôt public. Chaque APK de debug de la CI s'installe donc par-dessus le précédent, en gardant les fiches de test.
+**Pourquoi** : sans cela, chaque run de CI fabrique sa propre clé de debug et Android refuse la mise à jour (« application non installée ») : il fallait désinstaller et perdre ses fiches à chaque test. Cette clé n'a aucune valeur : la release est signée par la clé officielle, hors dépôt. Debug et release restent incompatibles entre eux.
+
 ## Appli joueur
 
 ### D-J1 · 2026-10-09 · Calquée sur Sans Nom — *validée*
@@ -68,10 +72,11 @@ Retour du MJ sur J1 : une seule section « Ressources » (titre et « + Ressourc
 Remplace la liste sous les losanges prévue au cahier §4.4.
 
 ### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *proposée*
-Bouton « i » discret sur les blocs (carac, ressources, rêve, ambition, XP, compétences) ouvrant une fenêtre du bas avec la règle courte (pas de mémo Haki : règle du MJ). Plus une page « Aide-mémoire » accessible depuis le menu de la fiche (seuils, critiques du palier choisi, coûts d'XP, coûts d'endurance).
+Bouton « i » discret sur les blocs (carac, ressources, rêve, ambition, XP, compétences) ouvrant une fenêtre du bas avec la règle courte (pas de mémo Haki : règle du MJ). Plus une page « Aide-mémoire » accessible depuis le menu de la fiche (seuils, critiques des trois paliers de dé, coûts d'XP, coûts d'endurance).
 **Pourquoi (challenge de l'idée de départ)** : en partie, le joueur cherche une réponse précise à l'endroit où il regarde ; un onglet Règles complet serait lu une fois puis ignoré, et dupliquerait le rôle du MJ. Les textes vivent dans `packages/core/src/rules/memos.ts` : les modifier demande une nouvelle version de l'APK, acceptable puisque le MJ est aussi le développeur.
 
-### D-J8 · 2026-10-09 · Palier de dé sur la fiche — *proposée*
+### D-J8 · 2026-10-09 · Palier de dé sur la fiche — *abandonnée* (2026-10-09)
+**Abandon** : le MJ juge l'information inutile, les joueurs connaissent leur dé. Le champ est retiré de l'écran et du modèle (les fiches existantes le perdent à la lecture, sans migration) ; l'aide-mémoire montrera les critiques des trois paliers.
 Sélecteur D10 / D20 / D100 dans l'identité, sans calcul automatique : il sert uniquement à afficher les bons seuils de critique dans les mémos.
 
 ## Appli MJ

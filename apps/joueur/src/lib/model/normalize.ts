@@ -2,7 +2,6 @@ import {
   createResource,
   isClasse,
   isFruitType,
-  isPalier,
   isRace,
   isTribu,
   LIMITS,
@@ -51,7 +50,6 @@ export function normalizeCharacter(raw: unknown): { character: Character; warnin
   else if (r.race) w.push(`race inconnue « ${String(r.race)} » ignorée`)
   if (isTribu(r.tribu)) c.tribu = r.tribu
   c.classes = [...new Set(arr(r.classes).filter(isClasse))]
-  if (isPalier(r.palierDe)) c.palierDe = r.palierDe
   c.reve = str(r.reve, LIMITS.textMedium)
   c.stats = normalizeStats(r.stats, w)
   c.bonusTemporaires = normalizeTempBonuses(r.bonusTemporaires)
