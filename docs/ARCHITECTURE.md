@@ -26,7 +26,7 @@ Aucune dépendance réseau à l'exécution : polices embarquées, pas de CDN.
 
 L'appli MJ est une **app Android** installée sur le Chromebook (Play Store désactivé ou non : installation de l'APK via le mode développeur Android/ADB ou via le Play Store en test interne — voir Q-T3). Conséquences :
 
-- Mise en page **paysage, grand écran** (≥ 1280 px), souris et clavier : raccourcis clavier, survol, clic droit facultatif.
+- Mise en page **paysage, grand écran** (≥ 1280 px), souris et clavier : raccourcis clavier, survol, clic droit facultatif. Pas de version téléphone, mais repli en 2 puis 1 colonne si la fenêtre rétrécit (D-M10).
 - Le WebView Android du Chromebook est à jour (Chrome) : pas de contrainte de compatibilité particulière.
 - Les fichiers à importer (images, PDF) sont choisis via le sélecteur de fichiers Android, qui donne accès aux dossiers « Mes fichiers » / Google Drive du Chromebook.
 

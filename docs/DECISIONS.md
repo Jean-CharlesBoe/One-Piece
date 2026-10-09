@@ -60,6 +60,9 @@ Remplace la première proposition (compteurs 0/5, maîtrise calculée, bouton É
 ### D-J9 · 2026-10-09 · Une classe par personnage, modèle prêt pour plusieurs — *validée*
 L'écran n'en propose qu'une ; le modèle stocke une liste (`classes: Classe[]`) pour en autoriser plusieurs plus tard sans migration.
 
+### D-J10 · 2026-10-09 · Caracs à 0 à la création — *proposée*
+Un nouveau personnage (et un compagnon) démarre avec les 8 caracs à 0 (Sans Nom : 1). Les 40 points de création se répartissent à partir de zéro (REGLES §4) ; le joueur reste libre (D-J2).
+
 ### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *proposée*
 Bouton « i » discret sur les blocs (carac, ressources, rêve, ambition, XP, compétences) ouvrant une fenêtre du bas avec la règle courte (pas de mémo Haki : règle du MJ). Plus une page « Aide-mémoire » accessible depuis le menu de la fiche (seuils, critiques du palier choisi, coûts d'XP, coûts d'endurance).
 **Pourquoi (challenge de l'idée de départ)** : en partie, le joueur cherche une réponse précise à l'endroit où il regarde ; un onglet Règles complet serait lu une fois puis ignoré, et dupliquerait le rôle du MJ. Les textes vivent dans `packages/core/src/rules/memos.ts` : les modifier demande une nouvelle version de l'APK, acceptable puisque le MJ est aussi le développeur.
@@ -98,3 +101,14 @@ Motif exprimé par le MJ pour quitter Notion : connaissance éparpillée, mêmes
 
 ### D-M9 · 2026-10-09 · Relevé des jets de Haki dans le journal de session — *validée*
 Entrée de journal de type « Haki » : PJ (fiche de lore), type, résultat du D100 ; l'app affiche l'effet de la table et signale un « meilleur résultat ». La fiche de lore du PJ récapitule ces entrées. C'est le seul suivi lié aux PJ côté MJ, sans fiche technique (D-T0).
+
+### D-M10 · 2026-10-09 · Appli MJ pensée pour le Chromebook, sans version mobile, mais tolérante aux fenêtres réduites — *validée*
+Cible : écran du Chromebook en plein écran paysage (vérifié en 1366 × 768). Aucune mise en page téléphone. La disposition se replie quand la fenêtre rétrécit (fenêtre ancrée sur une moitié d'écran, mode tablette en portrait) :
+
+| Largeur de fenêtre | Disposition |
+|---|---|
+| ≥ 1280 px | 3 colonnes : barre latérale + liste, fiche, panneau Liens |
+| 900 à 1279 px | 2 colonnes : la liste se replie (ouverte à la demande), fiche + panneau |
+| < 900 px | 1 colonne : la fiche seule ; barre latérale, liste et panneau Liens en volets |
+
+**Pourquoi** : sur ChromeOS, une app Android peut être redimensionnée ou passer en portrait en mode tablette ; prévoir ces paliers dès M0 coûte peu, les ajouter après coup serait pénible.

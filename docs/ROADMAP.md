@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **J0 — Socle Android de Vivre Card** (C1 terminée ; J0 et M0 peuvent démarrer, C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos)
+Étape en cours : **J0 — Socle Android de Vivre Card** (code fait ; reste la clé de signature, le dépôt GitHub et le test sur téléphone). C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -16,7 +16,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 
 | # | Étape | Contenu | Bloquée par | Statut |
 |---|---|---|---|---|
-| J0 | Socle Android | Capacitor, `appId`, SQLite + repository + repli web, accueil (liste), CI `joueur.yml`, APK debug, clé de signature | — | à faire |
+| J0 | Socle Android | Capacitor, `appId`, SQLite + repository + repli web, accueil (liste), CI `joueur.yml`, APK debug, clé de signature | — | en cours (code fait) |
 | J1 | Onglet Fiche | identité, caracs, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition), ressources perso, XP, équipement, inventaire, modes jeu/édition, sauvegarde auto | — | à faire |
 | J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | à faire |
 | J3 | Compétences | SkillList, coût en Endurance, origine + filtre | Q-J4 | à faire |
@@ -75,3 +75,13 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Point d'attention : un **npm 6.13.4** traîne dans `C:\node_modules` (2019). npm ajoute les `node_modules/.bin` parents au PATH des scripts : tout `npm run` imbriqué tombe sur ce vieux npm, qui ignore `--workspaces` et relance le script racine en boucle. Les scripts racine appellent donc directement `vite`, `svelte-check`, `tsc` et `vitest`. À garder pour les futurs scripts (`android:joueur`…), ou supprimer `C:\node_modules` si rien ne s'en sert.
 - Avantages dans le détail d'une carac : libellé neutre « Avantages » (Sans Nom disait « relances ») tant que Q-R1 est ouverte.
 - Reste à faire : J0 (Capacitor, `appId`, SQLite + repository + repli web, accueil, CI `joueur.yml`) ; dépôt git à initialiser et premier commit.
+
+### Session 2 · 2026-10-09 (D-M10, J0 — socle Android de Vivre Card)
+- D-M10 validée : appli MJ pensée pour le Chromebook, pas de version mobile ; repli 3 → 2 → 1 colonne selon la largeur de fenêtre (1280 / 900 px). Cahier MJ §2-§3 et ARCHITECTURE à jour.
+- `packages/core` : type `Skill` partagé (coût en Endurance, origine), briques `normalize*` (caracs, bonus, ressources, compétences) et lecteurs `read.*`, réutilisables pour les PNJ (M7). Caracs à 0 par défaut (D-J10, proposée).
+- `apps/joueur` : Capacitor 8 (`fr.onepiecejdr.joueur`, « Vivre Card »), modèle `Character` (§6 du cahier, sans prime/berries ni Transfert en attendant Q-J2/Q-J3), `normalizeCharacter` + tests, repository SQLite (migration 1) et repli `localStorage`, accueil (liste avec « Race · Classe », créer, ouvrir, supprimer en deux temps, version), écran personnage provisoire, bouton retour Android.
+- Projet `apps/joueur/android` généré ; `build.gradle` repris de Sans Nom (signature par variables d'environnement ou `keystore.properties`, version depuis le tag).
+- CI `.github/workflows/joueur.yml` : check + tests du monorepo, APK debug en artefact ; tag `joueur-vX.Y.Z` → APK signé + Release (vérifie que le tag = version de `apps/joueur/package.json`). `docs/RELEASE.md` adapté (une clé pour les deux applis).
+- Vérifié : `npm run check`, 29 tests, parcours accueil → personnage → accueil → suppression dans le navigateur (360 × 780).
+- **Non vérifié** : build APK en local. Deux obstacles sur le poste : (1) l'environnement de Claude Code ne laisse pas Gradle ouvrir ses connexions locales (le terminal intégré, lui, le permet) ; (2) le JDK d'Android Studio est en **Java 25**, que Gradle 8.14.3 (gabarit Capacitor 8) ne gère pas : « Unsupported class file major version 69 ». La CI utilise Java 21 et n'est pas concernée. En local : installer un JDK 21 (ou régler le JDK Gradle d'Android Studio sur 21).
+- Reste à faire pour clore J0 : créer le dépôt GitHub et pousser ; générer la clé de signature et les secrets (docs/RELEASE.md) ; premier run CI vert ; installer l'APK de debug sur un téléphone et faire les vérifications de RELEASE.md (persistance SQLite après fermeture de l'app).

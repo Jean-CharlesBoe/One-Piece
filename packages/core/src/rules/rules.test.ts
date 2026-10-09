@@ -18,10 +18,10 @@ import {
 const someone = (): HasStats => ({ stats: emptyStats(), bonusTemporaires: [] })
 
 describe('caracs', () => {
-  it('sont 8, à 1 par défaut', () => {
+  it('sont 8, à 0 par défaut', () => {
     const s = emptyStats()
     expect(Object.keys(s)).toEqual(STATS.map(([k]) => k))
-    expect(s.perception).toEqual({ valeur: 1, avantages: 0 })
+    expect(s.perception).toEqual({ valeur: 0, avantages: 0 })
   })
 
   it("n'ont pas de plafond de jeu mais restent positives", () => {

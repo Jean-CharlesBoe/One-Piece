@@ -24,6 +24,7 @@ Langue du projet : **français** (UI, docs, messages de commit). Identifiants de
 | [docs/QUESTIONS.md](docs/QUESTIONS.md) | Questions ouvertes et réponses obtenues |
 | [docs/DECISIONS.md](docs/DECISIONS.md) | Journal des décisions, avec leur justification |
 | [docs/ROADMAP.md](docs/ROADMAP.md) | Étapes de développement et journal des sessions |
+| [docs/RELEASE.md](docs/RELEASE.md) | Dev local, test sur téléphone, clé de signature, publication (tags `joueur-vX.Y.Z`) |
 
 Référence technique : le dépôt **Sans Nom** (https://github.com/Jean-CharlesBoe/Sans-Nom) — même stack, même organisation, mêmes conventions. En cas de doute sur un choix technique déjà tranché là-bas (CI, signature, SQLite, sauvegarde, bouton retour), **reprendre la solution de Sans Nom**.
 
@@ -47,6 +48,8 @@ Référence technique : le dépôt **Sans Nom** (https://github.com/Jean-Charles
 
 ## Commandes (à la racine du monorepo)
 
+Les scripts racine n'appellent jamais `npm run` imbriqué (D-T7).
+
 ```bash
 npm install
 npm run dev:joueur        # appli joueur dans le navigateur (repli localStorage)
@@ -54,6 +57,7 @@ npm run dev:mj            # appli MJ dans le navigateur (repli web jeep-sqlite)
 npm run check             # types (svelte-check + tsc) sur tout le monorepo
 npm test                  # Vitest sur tout le monorepo
 npm run android:joueur    # build + cap sync android de l'appli joueur
+npm run android:joueur:open  # ouvre apps/joueur/android dans Android Studio
 npm run android:mj        # build + cap sync android de l'appli MJ
 npm run notion:import -- <export.zip> <sortie.opmj>   # migration Notion unique
 ```

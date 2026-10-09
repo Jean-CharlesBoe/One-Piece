@@ -5,9 +5,11 @@ export * from './model/ids'
 export * from './model/stats'
 export * from './model/resources'
 export * from './model/identity'
+export * from './model/skills'
 
 export * from './rules/numbers'
 export * from './rules/stats'
 export * from './rules/resources'
+export * from './rules/normalize'
 
 export * from './ui/back'

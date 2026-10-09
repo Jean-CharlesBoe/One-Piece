@@ -16,7 +16,7 @@ Deux usages :
 ## 2. Contraintes
 
 - App Android (Capacitor) sur Chromebook, **hors ligne**, base **SQLite** embarquée, médias dans le dossier privé de l'app.
-- Écran large paysage, **clavier et souris** (raccourcis, autocomplétion), lisible aussi en mode tablette.
+- Écran large paysage, **clavier et souris** (raccourcis, autocomplétion). Pas de version téléphone ; la disposition se replie si la fenêtre rétrécit (demi-écran, mode tablette en portrait), voir §3 et D-M10.
 - Un seul utilisateur (le MJ), pas de compte.
 - Aucune donnée de joueur : les PJ existent seulement comme fiches de lore (histoire, rôle), sans fiche technique (D-T0).
 - Ne jamais perdre la base : sauvegarde `.opmj` (base + médias) + rappel + backup Android.
@@ -36,6 +36,7 @@ Deux usages :
 │ Sauvegarde│                          │                       │
 └───────────┴──────────────────────────┴──────────────────────┘
 ```
+- **Largeur de fenêtre** (D-M10) : ≥ 1280 px → 3 colonnes ci-dessus ; 900 à 1279 px → 2 colonnes, la liste se replie (ouverte à la demande) ; < 900 px → la fiche seule, barre latérale, liste et panneau Liens en volets. Référence de vérification : 1366 × 768.
 - La liste se masque quand on navigue de fiche en fiche (mode deux colonnes) ; historique **Précédent / Suivant** (Alt+← / Alt+→ et bouton retour Android).
 - Onglets de fiches facultatifs **[Q-M1]** : garder plusieurs fiches ouvertes en session.
 

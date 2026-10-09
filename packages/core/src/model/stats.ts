@@ -40,6 +40,7 @@ export interface TempBonus {
   origine: string
 }
 
-export function emptyStats(valeur = 1): Stats {
+/** Caracs à 0 : à la création, les 40 points se répartissent à partir de zéro (REGLES §4). */
+export function emptyStats(valeur = 0): Stats {
   return Object.fromEntries(STAT_KEYS.map(k => [k, { valeur, avantages: 0 }])) as Stats
 }
