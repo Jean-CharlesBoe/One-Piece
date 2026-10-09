@@ -1,4 +1,5 @@
-import type { Resource } from '../model/resources'
+import { newId } from '../model/ids'
+import { createResource, type CustomResource, type Resource } from '../model/resources'
 import { clampInt, LIMITS } from './numbers'
 
 /** Le max est saisi à la main ; l'actuel est ramené sous le nouveau max si besoin. */
@@ -22,4 +23,30 @@ export function adjustResource(res: Resource, delta: number): number {
 export function setRegeneration(res: Resource, text: string): string {
   res.regeneration = text.trim().slice(0, LIMITS.textShort)
   return res.regeneration
+}
+
+/** À 0 d'Endurance, le personnage s'évanouit (REGLES §3) : simple information, aucun blocage. */
+export function isEvanoui(endurance: Resource): boolean {
+  return endurance.max > 0 && endurance.cur === 0
+}
+
+export function addCustomResource(list: CustomResource[], nom: string, max = 0): CustomResource {
+  const res: CustomResource = {
+    ...createResource(clampInt(max, 0, LIMITS.resourceMax)),
+    id: newId(),
+    nom: nom.trim().slice(0, LIMITS.textShort),
+    regle: '',
+  }
+  list.push(res)
+  return res
+}
+
+export function renameCustomResource(res: CustomResource, nom: string): string {
+  res.nom = nom.trim().slice(0, LIMITS.textShort)
+  return res.nom
+}
+
+export function setCustomResourceRule(res: CustomResource, regle: string): string {
+  res.regle = regle.trim().slice(0, LIMITS.textMedium)
+  return res.regle
 }

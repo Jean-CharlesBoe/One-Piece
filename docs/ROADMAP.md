@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **J0 — Socle Android de Vivre Card** (code fait ; reste la clé de signature, le dépôt GitHub et le test sur téléphone). C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
+Étape en cours : **J1 — Onglet Fiche** (code fait, à essayer sur téléphone). Ensuite : J2 (fruit). C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -16,8 +16,8 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 
 | # | Étape | Contenu | Bloquée par | Statut |
 |---|---|---|---|---|
-| J0 | Socle Android | Capacitor, `appId`, SQLite + repository + repli web, accueil (liste), CI `joueur.yml`, APK debug, clé de signature | — | en cours (code fait) |
-| J1 | Onglet Fiche | identité, caracs, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition), ressources perso, XP, équipement, inventaire, modes jeu/édition, sauvegarde auto | — | à faire |
+| J0 | Socle Android | Capacitor, `appId`, SQLite + repository + repli web, accueil (liste), CI `joueur.yml`, APK debug, clé de signature | — | fait |
+| J1 | Onglet Fiche | identité, caracs, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition), ressources perso, XP, équipement, inventaire, modes jeu/édition, sauvegarde auto | — | en cours (code fait, test téléphone à faire) |
 | J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | à faire |
 | J3 | Compétences | SkillList, coût en Endurance, origine + filtre | Q-J4 | à faire |
 | J4 | Compagnons | liste + fiche compagnon | — | à faire |
@@ -85,3 +85,22 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Vérifié : `npm run check`, 29 tests, parcours accueil → personnage → accueil → suppression dans le navigateur (360 × 780).
 - **Non vérifié** : build APK en local. Deux obstacles sur le poste : (1) l'environnement de Claude Code ne laisse pas Gradle ouvrir ses connexions locales (le terminal intégré, lui, le permet) ; (2) le JDK d'Android Studio est en **Java 25**, que Gradle 8.14.3 (gabarit Capacitor 8) ne gère pas : « Unsupported class file major version 69 ». La CI utilise Java 21 et n'est pas concernée. En local : installer un JDK 21 (ou régler le JDK Gradle d'Android Studio sur 21).
 - Reste à faire pour clore J0 : créer le dépôt GitHub et pousser ; générer la clé de signature et les secrets (docs/RELEASE.md) ; premier run CI vert ; installer l'APK de debug sur un téléphone et faire les vérifications de RELEASE.md (persistance SQLite après fermeture de l'app).
+
+### Session 2 (suite) · 2026-10-09
+- Dépôt public créé et poussé par le MJ : https://github.com/Jean-CharlesBoe/One-Piece
+- Premier run CI « Vivre Card (joueur) » **vert** (check, tests, APK debug en 2 min 11 s), artefact `vivrecard-debug-apk`.
+- Clé de signature créée par le MJ, 4 secrets en place (`ANDROID_KEYSTORE_BASE64`, `ANDROID_KEYSTORE_PASSWORD`, `ANDROID_KEY_ALIAS`, `ANDROID_KEY_PASSWORD`). La chaîne de release signée n'est pas encore éprouvée : elle le sera au premier tag `joueur-v…` (empreinte SHA-256 à noter alors dans RELEASE.md).
+- Avertissement CI sans effet pour l'instant : `ubuntu-latest` passe à Ubuntu 26 à partir du 19/10/2026 ; surveiller le prochain run après cette date.
+- Reste pour clore J0 : installer l'APK de debug sur un téléphone et faire les vérifications de RELEASE.md (surtout la persistance SQLite après fermeture complète de l'app).
+
+### Session 3 · 2026-10-09 (J0 close, J1 — onglet Fiche)
+- J0 terminée : APK de debug testé sur téléphone par le MJ (création, retour, persistance SQLite après fermeture, suppression, thème sombre).
+- `packages/core` :
+  - règles : `identity` (Ambition et tribus réservées aux Humains, valeurs conservées au changement de race ; une classe à l'écran, liste en base), `xp` (compteur + `XP_COSTS` de REGLES §4), `lists` (`moveItem`, `removeById`), `resources` (`isEvanoui` : Endurance à 0 avec un max renseigné ; ressources perso : ajout, nom, règle) ;
+  - `CustomResource` et `normalizeCustomResources` descendus dans core (utiles aux PNJ en M7) ;
+  - `ResourceSheet` : fenêtre de dépense / récupération séparée du losange, réutilisée par les ressources perso.
+- `apps/joueur` : écran personnage avec onglets Fiche / Compétences / Compagnons (les deux derniers en attente de J3 / J4), modes jeu / édition, sauvegarde automatique (400 ms, immédiate au retour et en arrière-plan) ; onglet Fiche : identité (nom, surnom, âge, race, tribu si Humain, classe, palier D10/D20/D100, rêve replié dépliable), caracs, bonus temporaires, bandeau « Évanoui », losanges Vitalité / Endurance / Rêve / Ambition (Humain seulement), ressources personnelles (liste, ↑ ↓, suppression en deux temps, nom et règle dans la fenêtre), XP avec rappel des coûts, équipement, inventaire.
+- Vérifié : check, 35 tests, parcours complet dans le navigateur à 360 × 780 avec rechargement (tout est conservé), console sans erreur.
+- Pas encore fait (questions ouvertes ou étapes suivantes) : bloc Fruit (J2), prime/berries (Q-J2), Nouveau jour / Transfert (Q-J3), menu ⋮ (Aide-mémoire J5, Dupliquer / Exporter J6), mémos « i » (J5).
+- Retour du MJ (D-J11) : section « Ressources » unique, « + Ressource » sur la ligne du titre, ressources perso en losanges sarcelle à la suite des autres, deux par ligne, écart vertical agrandi ; nom / règle / ordre / suppression dans la fenêtre de la ressource. `ResourceDiamond` accepte maintenant `note`, `extra` et `open` liable.
+- Reste pour clore J1 : essayer l'APK de debug sur téléphone (saisie au pouce, clavier numérique, fenêtres du bas, retour Android qui ferme d'abord la fenêtre ouverte).

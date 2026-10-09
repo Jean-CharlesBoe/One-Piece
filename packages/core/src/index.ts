@@ -11,5 +11,8 @@ export * from './rules/numbers'
 export * from './rules/stats'
 export * from './rules/resources'
 export * from './rules/normalize'
+export * from './rules/identity'
+export * from './rules/xp'
+export * from './rules/lists'
 
 export * from './ui/back'

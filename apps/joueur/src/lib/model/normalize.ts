@@ -7,6 +7,7 @@ import {
   isTribu,
   LIMITS,
   clampInt,
+  normalizeCustomResources,
   normalizeResource,
   normalizeSkills,
   normalizeStats,
@@ -19,7 +20,6 @@ import {
   SCHEMA_VERSION,
   type Character,
   type Compagnon,
-  type CustomResource,
   type Fruit,
 } from './character'
 
@@ -62,7 +62,7 @@ export function normalizeCharacter(raw: unknown): { character: Character; warnin
     reve: normalizeResource(res.reve, 'Rêve', w, '', createResource(10)),
     ambition: normalizeResource(res.ambition, 'Ambition', w, '', createResource(10)),
   }
-  c.ressourcesPerso = arr(r.ressourcesPerso).map(x => customResource(x, w))
+  c.ressourcesPerso = normalizeCustomResources(r.ressourcesPerso, w)
   c.fruit = fruit(r.fruit)
   c.xp = clampInt(num(r.xp, 0), 0, LIMITS.xpMax)
   c.equipement = str(r.equipement, LIMITS.textLong)
@@ -71,12 +71,6 @@ export function normalizeCharacter(raw: unknown): { character: Character; warnin
   c.compagnons = arr(r.compagnons).map(x => compagnon(x, w))
   c.schemaVersion = SCHEMA_VERSION
   return { character: c, warnings: w }
-}
-
-function customResource(raw: unknown, w: string[]): CustomResource {
-  const r = obj(raw)
-  const nom = str(r.nom, LIMITS.textShort)
-  return { ...normalizeResource(r, nom || 'Ressource', w), id: id(r.id), nom, regle: str(r.regle, LIMITS.textMedium) }
 }
 
 function fruit(raw: unknown): Fruit | null {

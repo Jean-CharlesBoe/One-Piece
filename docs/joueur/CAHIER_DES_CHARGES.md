@@ -79,13 +79,14 @@ Losanges `actuel / max` comme Sans Nom, tap = fenêtre du bas (−10 / −5 / �
 | **Endurance** | losange bleu ; à 0, bandeau « Évanoui » | 0 / 0 |
 | **Rêve** | losange doré | 10 / 10 |
 | **Ambition** | losange violet, **Humain uniquement** (masqué sinon, valeurs conservées) | 10 / 10 |
-| **Ressources personnalisées** | liste sous les losanges : nom, actuel/max, règle (texte) | aucune |
+| **Ressources personnalisées** | losanges sarcelle à la suite des autres (D-J11) : nom, actuel/max ; la règle (texte) s'affiche dans leur fenêtre | aucune |
 
 - Une ressource ne dépasse jamais son max (règle Sans Nom Q 20).
 - Champ **Régénération / récupération** (texte) par ressource, comme Sans Nom (ex. Rêve : « 2D6+4 + points dépensés », Ambition : « chaque jour »).
 - Action rapide **« Nouveau jour »** (menu des ressources) : remet l'Ambition au max et réarme le Transfert. **[Q-J3]**
 - **Transfert** (1 fois/jour, ≤ 25 % de la Vitalité max) : bouton dans la fenêtre Vitalité/Endurance, qui propose le plafond calculé et coche « utilisé aujourd'hui ». Le joueur peut l'ignorer. **[Q-J3]**
-- Ressources personnalisées : ajout / suppression / réordonnancement en mode édition ; même fenêtre d'ajustement. Exemple : *Chance*, max 5, « 1 pt = +1 à un jet ; 10 pts = créer ou annuler un critique ; recharge en courant ».
+- Section **« Ressources »** : titre et bouton « + Ressource » (mode édition) sur la même ligne ; **deux losanges par ligne**, lignes bien espacées (D-J11).
+- Ressources personnalisées : ajout en mode édition ; nom, règle, ordre (↑ Avant / ↓ Après) et suppression en deux temps dans leur fenêtre, en mode édition ; même fenêtre d'ajustement que les autres losanges. Exemple : *Chance*, max 5, « 1 pt = +1 à un jet ; 10 pts = créer ou annuler un critique ; recharge en courant ».
 
 ### 4.5 Haki : pas de bloc dédié (D-J6)
 Le suivi du Haki (jets de D100, progression vers la maîtrise) relève **uniquement du MJ** : Vivre Card n'a ni compteur, ni état, ni bouton d'épuisement.

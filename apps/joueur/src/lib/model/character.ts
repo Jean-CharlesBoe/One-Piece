@@ -8,6 +8,7 @@ import {
   emptyStats,
   newId,
   type Classe,
+  type CustomResource,
   type FruitType,
   type Palier,
   type Race,
@@ -19,12 +20,6 @@ import {
 } from '@onepiece/core'
 
 export const SCHEMA_VERSION = 1
-
-export interface CustomResource extends Resource {
-  id: string
-  nom: string
-  regle: string
-}
 
 export interface Fruit {
   nom: string

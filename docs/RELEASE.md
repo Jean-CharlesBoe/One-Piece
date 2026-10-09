@@ -49,13 +49,13 @@ Commandes **PowerShell** :
    ```powershell
    & "C:\Program Files\Android\Android Studio\jbr\bin\keytool.exe" -genkeypair -v -keystore onepiece-release.jks -alias onepiece -keyalg RSA -keysize 4096 -validity 36500
    ```
-3. Une fois le dépôt GitHub créé, envoyer les secrets avec `gh` (remplacer `COMPTE/DEPOT` ; les commandes sans `--body` demandent la valeur au clavier) :
+3. Envoyer les secrets avec `gh` (les commandes sans `--body` demandent la valeur au clavier) :
    ```powershell
-   [Convert]::ToBase64String([IO.File]::ReadAllBytes("$PWD\onepiece-release.jks")) | gh secret set ANDROID_KEYSTORE_BASE64 --repo COMPTE/DEPOT
-   gh secret set ANDROID_KEYSTORE_PASSWORD --repo COMPTE/DEPOT
-   gh secret set ANDROID_KEY_PASSWORD --repo COMPTE/DEPOT
-   gh secret set ANDROID_KEY_ALIAS --body onepiece --repo COMPTE/DEPOT
-   gh secret list --repo COMPTE/DEPOT
+   [Convert]::ToBase64String([IO.File]::ReadAllBytes("$PWD\onepiece-release.jks")) | gh secret set ANDROID_KEYSTORE_BASE64 --repo Jean-CharlesBoe/One-Piece
+   gh secret set ANDROID_KEYSTORE_PASSWORD --repo Jean-CharlesBoe/One-Piece
+   gh secret set ANDROID_KEY_PASSWORD --repo Jean-CharlesBoe/One-Piece
+   gh secret set ANDROID_KEY_ALIAS --body onepiece --repo Jean-CharlesBoe/One-Piece
+   gh secret list --repo Jean-CharlesBoe/One-Piece
    ```
 4. Copier `onepiece-release.jks` en lieu sûr et garder le mot de passe à part.
 5. Noter ci-dessous l'empreinte SHA-256 du certificat (après la première release).

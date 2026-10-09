@@ -1,6 +1,6 @@
 import { newId } from '../model/ids'
 import { isSkillOrigin } from '../model/identity'
-import type { Resource } from '../model/resources'
+import type { CustomResource, Resource } from '../model/resources'
 import type { Skill } from '../model/skills'
 import { emptyStats, isStatKey, STATS, type Stats, type TempBonus } from '../model/stats'
 import { clampInt, LIMITS } from './numbers'
@@ -73,4 +73,13 @@ export function normalizeSkills(raw: unknown): Skill[] {
       origine: isSkillOrigin(s.origine) ? s.origine : '',
       description: str(s.description, LIMITS.textLong),
     }))
+}
+
+export function normalizeCustomResources(raw: unknown, w: string[], who = ''): CustomResource[] {
+  return arr(raw)
+    .map(obj)
+    .map(r => {
+      const nom = str(r.nom, LIMITS.textShort)
+      return { ...normalizeResource(r, nom || 'Ressource', w, who), id: id(r.id), nom, regle: str(r.regle, LIMITS.textMedium) }
+    })
 }
