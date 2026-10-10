@@ -71,6 +71,9 @@ Un nouveau personnage (et un compagnon) démarre avec les 8 caracs à 0 (Sans No
 Retour du MJ sur J1 : une seule section « Ressources » (titre et « + Ressource » sur la même ligne) ; les ressources personnalisées ont le même losange que Vitalité / Endurance / Rêve (teinte sarcelle), à leur suite ; jamais plus de deux losanges par ligne, avec un écart vertical plus grand. Nom, règle, ordre et suppression se règlent dans la fenêtre de la ressource (mode édition) ; la règle s'y affiche aussi en mode jeu.
 Remplace la liste sous les losanges prévue au cahier §4.4.
 
+### D-J12 · 2026-10-10 · Pas de raccourci de dépense depuis une compétence — *validée*
+Réponse du MJ à Q-J4 : comme dans Sans Nom, le joueur ouvre le losange Endurance et retire le coût à la main. La compétence affiche seulement son coût en Endurance ; aucun tap long ni toast d'annulation.
+
 ### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *proposée*
 Bouton « i » discret sur les blocs (carac, ressources, rêve, ambition, XP, compétences) ouvrant une fenêtre du bas avec la règle courte (pas de mémo Haki : règle du MJ). Plus une page « Aide-mémoire » accessible depuis le menu de la fiche (seuils, critiques des trois paliers de dé, coûts d'XP, coûts d'endurance).
 **Pourquoi (challenge de l'idée de départ)** : en partie, le joueur cherche une réponse précise à l'endroit où il regarde ; un onglet Règles complet serait lu une fois puis ignoré, et dupliquerait le rôle du MJ. Les textes vivent dans `packages/core/src/rules/memos.ts` : les modifier demande une nouvelle version de l'APK, acceptable puisque le MJ est aussi le développeur.

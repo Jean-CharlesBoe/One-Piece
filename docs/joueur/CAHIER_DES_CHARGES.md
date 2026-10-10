@@ -99,8 +99,8 @@ Quand le MJ annonce qu'un Haki est maîtrisé, le joueur **ajoute une compétenc
 ### 4.7 Compétences
 Repris de Sans Nom (`SkillList`) : cartes repliées (titre, pastille de coût, 1re ligne), dépliées d'un tap, « Tout déplier » ; en édition : titre, coût, description longue, ↑ ↓, suppression en 2 temps.
 - **Coût en Endurance** (nombre, facultatif).
-- **Origine** facultative : Fruit · Style de combat · Race · Haki · Autre → pastille de couleur + filtre en haut de liste (« Toutes / Fruit / Combat… »).
-- En mode jeu, un tap long sur la pastille de coût retire le coût de l'Endurance (confirmation par toast « −6 Endurance, annuler ») **[Q-J4]**.
+- **Origine** facultative : Fruit · Style de combat · Race · Haki · Autre → pastille de couleur (et liseré de la carte) + filtre en haut de liste (« Toutes / Fruit / Combat… »), limité aux origines présentes. Le filtre ne s'applique qu'en mode jeu : en édition, toute la liste reste visible (l'ordre ↑ ↓ porte sur la liste complète). Le lien « Voir les techniques » du fruit ouvre la liste filtrée sur « Fruit ».
+- Pas de raccourci de dépense (Q-J4, D-J12) : la pastille affiche seulement le coût ; le joueur retire l'Endurance à la main dans le losange, comme dans Sans Nom.
 
 ### 4.8 Compagnons (D-J5)
 Repris de `InvocationsTab` / `CreatureView` : liste (nom, type, Vitalité / Endurance en résumé) + « Ajouter ».

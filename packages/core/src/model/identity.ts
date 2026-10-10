@@ -121,14 +121,19 @@ export const PALIER_INFO: Record<Palier, PalierInfo> = {
 export const FRUIT_TYPES = ['Paramecia', 'Zoan', 'Logia', 'Inconnu'] as const
 export type FruitType = (typeof FRUIT_TYPES)[number]
 
-/** Origine facultative d'une compétence : clé stockée, libellé. */
+/** Origine facultative d'une compétence : clé stockée, libellé, libellé court (pastille et filtre). */
 export const SKILL_ORIGINS = [
-  ['fruit', 'Fruit'],
-  ['combat', 'Style de combat'],
-  ['race', 'Race'],
-  ['haki', 'Haki'],
-  ['autre', 'Autre'],
+  ['fruit', 'Fruit', 'Fruit'],
+  ['combat', 'Style de combat', 'Combat'],
+  ['race', 'Race', 'Race'],
+  ['haki', 'Haki', 'Haki'],
+  ['autre', 'Autre', 'Autre'],
 ] as const
+
+export function skillOriginLabel(origine: SkillOrigin, court = false): string {
+  const o = SKILL_ORIGINS.find(([k]) => k === origine)
+  return o ? o[court ? 2 : 1] : ''
+}
 /** '' = origine non précisée. */
 export type SkillOrigin = '' | (typeof SKILL_ORIGINS)[number][0]
 

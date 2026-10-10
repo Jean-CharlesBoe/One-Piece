@@ -16,5 +16,6 @@ export * from './rules/identity'
 export * from './rules/xp'
 export * from './rules/lists'
 export * from './rules/fruit'
+export * from './rules/skills'
 
 export * from './ui/back'

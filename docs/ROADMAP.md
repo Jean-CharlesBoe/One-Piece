@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **J2 — Fruit du démon** (code fait, à essayer sur téléphone). Ensuite : J3 (compétences), bloquée par Q-J4. C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
+Étape en cours : **J3 — Compétences**. C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -18,8 +18,8 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 |---|---|---|---|---|
 | J0 | Socle Android | Capacitor, `appId`, SQLite + repository + repli web, accueil (liste), CI `joueur.yml`, APK debug, clé de signature | — | fait |
 | J1 | Onglet Fiche | identité, caracs, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition), ressources perso, XP, équipement, inventaire, modes jeu/édition, sauvegarde auto | — | fait |
-| J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | en cours (code fait, test téléphone à faire) |
-| J3 | Compétences | SkillList, coût en Endurance, origine + filtre | Q-J4 | à faire |
+| J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | fait |
+| J3 | Compétences | SkillList, coût en Endurance, origine + filtre | — | en cours (code fait, test téléphone à faire) |
 | J4 | Compagnons | liste + fiche compagnon | — | à faire |
 | J5 | Mémos | boutons « i », aide-mémoire | Q-J5 | à faire |
 | J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | à faire |
@@ -114,3 +114,12 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - `apps/joueur` : `FruitBlock` sous l'identité. Édition : « + Fruit du démon », nom, type (Paramecia / Zoan / Logia / Inconnu), description, éveil, « Retirer le fruit » en deux temps. Jeu : bloc masqué si vide, replié (titre, nom, pastille du type), déplié d'un tap (description, éveil, rappel « ne sait pas nager »). Lien « Voir les techniques (n) » affiché dès qu'une compétence d'origine « fruit » existe : il ouvre l'onglet Compétences (le filtre « Fruit » viendra avec J3).
 - Vérifié : check, 39 tests, parcours complet dans le navigateur à 360 × 780 (création, rechargement, dépliage, lien, retrait), console sans erreur. Nom du fruit qui était tronqué à 360 px : titre du bloc passé au-dessus.
 - Prochaine étape : J3 (compétences), qui attend la réponse à **Q-J4** (retirer l'Endurance d'un tap long sur le coût d'une compétence, ou ajustement à la main du losange comme dans Sans Nom).
+
+### Session 5 · 2026-10-10 (J2 close, Q-J4, J3 — compétences)
+- J2 terminée : testée sur téléphone par le MJ.
+- Q-J4 répondue : pas de raccourci de dépense, le joueur ajuste le losange Endurance à la main comme dans Sans Nom (D-J12). QUESTIONS, cahier §4.7 et DECISIONS à jour.
+- `packages/core` : `rules/skills.ts` (`addSkill`, `updateSkill` avec origine, `filterSkills`, `usedOrigins`), libellés courts des origines (`skillOriginLabel`), couleurs `--o-fruit`, `--o-combat`, `--o-race`, `--o-haki`, `--o-autre` ; `ui/SkillList.svelte` repris de Sans Nom (cartes repliées avec titre, pastille d'origine, coût « n End. », 1re ligne ; « Tout déplier » ; édition : titre, coût, origine, description, ↑ ↓, suppression en deux temps), avec filtre par origine en mode jeu. Composant partagé : servira aux compagnons (J4) et aux PNJ (M7).
+- `apps/joueur` : onglet Compétences branché ; le lien « Voir les techniques » du fruit ouvre la liste filtrée sur « Fruit ».
+- Vérifié : check, 42 tests, parcours dans le navigateur à 360 × 780 (4 compétences, filtres, lien du fruit, dépliage, rechargement, réordonnancement, suppression), console sans erreur.
+- Point d'attention : le stockage du navigateur intégré semble repartir de zéro à chaque nouvelle session de travail (les fiches de test « ozmo » / « Osmo » n'y étaient plus) ; sans incidence sur les téléphones.
+- Reste pour clore J3 : test sur téléphone. Ensuite : J4 (compagnons).

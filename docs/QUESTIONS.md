@@ -18,7 +18,6 @@ Préfixes : **Q-T** transverse · **Q-R** règles du jeu · **Q-J** appli joueur
 ### Appli joueur
 - **Q-J2. Prime et berries** — Utiles sur la fiche (prime du pirate, argent en poche) ou hors périmètre comme l'argent dans Sans Nom ?
 - **Q-J3. Nouveau jour et Transfert** — Bouton « Nouveau jour » (recharge Ambition, réarme le Transfert) et assistant de Transfert (25 % calculés) : utiles, ou saisie à la main ?
-- **Q-J4. Raccourci de dépense** — Retirer l'Endurance directement depuis une compétence (tap long sur son coût) : utile, ou le joueur ajuste le losange à la main (comme Sans Nom) ?
 - **Q-J5. Mémos** — Valider D-J7 (mémos « i » contextuels + aide-mémoire, pas d'onglet Règles).
 
 ### Appli MJ
@@ -53,3 +52,4 @@ Préfixes : **Q-T** transverse · **Q-R** règles du jeu · **Q-J** appli joueur
 - **Haki sur Vivre Card** → rien : règle propre au MJ ; le joueur ajoute une compétence de Haki quand le MJ annonce la maîtrise ; pas de bouton Épuisement (D-J6).
 - **Q-R6. Lunariens** → non jouables par les PJ ; race de lore côté MJ uniquement.
 - **Q-M8. Relevé des jets de Haki** → une entrée « Haki » dans le journal de session (D-M9).
+- **Q-J4. Raccourci de dépense** → **non** : comme Sans Nom, le joueur ouvre le losange Endurance et retire le coût à la main ; la compétence affiche seulement son coût (D-J12).

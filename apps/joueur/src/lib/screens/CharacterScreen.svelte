@@ -1,6 +1,8 @@
 <script lang="ts">
   import { App as CapApp } from '@capacitor/app'
   import { Capacitor } from '@capacitor/core'
+  import type { SkillFilter } from '@onepiece/core'
+  import SkillList from '@onepiece/core/ui/SkillList.svelte'
   import { onDestroy, onMount } from 'svelte'
   import type { Character } from '../model/character'
   import { getRepository } from '../storage/repository'
@@ -19,6 +21,7 @@
   let error = $state('')
   let tab = $state<Tab>('fiche')
   let editing = $state(false)
+  let skillFilter = $state<SkillFilter>('toutes')
   let saveState = $state<'saved' | 'pending' | 'error'>('saved')
 
   /* ---------- Sauvegarde automatique ---------- */
@@ -119,10 +122,16 @@
     <p class="error" role="alert">{error}</p>
   {:else if character}
     {#if tab === 'fiche'}
-      <!-- Le filtre « Fruit » de l'onglet Compétences arrive avec J3. -->
-      <FicheTab {character} {editing} onShowTechniques={() => (tab = 'competences')} />
+      <FicheTab
+        {character}
+        {editing}
+        onShowTechniques={() => {
+          skillFilter = 'fruit'
+          tab = 'competences'
+        }}
+      />
     {:else if tab === 'competences'}
-      <p class="soon">Les compétences arrivent à l'étape J3.</p>
+      <SkillList owner={character} {editing} bind:filter={skillFilter} />
     {:else}
       <p class="soon">Les compagnons arrivent à l'étape J4.</p>
     {/if}
