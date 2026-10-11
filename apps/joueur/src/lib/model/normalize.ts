@@ -1,10 +1,10 @@
 import {
+  clampInt,
   createResource,
   isClasse,
   isRace,
   isTribu,
   LIMITS,
-  clampInt,
   normalizeCustomResources,
   normalizeFruit,
   normalizeResource,
@@ -19,6 +19,7 @@ import {
   SCHEMA_VERSION,
   type Character,
   type Compagnon,
+  type Fiche,
 } from './character'
 
 const { obj, arr, str, num, date, id } = read
@@ -42,52 +43,46 @@ export function normalizeCharacter(raw: unknown): { character: Character; warnin
   c.id = id(r.id)
   c.createdAt = date(r.createdAt) ?? c.createdAt
   c.updatedAt = date(r.updatedAt) ?? c.updatedAt
-  c.nom = str(r.nom, LIMITS.textShort)
-  c.titre = str(r.titre, LIMITS.textShort)
-  c.age = str(r.age, 40)
   if (isRace(r.race)) c.race = r.race
   else if (r.race) w.push(`race inconnue « ${String(r.race)} » ignorée`)
-  if (isTribu(r.tribu)) c.tribu = r.tribu
-  c.classes = [...new Set(arr(r.classes).filter(isClasse))]
-  c.reve = str(r.reve, LIMITS.textMedium)
-  c.prime = typeof r.prime === 'number' && Number.isFinite(r.prime) ? clampInt(r.prime, 0, LIMITS.primeMax) : null
-  c.stats = normalizeStats(r.stats, w)
-  c.bonusTemporaires = normalizeTempBonuses(r.bonusTemporaires)
-  const res = obj(r.ressources)
-  c.ressources = {
-    vitalite: normalizeResource(res.vitalite, 'Vitalité', w),
-    endurance: normalizeResource(res.endurance, 'Endurance', w),
-    reve: normalizeResource(res.reve, 'Rêve', w, '', createResource(10)),
-    ambition: normalizeResource(res.ambition, 'Ambition', w, '', createResource(10)),
-  }
-  c.ressourcesPerso = normalizeCustomResources(r.ressourcesPerso, w)
-  c.fruit = normalizeFruit(r.fruit)
-  c.xp = clampInt(num(r.xp, 0), 0, LIMITS.xpMax)
-  c.equipement = str(r.equipement, LIMITS.textLong)
-  c.inventaire = str(r.inventaire, LIMITS.textLong)
-  c.competences = normalizeSkills(r.competences)
+  readFiche(c, r, w, '')
   c.compagnons = arr(r.compagnons).map(x => compagnon(x, w))
   c.schemaVersion = SCHEMA_VERSION
   return { character: c, warnings: w }
 }
 
-
+/** Compagnon : même fiche qu'un PJ (D-J17), race libre. Un ancien champ `type` est ignoré. */
 function compagnon(raw: unknown, w: string[]): Compagnon {
   const r = obj(raw)
-  const cp = createCompagnon(str(r.nom, LIMITS.textShort))
-  const who = `compagnon « ${cp.nom || 'sans nom'} » : `
+  const cp = createCompagnon('')
   cp.id = id(r.id)
-  cp.type = str(r.type, LIMITS.textShort)
-  cp.race = str(r.race, LIMITS.textShort)
-  cp.stats = normalizeStats(r.stats, w, who)
-  cp.bonusTemporaires = normalizeTempBonuses(r.bonusTemporaires)
+  cp.race = str(r.race, LIMITS.textShort).trim()
+  readFiche(cp, r, w, `compagnon « ${str(r.nom, LIMITS.textShort) || 'sans nom'} » : `)
+  return cp
+}
+
+/** Champs communs à un PJ et à un compagnon. */
+function readFiche(f: Fiche, r: Record<string, unknown>, w: string[], who: string): void {
+  f.nom = str(r.nom, LIMITS.textShort)
+  f.titre = str(r.titre, LIMITS.textShort)
+  f.age = str(r.age, 40)
+  if (isTribu(r.tribu)) f.tribu = r.tribu
+  f.classes = [...new Set(arr(r.classes).filter(isClasse))]
+  f.reve = str(r.reve, LIMITS.textMedium)
+  f.prime = typeof r.prime === 'number' && Number.isFinite(r.prime) ? clampInt(r.prime, 0, LIMITS.primeMax) : null
+  f.stats = normalizeStats(r.stats, w, who)
+  f.bonusTemporaires = normalizeTempBonuses(r.bonusTemporaires)
   const res = obj(r.ressources)
-  cp.ressources = {
+  f.ressources = {
     vitalite: normalizeResource(res.vitalite, 'Vitalité', w, who),
     endurance: normalizeResource(res.endurance, 'Endurance', w, who),
+    reve: normalizeResource(res.reve, 'Rêve', w, who, createResource(10)),
+    ambition: normalizeResource(res.ambition, 'Ambition', w, who, createResource(10)),
   }
-  cp.equipement = str(r.equipement, LIMITS.textLong)
-  cp.inventaire = str(r.inventaire, LIMITS.textLong)
-  cp.competences = normalizeSkills(r.competences)
-  return cp
+  f.ressourcesPerso = normalizeCustomResources(r.ressourcesPerso, w, who)
+  f.fruit = normalizeFruit(r.fruit)
+  f.xp = clampInt(num(r.xp, 0), 0, LIMITS.xpMax)
+  f.equipement = str(r.equipement, LIMITS.textLong)
+  f.inventaire = str(r.inventaire, LIMITS.textLong)
+  f.competences = normalizeSkills(r.competences)
 }

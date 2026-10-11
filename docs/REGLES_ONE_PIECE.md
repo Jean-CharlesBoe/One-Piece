@@ -164,7 +164,7 @@ Coût en Endurance selon l'ampleur de l'action (fruit, arme ou style de combat) 
 
 À la création : **une compétence de fruit** à coût fixe **≤ 5** et **une capacité spéciale** liée au style de combat.
 
-**Combat** : le joueur décrit l'action, justifie son approche, lance sur la carac choisie par le MJ. Attaque de base : **1D6 + modificateur** (Robustesse, Adresse ou Finesse). ⚠ « modificateur de caractéristique » non défini (la carac entière ? Q-R5). Source : page Notion « Règles » (https://www.notion.so/3ea9b6dd00244fcc9508b79d05cef381), §6 « Système de combat », point 2 « Calcul des dégâts » ; le MJ la relit.
+**Combat** : le joueur décrit l'action, justifie son approche, lance sur la carac choisie par le MJ. Attaque de base : **1D6 + modificateur** (Robustesse, Adresse ou Finesse). Confirmé par le MJ (Q-R5, 2026-10-11) : toute attaque sans compétence créée derrière. Source : page Notion « Règles » (https://www.notion.so/3ea9b6dd00244fcc9508b79d05cef381), §6 « Système de combat », point 2 « Calcul des dégâts » ; le MJ la relit.
 
 ## 9. Combat naval
 

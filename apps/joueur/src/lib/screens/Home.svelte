@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from 'svelte'
+  import BackupPanel from '../components/BackupPanel.svelte'
   import { createCharacter, type CharacterSummary } from '../model/character'
   import { getRepository } from '../storage/repository'
 
@@ -99,6 +100,12 @@
     </ul>
   {/if}
 
+  {#if !loading}
+    <div class="backup">
+      <BackupPanel {characters} onImported={refresh} />
+    </div>
+  {/if}
+
   <p class="version">Vivre Card v{__APP_VERSION__}</p>
 </main>
 
@@ -157,6 +164,9 @@
   }
   .error {
     color: var(--danger);
+  }
+  .backup {
+    margin-top: 28px;
   }
   .version {
     margin-top: 24px;

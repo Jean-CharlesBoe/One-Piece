@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { STAT_KEYS } from '../model/stats'
-import { MEMO_CARACS, STAT_DESCRIPTIONS } from './memos'
+import { MEMO_CARACS, MEMO_RESSOURCES, STAT_DESCRIPTIONS } from './memos'
 import { formatPrime, parsePrime, setPrime } from './prime'
 
 describe('prime', () => {
@@ -31,5 +31,13 @@ describe('mémo des caractéristiques', () => {
     expect(Object.keys(STAT_DESCRIPTIONS).sort()).toEqual([...STAT_KEYS].sort())
     expect(MEMO_CARACS.liste).toHaveLength(8)
     expect(MEMO_CARACS.texte.join(' ')).toMatch(/relances/)
+  })
+})
+
+describe('mémo des ressources', () => {
+  it('couvre les ressources et le transfert', () => {
+    const labels = MEMO_RESSOURCES.liste!.map(([l]) => l)
+    expect(labels).toEqual(expect.arrayContaining(['Vitalité', 'Endurance', 'Rêve', 'Ambition', 'Transfert']))
+    expect(MEMO_RESSOURCES.liste!.find(([l]) => l === 'Ambition')![1]).toMatch(/\+2/)
   })
 })

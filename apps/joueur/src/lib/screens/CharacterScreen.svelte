@@ -2,8 +2,11 @@
   import { App as CapApp } from '@capacitor/app'
   import { Capacitor } from '@capacitor/core'
   import type { SkillFilter } from '@onepiece/core'
+  import Sheet from '@onepiece/core/ui/Sheet.svelte'
   import SkillList from '@onepiece/core/ui/SkillList.svelte'
   import { onDestroy, onMount } from 'svelte'
+  import { asCopy, buildBackup, characterFileName } from '../backup/format'
+  import { offerFile } from '../backup/share'
   import type { Character } from '../model/character'
   import { getRepository } from '../storage/repository'
   import CompagnonsTab from './CompagnonsTab.svelte'
@@ -61,6 +64,50 @@
     onBack()
   }
 
+  /* ---------- Menu ⋮ : exporter, dupliquer (J6) ---------- */
+  let menuOpen = $state(false)
+  let busy = $state(false)
+  let menuMessage = $state('')
+
+  const errText = (e: unknown) => (e instanceof Error ? e.message : String(e))
+
+  async function exportOne() {
+    if (!character) return
+    busy = true
+    menuMessage = ''
+    try {
+      await flush()
+      const snap = $state.snapshot(character)
+      const now = new Date()
+      const shared = await offerFile(
+        characterFileName(snap.nom, now),
+        JSON.stringify(buildBackup([snap], __APP_VERSION__, now), null, 1),
+      )
+      if (shared) menuMessage = 'Fichier du personnage prêt.'
+    } catch (e) {
+      menuMessage = 'Export impossible : ' + errText(e)
+    } finally {
+      busy = false
+    }
+  }
+
+  // La copie est enregistrée, puis on revient à la liste où elle apparaît.
+  async function duplicate() {
+    if (!character) return
+    busy = true
+    menuMessage = ''
+    try {
+      await flush()
+      await (await getRepository()).save(asCopy($state.snapshot(character)))
+      menuOpen = false
+      onBack()
+    } catch (e) {
+      menuMessage = 'Copie impossible : ' + errText(e)
+    } finally {
+      busy = false
+    }
+  }
+
   onMount(() => {
     load()
     if (!Capacitor.isNativePlatform()) return
@@ -103,8 +150,17 @@
     >
       {editing ? '✓' : '✎'}
     </button>
+    <button class="icon" onclick={() => (menuOpen = true)} aria-label="Menu du personnage">⋮</button>
   {/if}
 </header>
+
+<Sheet bind:open={menuOpen} title={character?.nom || 'Personnage'}>
+  <div class="menu">
+    <button onclick={exportOne} disabled={busy}>Exporter ce personnage</button>
+    <button onclick={duplicate} disabled={busy}>Dupliquer</button>
+    {#if menuMessage}<p class="menu-msg" role="status">{menuMessage}</p>{/if}
+  </div>
+</Sheet>
 
 <div class="tabs" role="tablist" aria-label="Sections de la fiche">
   {#each TABS as [key, label] (key)}
@@ -211,5 +267,14 @@
   }
   .error {
     color: var(--danger);
+  }
+  .menu {
+    display: grid;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .menu-msg {
+    margin: 4px 0 0;
+    color: var(--muted);
   }
 </style>

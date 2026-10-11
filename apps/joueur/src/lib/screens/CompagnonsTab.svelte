@@ -1,10 +1,10 @@
 <script lang="ts">
   import { moveItem, onBack, removeById } from '@onepiece/core'
   import Sheet from '@onepiece/core/ui/Sheet.svelte'
-  import { addCompagnon, type Character } from '../model/character'
+  import { addCompagnon, sousTitre, type Character } from '../model/character'
   import CompagnonView from './CompagnonView.svelte'
 
-  // Liste des compagnons (cahier joueur §4.8, D-J5) → tap = fiche, « + Ajouter » = nouveau compagnon.
+  // Liste des compagnons (cahier joueur §4.8, D-J5, D-J17) → tap = fiche, « + Ajouter » = nouveau compagnon.
   let { character, editing }: { character: Character; editing: boolean } = $props()
 
   let openId = $state<string | null>(null)
@@ -55,8 +55,8 @@
         <li>
           <button class="card item" onclick={() => (openId = cp.id)}>
             <span class="name">{cp.nom || 'Sans nom'}</span>
-            {#if cp.type || cp.race}
-              <span class="meta">{[cp.type, cp.race].filter(Boolean).join(' · ')}</span>
+            {#if sousTitre(cp)}
+              <span class="meta">{sousTitre(cp)}</span>
             {/if}
             <span class="res">
               <span class="vitalite">Vitalité {cp.ressources.vitalite.cur}/{cp.ressources.vitalite.max}</span>

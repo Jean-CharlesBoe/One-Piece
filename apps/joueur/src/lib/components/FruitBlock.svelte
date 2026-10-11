@@ -1,6 +1,6 @@
 <script lang="ts">
   import { addFruit, FRUIT_RAPPEL, FRUIT_TYPES, fruitTechniques, isFruitEmpty, removeFruit } from '@onepiece/core'
-  import type { Character } from '../model/character'
+  import type { Character, Compagnon } from '../model/character'
 
   // Fruit du démon (cahier joueur §4.3, D-J4). Mode jeu : bloc replié (nom, type), masqué si vide ;
   // mode édition : formulaire. Ses techniques sont les compétences d'origine « fruit ».
@@ -8,7 +8,7 @@
     character,
     editing,
     onShowTechniques,
-  }: { character: Character; editing: boolean; onShowTechniques: () => void } = $props()
+  }: { character: Character | Compagnon; editing: boolean; onShowTechniques: () => void } = $props()
 
   let open = $state(false)
   let confirmRemove = $state(false)

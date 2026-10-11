@@ -55,7 +55,7 @@ Ambition affichée seulement pour la race Humain (règle du type « Nain sans ma
 ### D-J4 · 2026-10-09 · Fruit du démon sur la page principale, ses techniques dans Compétences — *validée*
 
 ### D-J5 · 2026-10-09 · Onglet « Compagnons » à la place d'« Invocations » — *validée*
-Même principe que les créatures de Sans Nom, ressources Vitalité / Endurance.
+Même principe que les créatures de Sans Nom. Fiche du compagnon : voir D-J17.
 
 ### D-J6 · 2026-10-09 · Pas de suivi du Haki dans Vivre Card — *validée*
 Le Haki est une règle propre au MJ (jets de D100, progression vers la maîtrise) : aucun compteur, état ni bouton d'épuisement dans l'appli joueur. Quand le MJ annonce une maîtrise, le joueur ajoute une compétence d'origine « Haki » (coût fixe en Endurance). Les malus d'épuisement sont annoncés par le MJ et saisis, si besoin, en bonus temporaires.
@@ -78,7 +78,18 @@ Réponse du MJ à Q-J4 : comme dans Sans Nom, le joueur ouvre le losange Enduran
 Demande du MJ : un titre « Caractéristiques » au-dessus de la grille, avec le bouton « i » à côté (premier mémo en place) ; le surnom, race · tribu · classe · âge et le rêve sont regroupés sous un titre « Info », en texte simple (le rêve n'est plus dans un cadre dépliable).
 
 ### D-J14 · 2026-10-11 · Prime sur la fiche, dans le bloc Info — *validée*
-Les personnages finiront avec une prime sur la tête : ligne « Prime : 30 000 000 ฿ » (ou « aucune pour l'instant ») en bas du bloc Info, même aspect que les autres infos ; saisie en mode édition, séparateurs acceptés. Champ `prime: number | null`. Un premier encart à part a été jugé trop encombrant par le MJ. Pas de champ berries : l'argent en poche est une entrée de l'inventaire (Q-J2).
+Les personnages finiront avec une prime sur la tête : ligne « Prime : 30 000 000 ฿ » en bas du bloc Info, **absente si aucune prime n'est saisie** (retour du MJ), même aspect que les autres infos ; saisie en mode édition, séparateurs acceptés. Champ `prime: number | null`. Un premier encart à part a été jugé trop encombrant par le MJ. Pas de champ berries : l'argent en poche est une entrée de l'inventaire (Q-J2).
+
+### D-J15 · 2026-10-11 · Transfert et Ambition quotidienne gérés à la main — *validée*
+Réponse du MJ à Q-J3 : pas de bouton « Nouveau jour » ni d'assistant de Transfert ; le joueur ajuste ses losanges. Le bloc Ressources a un bouton « i » qui rappelle Rêve, Ambition (1 pt = +2), Transfert (25 %, sans dépasser le max) et régénération (2D6 hors combat).
+
+### D-J16 · 2026-10-11 · Sauvegarde fichier de Vivre Card — *validée*
+Reprise de Sans Nom (D-T4) : encart « Sauvegarde » à l'accueil (tous les personnages, feuille de partage Android, rappel rouge si modifications et ≥ 7 jours), import avec un choix par personnage (Remplacer / Garder les deux / Ignorer, Importer / Ignorer pour un nouveau). Menu ⋮ de la fiche : « Exporter ce personnage » (même format, un seul perso) et « Dupliquer ». Format `onepiece-joueur-sauvegarde` v1, fichiers `vivrecard-sauvegarde-AAAA-MM-JJ.json` et `vivrecard-<nom>-AAAA-MM-JJ.json`.
+
+### D-J17 · 2026-10-11 · Fiche compagnon identique à la fiche PJ — *validée*
+Demande du MJ : un compagnon peut être un être vivant à part entière (race propre, XP, fruit du démon…). Il a donc toute la fiche d'un PJ : surnom, âge, race, tribu, classe, rêve (texte et jauge), prime, fruit, caracs, bonus, Vitalité / Endurance / Rêve / Ambition (si Humain), ressources perso, XP, équipement, inventaire, compétences. Le champ « Type » (Animal, Monture…) disparaît.
+Race : les 5 races jouables + « Autre race… » avec un champ libre ; choisir « Humain » fait apparaître tribu et Ambition, comme pour un PJ.
+Mise en œuvre : une interface `Fiche` commune à `Character` et `Compagnon`, l'onglet Fiche réutilisé tel quel pour le compagnon (option `freeRace`), `normalizeFiche` commun. Les anciens compagnons sont relus sans migration (aucune version publiée).
 
 ### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *validée* (Q-J5, 2026-10-11)
 Bouton « i » discret sur les blocs (carac, ressources, rêve, ambition, XP, compétences) ouvrant une fenêtre du bas avec la règle courte (pas de mémo Haki : règle du MJ). Plus une page « Aide-mémoire » accessible depuis le menu de la fiche (seuils, critiques des trois paliers de dé, coûts d'XP, coûts d'endurance).

@@ -3,19 +3,21 @@
     addCustomResource,
     hasAmbition,
     isEvanoui,
+    MEMO_RESSOURCES,
     moveItem,
     removeById,
     renameCustomResource,
     setCustomResourceRule,
     type CustomResource,
   } from '@onepiece/core'
+  import InfoButton from '@onepiece/core/ui/InfoButton.svelte'
   import ResourceDiamond from '@onepiece/core/ui/ResourceDiamond.svelte'
-  import type { Character } from '../model/character'
+  import type { Character, Compagnon } from '../model/character'
 
   // Ressources (cahier joueur §4.4) : Vitalité, Endurance, Rêve, Ambition (Humain) puis les ressources
   // personnelles, toutes en losanges, deux par ligne. Nom, règle, ordre et suppression d'une ressource
   // personnelle se règlent dans sa fenêtre, en mode édition.
-  let { character, editing }: { character: Character; editing: boolean } = $props()
+  let { character, editing }: { character: Character | Compagnon; editing: boolean } = $props()
 
   const r = $derived(character.ressources)
   const perso = $derived(character.ressourcesPerso)
@@ -44,7 +46,10 @@
 
 <section aria-labelledby="ressources-titre">
   <div class="head">
-    <h2 class="label" id="ressources-titre">Ressources</h2>
+    <div class="title">
+      <h2 class="label" id="ressources-titre">Ressources</h2>
+      <InfoButton memo={MEMO_RESSOURCES} />
+    </div>
     {#if editing}
       <button class="add" onclick={add}>+ Ressource</button>
     {/if}
@@ -110,6 +115,11 @@
     align-items: center;
     justify-content: space-between;
     min-height: 36px;
+  }
+  .title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   h2 {
     margin: 0;

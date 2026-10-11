@@ -7,18 +7,25 @@
   import FruitBlock from '../components/FruitBlock.svelte'
   import IdentityBlock from '../components/IdentityBlock.svelte'
   import ResourcesBlock from '../components/ResourcesBlock.svelte'
-  import type { Character } from '../model/character'
+  import type { Character, Compagnon } from '../model/character'
 
-  // Onglet Fiche (cahier joueur §4.1 à §4.6).
+  // Onglet Fiche (cahier joueur §4.1 à §4.6). Sert aussi à la fiche d'un compagnon (D-J17) : `freeRace`
+  // permet alors une race hors des 5 races jouables.
   let {
     character,
     editing,
     onShowTechniques,
-  }: { character: Character; editing: boolean; onShowTechniques: () => void } = $props()
+    freeRace = false,
+  }: {
+    character: Character | Compagnon
+    editing: boolean
+    onShowTechniques: () => void
+    freeRace?: boolean
+  } = $props()
 </script>
 
 <div class="tab">
-  <IdentityBlock {character} {editing} />
+  <IdentityBlock {character} {editing} {freeRace} />
 
   <FruitBlock {character} {editing} {onShowTechniques} />
 

@@ -1,7 +1,8 @@
 // Modèle d'un personnage de Vivre Card (docs/joueur/CAHIER_DES_CHARGES.md §6).
 // Un personnage, avec ses compagnons, est stocké comme un seul document JSON.
-// Berries (Q-J2) et Transfert (Q-J3) attendent la réponse du MJ. Tant qu'aucune version n'est publiée, un champ
-// ajouté ne demande pas de migration : `normalizeCharacter` complète les champs manquants.
+// Un compagnon a la même fiche qu'un PJ (D-J17) : seule sa race peut sortir des 5 races jouables.
+// Tant qu'aucune version n'est publiée, un champ ajouté ne demande pas de migration :
+// `normalizeCharacter` complète les champs manquants.
 
 import {
   createResource,
@@ -21,38 +22,22 @@ import {
 
 export const SCHEMA_VERSION = 1
 
-export interface Compagnon {
-  id: string
-  nom: string
-  type: string
-  race: string
-  stats: Stats
-  bonusTemporaires: TempBonus[]
-  ressources: { vitalite: Resource; endurance: Resource }
-  equipement: string
-  inventaire: string
-  competences: Skill[]
-}
-
-export interface Character {
-  id: string
-  schemaVersion: number
-  createdAt: string
-  updatedAt: string
+/** Tout ce qu'une fiche contient, pour un PJ comme pour un compagnon. */
+export interface Fiche {
   nom: string
   titre: string
   age: string
-  race: Race | ''
   /** Humains seulement ; valeur conservée si la race change. */
   tribu: Tribu
   /** L'écran n'en propose qu'une (D-J9). */
   classes: Classe[]
-  /** Le rêve du personnage (texte). */
+  /** Le rêve (texte). */
   reve: string
   /** Prime sur sa tête, en berries ; null = pas (encore) de prime. */
   prime: number | null
   stats: Stats
   bonusTemporaires: TempBonus[]
+  /** Ambition : affichée pour un Humain seulement, valeurs conservées sinon. */
   ressources: { vitalite: Resource; endurance: Resource; reve: Resource; ambition: Resource }
   ressourcesPerso: CustomResource[]
   fruit: Fruit | null
@@ -60,6 +45,20 @@ export interface Character {
   equipement: string
   inventaire: string
   competences: Skill[]
+}
+
+export interface Compagnon extends Fiche {
+  id: string
+  /** Une des 5 races jouables, ou un nom libre (« Autre race… » : Canard, Den Den Mushi…). */
+  race: string
+}
+
+export interface Character extends Fiche {
+  id: string
+  schemaVersion: number
+  createdAt: string
+  updatedAt: string
+  race: Race | ''
   compagnons: Compagnon[]
 }
 
@@ -72,17 +71,12 @@ export interface CharacterSummary {
   updatedAt: string
 }
 
-export function createCharacter(nom: string): Character {
-  const now = new Date().toISOString()
+/** Fiche vierge : caracs à 0, Rêve et Ambition à 10 / 10, rien d'autre. */
+export function createFiche(nom: string): Fiche {
   return {
-    id: newId(),
-    schemaVersion: SCHEMA_VERSION,
-    createdAt: now,
-    updatedAt: now,
     nom,
     titre: '',
     age: '',
-    race: '',
     tribu: '',
     classes: [],
     reve: '',
@@ -101,27 +95,25 @@ export function createCharacter(nom: string): Character {
     equipement: '',
     inventaire: '',
     competences: [],
+  }
+}
+
+export function createCharacter(nom: string): Character {
+  const now = new Date().toISOString()
+  return {
+    id: newId(),
+    schemaVersion: SCHEMA_VERSION,
+    createdAt: now,
+    updatedAt: now,
+    race: '',
+    ...createFiche(nom),
     compagnons: [],
   }
 }
 
 export function createCompagnon(nom: string): Compagnon {
-  return {
-    id: newId(),
-    nom,
-    type: '',
-    race: '',
-    stats: emptyStats(),
-    bonusTemporaires: [],
-    ressources: { vitalite: createResource(), endurance: createResource() },
-    equipement: '',
-    inventaire: '',
-    competences: [],
-  }
+  return { id: newId(), race: '', ...createFiche(nom) }
 }
-
-/** Suggestions du champ « Type » d'un compagnon (saisie libre, cahier joueur §4.8). */
-export const COMPAGNON_TYPES = ['Animal', 'Monture', 'Den Den Mushi', 'Autre'] as const
 
 /** Ajoute un compagnon (pas de limite de nombre) et le renvoie. */
 export function addCompagnon(c: Pick<Character, 'compagnons'>, nom: string): Compagnon {
@@ -130,11 +122,11 @@ export function addCompagnon(c: Pick<Character, 'compagnons'>, nom: string): Com
   return compagnon
 }
 
+/** « Race · Classe » (accueil, liste des compagnons). */
+export function sousTitre(c: { race: string; classes: Classe[] }): string {
+  return [c.race, c.classes.join(', ')].filter(Boolean).join(' · ')
+}
+
 export function summarize(c: Pick<Character, 'id' | 'nom' | 'race' | 'classes' | 'updatedAt'>): CharacterSummary {
-  return {
-    id: c.id,
-    nom: c.nom,
-    sousTitre: [c.race, c.classes.join(', ')].filter(Boolean).join(' · '),
-    updatedAt: c.updatedAt,
-  }
+  return { id: c.id, nom: c.nom, sousTitre: sousTitre(c), updatedAt: c.updatedAt }
 }

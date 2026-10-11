@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **J4 — Compagnons** (poussée, à essayer sur téléphone) et retours du MJ sur la fiche (Info, Caractéristiques, Prime). Ensuite : J5 (mémos ; seul celui de l'attaque de base attend Q-R5) et J6 (sauvegarde).
+Étape en cours : **J6 — Sauvegarde** (code fait, à essayer sur téléphone). J4 et les retours sur la fiche sont aussi à confirmer sur téléphone. Ensuite : J5 (mémos restants + aide-mémoire, plus rien ne bloque) puis J7.
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -10,7 +10,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 |---|---|---|---|---|
 | C0 | Cadrage | Specs, décisions, questions | — | fait (v0.2) |
 | C1 | Socle monorepo | workspaces npm, `packages/core` (caracs, races, classes, paliers, `Resource`, `TempBonus`), composants repris de Sans Nom (StatGrid, ResourceDiamond, TempBonuses, Sheet, NumberInput, back.ts), Vitest, `npm run check` | — | fait |
-| C2 | Règles et mémos | `packages/core/src/rules` (stats, ressources bornées, ambition/race, transfert, xp) + `memos.ts` depuis REGLES_ONE_PIECE.md ; tests | Q-R5 (mémo de l'attaque de base seulement) | à faire |
+| C2 | Règles et mémos | `packages/core/src/rules` (stats, ressources bornées, ambition/race, transfert, xp) + `memos.ts` depuis REGLES_ONE_PIECE.md ; tests | — | à faire |
 
 ## Appli joueur
 
@@ -21,8 +21,8 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | fait |
 | J3 | Compétences | SkillList, coût en Endurance, origine + filtre | — | fait |
 | J4 | Compagnons | liste + fiche compagnon | — | en cours (code fait, test téléphone à faire) |
-| J5 | Mémos | boutons « i », aide-mémoire | Q-R5 (attaque de base seulement) | en cours (mémo des caracs fait) |
-| J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | à faire |
+| J5 | Mémos | boutons « i », aide-mémoire | — | en cours (mémos Caractéristiques et Ressources faits) |
+| J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | en cours (code fait, test téléphone à faire) |
 | J7 | Finitions | mode sombre/clair, notice joueurs, icône, **1re release** | Q-T4 | à faire |
 
 ## Appli MJ
@@ -141,3 +141,16 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Vérifié : check, 47 tests, rendu à 360 × 780 (Info, Prime « 30 000 000 ฿ », mémo des caracs), console sans erreur.
 - Reste : confirmer « 1 point d'Ambition = +2 » ; Q-R5 ; Q-J2 (berries) ; Q-J3 (Nouveau jour / Transfert, désormais mieux défini).
 - Retours du MJ (même jour) : prime affichée comme une ligne du bloc Info (« Prime : 30 000 000 ฿ »), l'encart jugé trop encombrant est retiré (composant `PrimeBlock` supprimé, saisie dans le formulaire Info) ; berries = entrée d'inventaire (Q-J2 close) ; Ambition confirmée (1 point = +2) ; lien Notion donné au MJ pour Q-R5.
+
+### Session 6 (fin) · 2026-10-11 (Q-R5, Q-J3, mémo Ressources, J6 — sauvegarde)
+- Réponses du MJ : **Q-R5** confirmée (1D6 + modificateur de caractéristique, formulation conservée) ; **Q-J3** à la main (D-J15). Plus aucune question ouverte pour l'appli joueur.
+- `MEMO_RESSOURCES` (Vitalité, Endurance, Rêve, Ambition 1 pt = +2, Transfert, régénération 2D6, ressources perso) + bouton « i » à côté du titre « Ressources ».
+- **J6** (D-J16), repris de Sans Nom : `backup/format.ts` (format `onepiece-joueur-sauvegarde` v1, `parseBackup` via `normalizeCharacter`, `asCopy`, `backupStatus`, noms de fichiers) + tests ; `backup/share.ts` (feuille de partage Android, téléchargement dans le navigateur) ; `BackupPanel` à l'accueil ; menu ⋮ de la fiche (Exporter ce personnage, Dupliquer). Plugins `@capacitor/filesystem` et `@capacitor/share` ajoutés, projet Android synchronisé.
+- Bug trouvé au test et corrigé : « Garder les deux » échouait (`structuredClone` refuse les proxys `$state`) → copie par JSON et `$state.snapshot` avant enregistrement ; test ajouté. Espace manquant dans « …pour l'instant. Pense à sauvegarder ! » (défaut hérité de Sans Nom) corrigé.
+- Vérifié : check, 57 tests, dans le navigateur à 360 × 780 : rappel rouge, import d'un fichier (Garder les deux + nouveau), Dupliquer ; console sans erreur. Fiches de test supprimées, la fiche « Ozmo » du navigateur intégré laissée intacte. Le bouton « Sauvegarder » n'a pas été cliqué (il déclenche un téléchargement).
+- Reste pour clore J6, sur téléphone : « Sauvegarder » vers Drive ou par message, réimport du fichier, « Exporter ce personnage », et une mise à jour de l'APK par-dessus en gardant les fiches.
+
+### Session 6 (retours avant commit) · 2026-10-11 (prime, compagnons = fiche PJ)
+- **Prime** : la ligne n'apparaît plus si aucune prime n'est saisie (D-J14 précisée).
+- **Compagnons** (D-J17, plan validé avec le MJ) : même fiche qu'un PJ ; type supprimé ; race = 5 races jouables + « Autre race… » (champ libre) ; « Humain » → tribu et Ambition. Interface `Fiche` commune, `createFiche`, normalisation commune (`readFiche`) ; `IdentityBlock` (option `freeRace`), `FruitBlock`, `ResourcesBlock` et `FicheTab` acceptent un PJ ou un compagnon ; `CompagnonView` = `FicheTab` + compétences + suppression ; lien des techniques du fruit qui filtre et descend jusqu'à la liste (défilement direct : le défilement « doux » ne s'exécutait pas dans le navigateur de test). Core : `hasAmbition` / `hasTribu` / `setRace` acceptent une race libre, nouveau `isAutreRace`.
+- Vérifié : check, 61 tests, parcours navigateur 360 × 780 (prime vidée, « Autre race… » ↔ « Humain », Ambition et tribu, classe, âge, prime, fruit + lien, compétence, XP, rechargement), console sans erreur ; fiche de test supprimée, « Ozmo » intacte.

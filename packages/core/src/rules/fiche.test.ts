@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import type { Classe, Race, Tribu } from '../model/identity'
 import { createResource, type CustomResource } from '../model/resources'
-import { hasAmbition, hasTribu, mainClasse, setClasse, setRace } from './identity'
+import { hasAmbition, hasTribu, isAutreRace, mainClasse, setClasse, setRace } from './identity'
 import { moveItem, removeById } from './lists'
 import { normalizeCustomResources } from './normalize'
 import { addCustomResource, adjustResource, isEvanoui, renameCustomResource, setCustomResourceRule } from './resources'
@@ -34,6 +34,17 @@ describe('identité', () => {
     expect(c.classes).toEqual(['Cuisinier'])
     setClasse(c, '')
     expect(c.classes).toEqual([])
+  })
+})
+
+describe("race d'un compagnon", () => {
+  it('une race libre est possible ; « Humain » donne l’Ambition et la tribu', () => {
+    expect(isAutreRace('Canard')).toBe(true)
+    expect(isAutreRace('Mink')).toBe(false)
+    expect(isAutreRace('')).toBe(false)
+    expect(hasAmbition({ race: 'Canard' })).toBe(false)
+    expect(hasAmbition({ race: 'Humain' })).toBe(true)
+    expect(hasTribu({ race: 'Humain' })).toBe(true)
   })
 })
 

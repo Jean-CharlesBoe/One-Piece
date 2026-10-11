@@ -82,3 +82,40 @@ describe('compagnons', () => {
     expect(karoo.competences).toEqual([])
   })
 })
+
+describe('compagnon = fiche PJ complète (D-J17)', () => {
+  it('démarre comme un PJ : Rêve et Ambition à 10 / 10, rien d’autre', () => {
+    const c = createCharacter('Osmo')
+    const karoo = addCompagnon(c, 'Karoo')
+    expect(karoo.ressources.reve).toMatchObject({ cur: 10, max: 10 })
+    expect(karoo.ressources.ambition).toMatchObject({ cur: 10, max: 10 })
+    expect(karoo).toMatchObject({ race: '', xp: 0, prime: null, fruit: null, classes: [], ressourcesPerso: [] })
+  })
+
+  it('aller-retour complet, race libre comprise', () => {
+    const c = createCharacter('Osmo')
+    const karoo = addCompagnon(c, 'Karoo')
+    Object.assign(karoo, { race: 'Canard', titre: 'le Rapide', age: '4', reve: 'Courir le désert', prime: 50, xp: 3 })
+    karoo.classes = ['Timonier']
+    karoo.fruit = { nom: 'Fruit du vent', type: 'Logia', description: '', eveil: '' }
+    karoo.ressourcesPerso.push({ id: 'v', nom: 'Vitesse', cur: 2, max: 3, regeneration: '', regle: '' })
+    const humain = addCompagnon(c, 'Mousse')
+    Object.assign(humain, { race: 'Humain', tribu: 'long-cou' })
+    const { character, warnings } = normalizeCharacter(JSON.parse(JSON.stringify(c)))
+    expect(warnings).toEqual([])
+    expect(character.compagnons).toEqual(c.compagnons)
+  })
+
+  it('relit un ancien compagnon (champ « type », sans XP ni fruit) sans erreur', () => {
+    const { character, warnings } = normalizeCharacter({
+      nom: 'Osmo',
+      compagnons: [{ id: 'k', nom: 'Karoo', type: 'Monture', race: 'Canard', ressources: { vitalite: { cur: 30, max: 30 } } }],
+    })
+    const karoo = character.compagnons[0]
+    expect(warnings).toEqual([])
+    expect(karoo).not.toHaveProperty('type')
+    expect(karoo).toMatchObject({ id: 'k', nom: 'Karoo', race: 'Canard', xp: 0, fruit: null, prime: null })
+    expect(karoo.ressources.vitalite).toMatchObject({ cur: 30, max: 30 })
+    expect(karoo.ressources.reve).toMatchObject({ cur: 10, max: 10 })
+  })
+})

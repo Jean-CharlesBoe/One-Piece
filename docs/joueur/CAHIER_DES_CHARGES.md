@@ -52,7 +52,7 @@ Menu de la fiche (⋮ en haut à droite) : **Aide-mémoire** (§4.6), Dupliquer,
 
 Mode jeu : bloc titré **« Info »** (D-J13) : surnom en italique, « Race · Tribu · Classe · âge », « Rêve : … » en texte simple.
 
-**Prime** (D-J14) : dernière ligne du bloc Info, même aspect que les autres : « Prime : 30 000 000 ฿ » ou « Prime : aucune pour l'instant » ; saisie en mode édition (séparateurs acceptés, vide = pas de prime).
+**Prime** (D-J14) : dernière ligne du bloc Info, même aspect que les autres : « Prime : 30 000 000 ฿ », **rien du tout si aucune prime n'est saisie** ; saisie en mode édition (séparateurs acceptés, vide = pas de prime).
 
 ### 4.2 Fiche — Caractéristiques
 Bloc titré **« Caractéristiques »** avec son bouton « i » (mémo : jet = dé + carac, avantages = relances, descriptions des 8 caracs ; D-J13).
@@ -86,8 +86,7 @@ Losanges `actuel / max` comme Sans Nom, tap = fenêtre du bas (−10 / −5 / �
 
 - Une ressource ne dépasse jamais son max (règle Sans Nom Q 20).
 - Champ **Régénération / récupération** (texte) par ressource, comme Sans Nom (ex. Rêve : « 2D6+4 + points dépensés », Ambition : « chaque jour »).
-- Action rapide **« Nouveau jour »** (menu des ressources) : remet l'Ambition au max et réarme le Transfert. **[Q-J3]**
-- **Transfert** (1 fois/jour, ≤ 25 % de la Vitalité max) : bouton dans la fenêtre Vitalité/Endurance, qui propose le plafond calculé et coche « utilisé aujourd'hui ». Le joueur peut l'ignorer. **[Q-J3]**
+- **Transfert**, Ambition rechargée chaque jour : gérés **à la main** par le joueur dans les losanges (Q-J3, D-J15). Pas de bouton « Nouveau jour » ni d'assistant ; la règle est dans le mémo « i » du bloc Ressources.
 - Section **« Ressources »** : titre et bouton « + Ressource » (mode édition) sur la même ligne ; **deux losanges par ligne**, lignes bien espacées (D-J11).
 - Ressources personnalisées : ajout en mode édition ; nom, règle, ordre (↑ Avant / ↓ Après) et suppression en deux temps dans leur fenêtre, en mode édition ; même fenêtre d'ajustement que les autres losanges. Exemple : *Chance*, max 5, « 1 pt = +1 à un jet ; 10 pts = créer ou annuler un critique ; recharge en courant ».
 
@@ -106,9 +105,10 @@ Repris de Sans Nom (`SkillList`) : cartes repliées (titre, pastille de coût, 1
 - **Origine** facultative : Fruit · Style de combat · Race · Haki · Autre → pastille de couleur (et liseré de la carte) + filtre en haut de liste (« Toutes / Fruit / Combat… »), limité aux origines présentes. Le filtre ne s'applique qu'en mode jeu : en édition, toute la liste reste visible (l'ordre ↑ ↓ porte sur la liste complète). Le lien « Voir les techniques » du fruit ouvre la liste filtrée sur « Fruit ».
 - Pas de raccourci de dépense (Q-J4, D-J12) : la pastille affiche seulement le coût ; le joueur retire l'Endurance à la main dans le losange, comme dans Sans Nom.
 
-### 4.8 Compagnons (D-J5)
-Repris de `InvocationsTab` / `CreatureView` : liste (nom, type, Vitalité / Endurance en résumé) + « Ajouter ».
-Fiche compagnon : nom, type (suggestions : Animal, Monture, Den Den Mushi, Autre), race libre, 8 caracs avec avantages et bonus temporaires, losanges **Vitalité** et **Endurance**, équipement, inventaire, compétences (coût en Endurance).
+### 4.8 Compagnons (D-J5, D-J17)
+Liste (nom, « race · classe », Vitalité / Endurance en résumé) + « Ajouter » ; ↑ ↓ en mode édition.
+Fiche compagnon : **la même fiche qu'un PJ** (D-J17) — bloc Info (nom, surnom, race, âge, tribu si Humain, classe, rêve, prime), fruit du démon, caractéristiques, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition si Humain, ressources perso), XP, équipement, inventaire — suivie de ses compétences sur la même page (le lien « Voir les techniques » du fruit y descend, filtré sur « Fruit ») et de « Supprimer ce compagnon » en deux temps.
+Seule différence : la **race** propose les 5 races jouables **et « Autre race… »**, qui ouvre un champ libre (Canard, Den Den Mushi…). Choisir « Humain » fait apparaître la tribu et l'Ambition.
 
 ### 4.9 Mémos et aide-mémoire (D-J7, proposée)
 - Bouton **« i »** (petit, discret, désactivable dans les réglages) sur : chaque carac (description), chaque ressource (règle), Rêve, Ambition, Transfert, XP, Compétences (barème des coûts d'Endurance), Fruit.
@@ -126,7 +126,7 @@ Fiche compagnon : nom, type (suggestions : Animal, Monture, Den Den Mushi, Autre
 | Ressources | 0 ≤ actuel ≤ max ; max saisi à la main |
 | Ambition | visible seulement si race = Humain ; valeurs conservées sinon |
 | Endurance à 0 | bandeau « Évanoui » (information, aucun blocage) |
-| Transfert | plafond = floor(25 % × Vitalité max) ; 1 fois par « jour » [Q-J3] |
+| Transfert | à la main (D-J15) ; règle rappelée dans le mémo Ressources |
 | XP | compteur ≥ 0, ajusté à la main |
 
 ## 6. Modèle de données
@@ -134,6 +134,8 @@ Fiche compagnon : nom, type (suggestions : Animal, Monture, Den Den Mushi, Autre
 Stockage comme Sans Nom : table `characters (id, nom, updated_at, data)` + `meta`. `data` = JSON ci-dessous, passé par `normalizeCharacter` à chaque lecture.
 
 ```ts
+// Fiche = champs communs au PJ et au compagnon (D-J17) : nom, titre, age, tribu, classes, reve, prime, stats,
+// bonusTemporaires, ressources, ressourcesPerso, fruit, xp, equipement, inventaire, competences.
 interface Character {
   id: string; schemaVersion: 1; createdAt: string; updatedAt: string
   nom: string; titre: string; age: string
@@ -153,7 +155,7 @@ interface Character {
   xp: number
   equipement: string; inventaire: string
   competences: Skill[]            // Skill = { id, titre, cout: number|null, origine: '' | 'fruit' | 'combat' | 'race' | 'haki' | 'autre', description }
-  compagnons: Compagnon[]         // Compagnon = { id, nom, type, race, stats, bonusTemporaires, ressources: { vitalite, endurance }, equipement, inventaire, competences }
+  compagnons: Compagnon[]         // Compagnon = Fiche + { id, race: string } (race jouable ou libre)
 }
 interface Resource { cur: number; max: number; regeneration: string }
 ```
