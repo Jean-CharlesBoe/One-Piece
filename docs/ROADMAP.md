@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **J4 — Compagnons** (code fait, à essayer sur téléphone). Ensuite : J5 (mémos, bloquée par Q-J5) et J6 (sauvegarde). C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
+Étape en cours : **J4 — Compagnons** (poussée, à essayer sur téléphone) et retours du MJ sur la fiche (Info, Caractéristiques, Prime). Ensuite : J5 (mémos ; seul celui de l'attaque de base attend Q-R5) et J6 (sauvegarde).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -10,7 +10,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 |---|---|---|---|---|
 | C0 | Cadrage | Specs, décisions, questions | — | fait (v0.2) |
 | C1 | Socle monorepo | workspaces npm, `packages/core` (caracs, races, classes, paliers, `Resource`, `TempBonus`), composants repris de Sans Nom (StatGrid, ResourceDiamond, TempBonuses, Sheet, NumberInput, back.ts), Vitest, `npm run check` | — | fait |
-| C2 | Règles et mémos | `packages/core/src/rules` (stats, ressources bornées, ambition/race, transfert, xp) + `memos.ts` depuis REGLES_ONE_PIECE.md ; tests | Q-R1, Q-R2, Q-R5 (textes des mémos seulement) | à faire |
+| C2 | Règles et mémos | `packages/core/src/rules` (stats, ressources bornées, ambition/race, transfert, xp) + `memos.ts` depuis REGLES_ONE_PIECE.md ; tests | Q-R5 (mémo de l'attaque de base seulement) | à faire |
 
 ## Appli joueur
 
@@ -21,7 +21,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | fait |
 | J3 | Compétences | SkillList, coût en Endurance, origine + filtre | — | fait |
 | J4 | Compagnons | liste + fiche compagnon | — | en cours (code fait, test téléphone à faire) |
-| J5 | Mémos | boutons « i », aide-mémoire | Q-J5 | à faire |
+| J5 | Mémos | boutons « i », aide-mémoire | Q-R5 (attaque de base seulement) | en cours (mémo des caracs fait) |
 | J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | à faire |
 | J7 | Finitions | mode sombre/clair, notice joueurs, icône, **1re release** | Q-T4 | à faire |
 
@@ -130,3 +130,14 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Vérifié : check, 43 tests, parcours dans le navigateur à 360 × 780 (création, fiche, ressources, compétence, rechargement, retour à la liste, suppression), console sans erreur.
 - `.claude/launch.json` : serveurs de dev passés sur les ports 5183 (joueur) et 5184 (MJ), le 5173 étant pris par un autre projet.
 - Reste pour clore J4 : test sur téléphone. Ensuite : **Q-J5** à trancher pour J5 (mémos « i » contextuels + aide-mémoire, D-J7), ou J6 (sauvegarde fichier) qui n'est bloquée par rien.
+
+### Session 6 (suite) · 2026-10-11 (réponses du MJ, Info / Caractéristiques / Prime)
+- J4 poussée (commit `f065d5b`), test téléphone à faire.
+- Réponses du MJ : **Q-J5** validée (D-J7 validée) ; **Q-R1** comme Sans Nom (relances) ; **Q-R2** Ambition +2 sur un jet, sans annuler un échec critique ni créer une réussite critique, avec des rappels sur le Transfert (plafonné au max), le Rêve et une régénération hors combat de 2D6 (REGLES §1 et §3 à jour) ; **Q-J2** prime oui, berries encore ouvertes.
+- **Q-R5** : source retrouvée dans Notion (page « Règles », §6 « Système de combat », point 2 « Calcul des dégâts »), le MJ la relit. Écarts relevés entre Notion et le rappel du MJ (Ambition +2, plafond du Transfert, régénération 2D6) : le rappel du MJ fait foi.
+- `packages/core` : `rules/memos.ts` (`Memo`, `STAT_DESCRIPTIONS`, `MEMO_CARACS`), `ui/InfoButton.svelte` (bouton « i » + fenêtre du bas), `rules/prime.ts` (`parsePrime`, `setPrime`, `formatPrime`, borne `LIMITS.primeMax`) ; tests.
+- `apps/joueur` : bloc « Info » (surnom, race · tribu · classe · âge, rêve en texte simple ; D-J13), encart « Prime » (D-J14 ; champ `prime` dans le modèle et `normalizeCharacter`), titre « Caractéristiques » avec bouton « i ».
+- Format stocké : `prime` ajouté sans changer `SCHEMA_VERSION` (aucune version publiée ; les fiches existantes reçoivent `prime: null` à la lecture).
+- Vérifié : check, 47 tests, rendu à 360 × 780 (Info, Prime « 30 000 000 ฿ », mémo des caracs), console sans erreur.
+- Reste : confirmer « 1 point d'Ambition = +2 » ; Q-R5 ; Q-J2 (berries) ; Q-J3 (Nouveau jour / Transfert, désormais mieux défini).
+- Retours du MJ (même jour) : prime affichée comme une ligne du bloc Info (« Prime : 30 000 000 ฿ »), l'encart jugé trop encombrant est retiré (composant `PrimeBlock` supprimé, saisie dans le formulaire Info) ; berries = entrée d'inventaire (Q-J2 close) ; Ambition confirmée (1 point = +2) ; lien Notion donné au MJ pour Q-R5.

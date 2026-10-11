@@ -17,5 +17,7 @@ export * from './rules/xp'
 export * from './rules/lists'
 export * from './rules/fruit'
 export * from './rules/skills'
+export * from './rules/prime'
+export * from './rules/memos'
 
 export * from './ui/back'

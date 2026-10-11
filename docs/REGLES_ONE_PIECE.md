@@ -25,7 +25,7 @@ Jet = **dé + caractéristique**, comparé à un seuil fixe (les seuils ne chang
 
 - **Réussite critique** : on ajoute le dé à la carac, on relance, et on **ajoute** le nouveau résultat.
 - **Échec critique** : on ajoute le dé à la carac, on relance, et on **soustrait** le nouveau résultat.
-- **Avantage** sur une carac : ⚠ effet non défini dans la page Règles. Dans Sans Nom, N avantages = N relances. Hypothèse retenue pour les mémos : même sens (Q-R1).
+- **Avantage** sur une carac (Q-R1, comme Sans Nom) : **+N = N relances** du jet sur cette carac ; un **double avantage** = 2 relances. Une valeur négative indique des désavantages, dont le MJ gère l'effet.
 
 ## 2. Caractéristiques
 
@@ -46,9 +46,10 @@ Jet = **dé + caractéristique**, comparé à un seuil fixe (les seuils ne chang
 |---|---|
 | **Vitalité** | points de vie |
 | **Endurance** | dépensée pour les techniques spéciales, le fruit, le Haki. **À 0, le personnage s'évanouit.** |
-| **Rêve** | jauge de 10 à la création. 1 point = relance d'un dé. Récupération : 2D6 + 4 (Vitalité ou Endurance) + nombre de points de rêve dépensés. Se regagne en jouant son rêve. |
-| **Ambition** | Humains uniquement : jauge de 10, puisée pour améliorer un jet, **rechargée chaque jour**. ⚠ « 1 point = +1 au jet » non écrit (Q-R2) |
-| **Transfert** | 1 fois par jour : transférer jusqu'à **25 % du total de Vitalité** en Endurance, ou l'inverse. Peut avoir des effets négatifs. |
+| **Rêve** | jauge de 10 à la création. **1 point dépensé = 1 relance de dé**, ou **récupération de 2D6 + 4** (Vitalité ou Endurance) **+ le nombre de points de rêve dépensés**. Se regagne en jouant son rêve. |
+| **Ambition** | Humains uniquement : jauge de 10, **rechargée chaque jour**. **+2 sur le résultat d'un jet** : **1 point d'Ambition dépensé = +2** (Q-R2, confirmé par le MJ le 2026-10-11). **Ne peut ni annuler un échec critique ni créer une réussite critique.** |
+| **Transfert** | Toutes les races, 1 fois par jour : transférer jusqu'à **25 % du total de Vitalité** en Endurance, ou l'inverse. **Impossible de dépasser le max** de Vitalité ou d'Endurance. Peut avoir des effets négatifs (Notion). |
+| **Régénération** | En dehors des combats et des phases de stress : **2D6** de Vitalité ou d'Endurance (rappel du MJ du 2026-10-11 ; absent de la page Notion). |
 | Ressources propres | certains personnages en ont (ex. **Chance** d'Osmo : max 5, recharge en courant partout, 1 pt = +1 à un jet, 10 pts = créer/annuler un critique) |
 
 ## 4. Création et XP
@@ -163,7 +164,7 @@ Coût en Endurance selon l'ampleur de l'action (fruit, arme ou style de combat) 
 
 À la création : **une compétence de fruit** à coût fixe **≤ 5** et **une capacité spéciale** liée au style de combat.
 
-**Combat** : le joueur décrit l'action, justifie son approche, lance sur la carac choisie par le MJ. Attaque de base : **1D6 + modificateur** (Robustesse, Adresse ou Finesse). ⚠ « modificateur de caractéristique » non défini (la carac entière ? Q-R5).
+**Combat** : le joueur décrit l'action, justifie son approche, lance sur la carac choisie par le MJ. Attaque de base : **1D6 + modificateur** (Robustesse, Adresse ou Finesse). ⚠ « modificateur de caractéristique » non défini (la carac entière ? Q-R5). Source : page Notion « Règles » (https://www.notion.so/3ea9b6dd00244fcc9508b79d05cef381), §6 « Système de combat », point 2 « Calcul des dégâts » ; le MJ la relit.
 
 ## 9. Combat naval
 

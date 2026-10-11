@@ -7,6 +7,8 @@ export const LIMITS = {
   bonusMax: 999,
   resourceMax: 9999,
   xpMax: 99999,
+  /** Prime en berries (les plus grosses primes du manga dépassent 3 milliards). */
+  primeMax: 99_999_999_999,
   costMax: 9999,
   textShort: 120,
   textMedium: 2000,

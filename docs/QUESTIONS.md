@@ -11,14 +11,10 @@ Préfixes : **Q-T** transverse · **Q-R** règles du jeu · **Q-J** appli joueur
 - **Q-T4. Icônes** — Même démarche que Sans Nom (dessin fourni) ? *Non bloquante.*
 
 ### Règles du jeu
-- **Q-R1. Avantage / désavantage** — Effet exact d'un avantage sur une carac (relance comme dans Sans Nom ? bonus fixe ?) et d'un « double avantage » ? Sert aux mémos.
-- **Q-R2. Ambition** — 1 point d'ambition = +1 au résultat d'un jet ? Plafond par jet ?
-- **Q-R5. Attaque de base** — « 1D6 + modificateur de caractéristique » : modificateur = la carac entière, une fraction, autre ?
+- **Q-R5. Attaque de base** — « 1D6 + modificateur de caractéristique » : modificateur = la carac entière, une fraction, autre ? *Source retrouvée : page Notion « Règles » (https://www.notion.so/3ea9b6dd00244fcc9508b79d05cef381), §6 « Système de combat », point 2 « Calcul des dégâts » (modifiée le 2025-02-02). Le MJ la relit (2026-10-11).*
 
 ### Appli joueur
-- **Q-J2. Prime et berries** — Utiles sur la fiche (prime du pirate, argent en poche) ou hors périmètre comme l'argent dans Sans Nom ?
 - **Q-J3. Nouveau jour et Transfert** — Bouton « Nouveau jour » (recharge Ambition, réarme le Transfert) et assistant de Transfert (25 % calculés) : utiles, ou saisie à la main ?
-- **Q-J5. Mémos** — Valider D-J7 (mémos « i » contextuels + aide-mémoire, pas d'onglet Règles).
 
 ### Appli MJ
 - **Q-M1. Onglets de fiches** — Garder plusieurs fiches ouvertes en onglets hors session (comme un navigateur), ou une seule fiche + historique suffit ?
@@ -53,3 +49,7 @@ Préfixes : **Q-T** transverse · **Q-R** règles du jeu · **Q-J** appli joueur
 - **Q-R6. Lunariens** → non jouables par les PJ ; race de lore côté MJ uniquement.
 - **Q-M8. Relevé des jets de Haki** → une entrée « Haki » dans le journal de session (D-M9).
 - **Q-J4. Raccourci de dépense** → **non** : comme Sans Nom, le joueur ouvre le losange Endurance et retire le coût à la main ; la compétence affiche seulement son coût (D-J12).
+- **Q-R1. Avantages** → comme Sans Nom : +N = N relances du jet ; double avantage = 2 relances ; négatif = désavantages gérés par le MJ (REGLES §1).
+- **Q-R2. Ambition** → +2 sur le résultat d'un jet (1 point dépensé = +2, confirmé), sans pouvoir annuler un échec critique ni créer une réussite critique ; rechargée chaque jour. Rappels associés du MJ : Transfert plafonné au max, Rêve (relance ou 2D6 + 4 + points dépensés), régénération hors combat de 2D6 (REGLES §3).
+- **Q-J2. Prime** → oui : encart « Prime » sur la fiche, les persos finiront avec une prime sur la tête (D-J14). Berries : pas de champ, une entrée de l'inventaire (2026-10-11). Affichage : ligne du bloc Info plutôt qu'un encart.
+- **Q-J5. Mémos** → principe validé (D-J7) : boutons « i » contextuels + aide-mémoire. Demandes associées : titre « Caractéristiques » avec son « i », bloc « Info » (D-J13).

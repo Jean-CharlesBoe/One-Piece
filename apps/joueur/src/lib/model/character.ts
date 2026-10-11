@@ -1,7 +1,7 @@
 // Modèle d'un personnage de Vivre Card (docs/joueur/CAHIER_DES_CHARGES.md §6).
 // Un personnage, avec ses compagnons, est stocké comme un seul document JSON.
-// Prime, berries (Q-J2) et Transfert (Q-J3) attendent la réponse du MJ : ils s'ajouteront sans migration,
-// `normalizeCharacter` complétant les champs manquants.
+// Berries (Q-J2) et Transfert (Q-J3) attendent la réponse du MJ. Tant qu'aucune version n'est publiée, un champ
+// ajouté ne demande pas de migration : `normalizeCharacter` complète les champs manquants.
 
 import {
   createResource,
@@ -49,6 +49,8 @@ export interface Character {
   classes: Classe[]
   /** Le rêve du personnage (texte). */
   reve: string
+  /** Prime sur sa tête, en berries ; null = pas (encore) de prime. */
+  prime: number | null
   stats: Stats
   bonusTemporaires: TempBonus[]
   ressources: { vitalite: Resource; endurance: Resource; reve: Resource; ambition: Resource }
@@ -84,6 +86,7 @@ export function createCharacter(nom: string): Character {
     tribu: '',
     classes: [],
     reve: '',
+    prime: null,
     stats: emptyStats(),
     bonusTemporaires: [],
     ressources: {

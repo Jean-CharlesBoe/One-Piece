@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { adjustXp, setXp, XP_COSTS } from '@onepiece/core'
+  import { adjustXp, MEMO_CARACS, setXp, XP_COSTS } from '@onepiece/core'
+  import InfoButton from '@onepiece/core/ui/InfoButton.svelte'
   import NumberInput from '@onepiece/core/ui/NumberInput.svelte'
   import StatGrid from '@onepiece/core/ui/StatGrid.svelte'
   import TempBonuses from '@onepiece/core/ui/TempBonuses.svelte'
@@ -21,7 +22,11 @@
 
   <FruitBlock {character} {editing} {onShowTechniques} />
 
-  <section aria-label="Caractéristiques">
+  <section aria-labelledby="caracs-titre">
+    <div class="section-head">
+      <h2 class="label" id="caracs-titre">Caractéristiques</h2>
+      <InfoButton memo={MEMO_CARACS} />
+    </div>
     <StatGrid owner={character} {editing} />
   </section>
 
@@ -61,6 +66,12 @@
   }
   h2 {
     margin: 0;
+  }
+  .section-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
   }
   .xp-row {
     display: grid;

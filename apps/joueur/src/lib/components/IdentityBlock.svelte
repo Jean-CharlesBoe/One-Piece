@@ -1,10 +1,13 @@
 <script lang="ts">
   import {
     CLASSES,
+    formatPrime,
     hasTribu,
     mainClasse,
+    parsePrime,
     RACES,
     setClasse,
+    setPrime,
     setRace,
     TRIBUS,
     type Classe,
@@ -13,10 +16,22 @@
   } from '@onepiece/core'
   import type { Character } from '../model/character'
 
-  // Identité (cahier joueur §4.1). Mode jeu : bloc compact ; mode édition : formulaire.
+  // Bloc « Info » (cahier joueur §4.1, D-J13, D-J14). Mode jeu : surnom, race · tribu · classe · âge, rêve
+  // et prime, en texte simple ; mode édition : formulaire.
   let { character, editing }: { character: Character; editing: boolean } = $props()
 
-  let reveOpen = $state(false)
+  /** Montant sans le symbole, pour le champ de saisie (« 30 000 000 »). */
+  const primeDigits = (n: number) => formatPrime(n).replace(/\s*฿$/, '')
+
+  function commitPrime(input: HTMLInputElement) {
+    const t = input.value.trim()
+    if (t === '') setPrime(character, null)
+    else {
+      const n = parsePrime(t)
+      if (n !== null) setPrime(character, n)
+    }
+    input.value = character.prime === null ? '' : primeDigits(character.prime)
+  }
 
   const tribuLabel = $derived(hasTribu(character) ? (TRIBUS.find(([k]) => k === character.tribu)?.[1] ?? '') : '')
   const summary = $derived(
@@ -31,6 +46,8 @@
   )
 </script>
 
+<section aria-labelledby="info-titre">
+<h2 class="label" id="info-titre">Info</h2>
 {#if editing}
   <div class="form">
     <label class="wide">
@@ -77,22 +94,33 @@
       <span class="label">Rêve</span>
       <textarea bind:value={character.reve} maxlength="2000" placeholder="La raison de prendre la mer"></textarea>
     </label>
+    <label class="wide">
+      <span class="label">Prime (฿)</span>
+      <input
+        value={character.prime === null ? '' : primeDigits(character.prime)}
+        onchange={e => commitPrime(e.currentTarget)}
+        inputmode="numeric"
+        placeholder="ex. 30 000 000 (vide = pas de prime)"
+        autocomplete="off"
+      />
+    </label>
   </div>
 {:else}
   <div class="view">
     {#if character.titre}<p class="titre">{character.titre}</p>{/if}
     {#if summary}<p class="summary">{summary}</p>{/if}
-    {#if character.reve}
-      <button class="reve" class:open={reveOpen} onclick={() => (reveOpen = !reveOpen)} aria-expanded={reveOpen}>
-        <span class="label">Rêve</span>
-        <span class="text">{character.reve}</span>
-      </button>
-    {/if}
-    {#if !character.titre && !summary && !character.reve}
-      <p class="summary hint">Race, classe, rêve… : touche le crayon pour remplir.</p>
+    {#if character.reve}<p class="summary reve"><span class="strong">Rêve :</span> {character.reve}</p>{/if}
+    {#if !character.titre && !summary && !character.reve && character.prime === null}
+      <p class="summary hint">Surnom, race, classe, rêve, prime… : touche le crayon pour remplir.</p>
+    {:else}
+      <p class="summary">
+        <span class="strong">Prime :</span>
+        {character.prime === null ? 'aucune pour l’instant' : formatPrime(character.prime)}
+      </p>
     {/if}
   </div>
 {/if}
+</section>
 
 <style>
   .form {
@@ -126,21 +154,13 @@
     font-size: 0.9rem;
   }
   .reve {
-    display: flex;
-    align-items: baseline;
-    gap: 8px;
-    min-height: 36px;
-    padding: 6px 10px;
-    text-align: left;
-  }
-  .reve .text {
-    flex: 1;
-    min-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-  .reve.open .text {
     white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .strong {
+    font-weight: 600;
+  }
+  h2 {
+    margin: 0 0 8px;
   }
 </style>

@@ -74,7 +74,13 @@ Remplace la liste sous les losanges prévue au cahier §4.4.
 ### D-J12 · 2026-10-10 · Pas de raccourci de dépense depuis une compétence — *validée*
 Réponse du MJ à Q-J4 : comme dans Sans Nom, le joueur ouvre le losange Endurance et retire le coût à la main. La compétence affiche seulement son coût en Endurance ; aucun tap long ni toast d'annulation.
 
-### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *proposée*
+### D-J13 · 2026-10-11 · Blocs titrés « Info » et « Caractéristiques » — *validée*
+Demande du MJ : un titre « Caractéristiques » au-dessus de la grille, avec le bouton « i » à côté (premier mémo en place) ; le surnom, race · tribu · classe · âge et le rêve sont regroupés sous un titre « Info », en texte simple (le rêve n'est plus dans un cadre dépliable).
+
+### D-J14 · 2026-10-11 · Prime sur la fiche, dans le bloc Info — *validée*
+Les personnages finiront avec une prime sur la tête : ligne « Prime : 30 000 000 ฿ » (ou « aucune pour l'instant ») en bas du bloc Info, même aspect que les autres infos ; saisie en mode édition, séparateurs acceptés. Champ `prime: number | null`. Un premier encart à part a été jugé trop encombrant par le MJ. Pas de champ berries : l'argent en poche est une entrée de l'inventaire (Q-J2).
+
+### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *validée* (Q-J5, 2026-10-11)
 Bouton « i » discret sur les blocs (carac, ressources, rêve, ambition, XP, compétences) ouvrant une fenêtre du bas avec la règle courte (pas de mémo Haki : règle du MJ). Plus une page « Aide-mémoire » accessible depuis le menu de la fiche (seuils, critiques des trois paliers de dé, coûts d'XP, coûts d'endurance).
 **Pourquoi (challenge de l'idée de départ)** : en partie, le joueur cherche une réponse précise à l'endroit où il regarde ; un onglet Règles complet serait lu une fois puis ignoré, et dupliquerait le rôle du MJ. Les textes vivent dans `packages/core/src/rules/memos.ts` : les modifier demande une nouvelle version de l'APK, acceptable puisque le MJ est aussi le développeur.
 

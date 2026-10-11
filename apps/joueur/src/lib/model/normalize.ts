@@ -50,6 +50,7 @@ export function normalizeCharacter(raw: unknown): { character: Character; warnin
   if (isTribu(r.tribu)) c.tribu = r.tribu
   c.classes = [...new Set(arr(r.classes).filter(isClasse))]
   c.reve = str(r.reve, LIMITS.textMedium)
+  c.prime = typeof r.prime === 'number' && Number.isFinite(r.prime) ? clampInt(r.prime, 0, LIMITS.primeMax) : null
   c.stats = normalizeStats(r.stats, w)
   c.bonusTemporaires = normalizeTempBonuses(r.bonusTemporaires)
   const res = obj(r.ressources)

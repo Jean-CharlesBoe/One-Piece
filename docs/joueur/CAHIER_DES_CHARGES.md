@@ -48,11 +48,15 @@ Menu de la fiche (⋮ en haut à droite) : **Aide-mémoire** (§4.6), Dupliquer,
 | Tribu | liste (Humain seulement) | Aucune, Longs bras, Longues jambes, Long cou |
 | Classe | liste fermée, **une seule** à l'écran | les 11 classes de la règle ; le modèle stocke une liste pour pouvoir en autoriser plusieurs plus tard sans migration (Q-J1) |
 | Rêve | texte long | la raison de prendre la mer |
-| Prime | nombre (berries), facultatif | **[Q-J2]** |
+| Prime | nombre (berries), facultatif | ligne « Prime : … » du bloc Info (D-J14) |
 
-Mode jeu : bloc compact (titre en italique, « Race · Tribu · Classes · âge », rêve replié sur une ligne, dépliable).
+Mode jeu : bloc titré **« Info »** (D-J13) : surnom en italique, « Race · Tribu · Classe · âge », « Rêve : … » en texte simple.
+
+**Prime** (D-J14) : dernière ligne du bloc Info, même aspect que les autres : « Prime : 30 000 000 ฿ » ou « Prime : aucune pour l'instant » ; saisie en mode édition (séparateurs acceptés, vide = pas de prime).
 
 ### 4.2 Fiche — Caractéristiques
+Bloc titré **« Caractéristiques »** avec son bouton « i » (mémo : jet = dé + carac, avantages = relances, descriptions des 8 caracs ; D-J13).
+
 **Identique à Sans Nom** : 8 caracs en grille 3 colonnes (3 + 3 + 2), cercle = valeur finale, pastille d'avantages signés, + / − en mode édition, tap = détail (valeur, bonus, total, description de la carac). Bonus temporaires (carac, ±N, origine), ajout rapide, suppression d'un tap, « Tout retirer ».
 
 Ordre proposé : Robustesse, Adresse, Finesse / Intellect, Volonté, Savoir-faire / Expression, Perception (celui de Sans Nom).
@@ -94,7 +98,7 @@ Quand le MJ annonce qu'un Haki est maîtrisé, le joueur **ajoute une compétenc
 ### 4.6 Fiche — XP, équipement, inventaire
 - **XP à dépenser** : compteur ; mémo des coûts (1 XP = +1 carac ou +2 Vitalité/Endurance max ; 10 XP = +1 max Rêve ou Ambition). Pas de dépense automatique (comme Sans Nom).
 - **Équipement** et **Inventaire** : texte libre, modifiables aussi en mode jeu.
-- **Berries** : nombre, modifiable en mode jeu **[Q-J2]**.
+- **Berries** : pas de champ dédié (Q-J2) : une simple entrée dans l'inventaire.
 
 ### 4.7 Compétences
 Repris de Sans Nom (`SkillList`) : cartes repliées (titre, pastille de coût, 1re ligne), dépliées d'un tap, « Tout déplier » ; en édition : titre, coût, description longue, ↑ ↓, suppression en 2 temps.
@@ -137,7 +141,7 @@ interface Character {
   tribu: '' | 'longs-bras' | 'longues-jambes' | 'long-cou'
   classes: Classe[]               // liste fermée de packages/core ; l'UI n'en édite qu'une (Q-J1)
   reve: string                    // le rêve (texte)
-  prime: number | null; berries: number | null
+  prime: number | null            // D-J14 ; pas de berries (Q-J2 : dans l'inventaire)
   stats: Record<StatKey, { valeur: number; avantages: number }>
   bonusTemporaires: { id: string; carac: StatKey; valeur: number; origine: string }[]
   ressources: {
