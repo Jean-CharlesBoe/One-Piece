@@ -49,7 +49,7 @@ Jet = **dé + caractéristique**, comparé à un seuil fixe (les seuils ne chang
 | **Rêve** | jauge de 10 à la création. **1 point dépensé = 1 relance de dé**, ou **récupération de 2D6 + 4** (Vitalité ou Endurance) **+ le nombre de points de rêve dépensés**. Se regagne en jouant son rêve. |
 | **Ambition** | Humains uniquement : jauge de 10, **rechargée chaque jour**. **+2 sur le résultat d'un jet** : **1 point d'Ambition dépensé = +2** (Q-R2, confirmé par le MJ le 2026-10-11). **Ne peut ni annuler un échec critique ni créer une réussite critique.** |
 | **Transfert** | Toutes les races, 1 fois par jour : transférer jusqu'à **25 % du total de Vitalité** en Endurance, ou l'inverse. **Impossible de dépasser le max** de Vitalité ou d'Endurance. Peut avoir des effets négatifs (Notion). |
-| **Régénération** | En dehors des combats et des phases de stress : **2D6** de Vitalité ou d'Endurance (rappel du MJ du 2026-10-11 ; absent de la page Notion). |
+| **Régénération** | En dehors des combats et des phases de stress : **2D6** de Vitalité ou d'Endurance (rappel du MJ du 2026-10-11 ; absent de la page Notion). ; **règle MJ** : la valeur peut évoluer, Vivre Card dit seulement que la régénération est possible hors combat (D-J18). |
 | Ressources propres | certains personnages en ont (ex. **Chance** d'Osmo : max 5, recharge en courant partout, 1 pt = +1 à un jet, 10 pts = créer/annuler un critique) |
 
 ## 4. Création et XP

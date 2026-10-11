@@ -1,5 +1,6 @@
 <script lang="ts">
   import { STATS, statLabel, type StatKey } from '../model/stats'
+  import { STAT_DESCRIPTIONS } from '../rules/memos'
   import { bonusTotal, finalStat, setAvantages, stepStat, type HasStats } from '../rules/stats'
   import Sheet from './Sheet.svelte'
 
@@ -59,6 +60,7 @@
   {#if detail}
     {@const st = owner.stats[detail]}
     {@const list = owner.bonusTemporaires.filter(b => b.carac === detail)}
+    <p class="desc">{STAT_DESCRIPTIONS[detail]}</p>
     <dl>
       <dt>Valeur</dt>
       <dd>{st.valeur}</dd>
@@ -170,6 +172,10 @@
   }
   .down {
     color: var(--down);
+  }
+  .desc {
+    margin: 12px 0 0;
+    color: var(--muted);
   }
   dl {
     display: grid;

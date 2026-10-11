@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from 'svelte'
   import BackupPanel from '../components/BackupPanel.svelte'
+  import SettingsPanel from '../components/SettingsPanel.svelte'
   import { createCharacter, type CharacterSummary } from '../model/character'
   import { getRepository } from '../storage/repository'
 
@@ -106,6 +107,10 @@
     </div>
   {/if}
 
+  <div class="settings">
+    <SettingsPanel />
+  </div>
+
   <p class="version">Vivre Card v{__APP_VERSION__}</p>
 </main>
 
@@ -167,6 +172,9 @@
   }
   .backup {
     margin-top: 28px;
+  }
+  .settings {
+    margin-top: 12px;
   }
   .version {
     margin-top: 24px;

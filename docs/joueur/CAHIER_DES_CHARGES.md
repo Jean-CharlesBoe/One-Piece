@@ -31,7 +31,7 @@ Fiche de personnage sur téléphone, rapide à consulter et à mettre à jour **
 ## 4. Écrans
 
 ### 4.0 Accueil
-Identique à Sans Nom : liste des personnages (nom, sous-titre « Race · Classe », date de modification), créer, ouvrir, supprimer en 2 temps ; encart **Sauvegarde** (sauvegarder tous les persos, importer, rappel si modifications et ≥ 7 jours) ; version de l'app.
+Identique à Sans Nom : liste des personnages (nom, sous-titre « Race · Classe », date de modification), créer, ouvrir, supprimer en 2 temps ; encart **Sauvegarde** (sauvegarder tous les persos, importer, rappel si modifications et ≥ 7 jours) ; encart **Réglages** (afficher ou masquer les « i ») ; version de l'app.
 
 ### Dans un personnage
 Onglets : **`Fiche | Compétences | Compagnons`**. Deux modes comme Sans Nom : **jeu** (par défaut) et **édition** (crayon). Sauvegarde automatique 400 ms après chaque modification, immédiate au retour et à la mise en arrière-plan. Bouton retour Android : ferme la fenêtre ouverte → revient à la liste → quitte.
@@ -110,9 +110,10 @@ Liste (nom, « race · classe », Vitalité / Endurance en résumé) + « Ajoute
 Fiche compagnon : **la même fiche qu'un PJ** (D-J17) — bloc Info (nom, surnom, race, âge, tribu si Humain, classe, rêve, prime), fruit du démon, caractéristiques, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition si Humain, ressources perso), XP, équipement, inventaire — suivie de ses compétences sur la même page (le lien « Voir les techniques » du fruit y descend, filtré sur « Fruit ») et de « Supprimer ce compagnon » en deux temps.
 Seule différence : la **race** propose les 5 races jouables **et « Autre race… »**, qui ouvre un champ libre (Canard, Den Den Mushi…). Choisir « Humain » fait apparaître la tribu et l'Ambition.
 
-### 4.9 Mémos et aide-mémoire (D-J7, proposée)
-- Bouton **« i »** (petit, discret, désactivable dans les réglages) sur : chaque carac (description), chaque ressource (règle), Rêve, Ambition, Transfert, XP, Compétences (barème des coûts d'Endurance), Fruit.
-- **Aide-mémoire** (menu ⋮) : seuils de difficulté, critiques des trois paliers de dé (D10, D20, D100 : pas de palier sur la fiche, D-J8 abandonnée), coûts d'XP, coûts d'Endurance, attaque de base 1D6 + modificateur, règle des avantages.
+### 4.9 Mémos et aide-mémoire (D-J7, validée)
+- Bouton **« i »** (petit, discret) à côté des titres : **Caractéristiques** (jet, avantages, description des 8 caracs), **Ressources** (Vitalité, Endurance, Rêve, Ambition, Transfert, régénération possible hors combat, ressources perso), **Fruit du démon** (nage, techniques = compétences « Fruit »), **Compétences** (coût retiré à la main). Le détail d'une carac (tap sur le cercle) affiche aussi sa description. Les « i » se masquent dans l'encart **« Réglages »** de l'accueil (case « Afficher les boutons « i » », cochée par défaut, enregistrée dans l'app).
+- **Infos réservées au MJ, jamais affichées** (D-J18) : seuils de difficulté, XP par adversaire et XP narratif, barème des coûts d'Endurance, règles de création (compétence de fruit ≤ 5, capacité de style de combat), attaque de base, dés de régénération.
+- **Aide-mémoire** (menu ⋮ de la fiche, fenêtre du bas) : **Jets** (dé + carac comparé au seuil fixé par le MJ, avantages), **Critiques** (règle + paliers D10, D20, D100), **Ressources** (Vitalité, Endurance, Rêve, Ambition, Transfert, régénération), **XP** (coûts de dépense).
 - Textes dans `packages/core/src/rules/memos.ts`, rédigés à partir de [REGLES_ONE_PIECE.md](../REGLES_ONE_PIECE.md). Aucun texte de règle en dur dans un composant.
 
 ## 5. Règles appliquées par l'app

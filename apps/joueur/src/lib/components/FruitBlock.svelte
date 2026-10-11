@@ -1,5 +1,6 @@
 <script lang="ts">
-  import { addFruit, FRUIT_RAPPEL, FRUIT_TYPES, fruitTechniques, isFruitEmpty, removeFruit } from '@onepiece/core'
+  import { addFruit, FRUIT_RAPPEL, FRUIT_TYPES, fruitTechniques, isFruitEmpty, MEMO_FRUIT, removeFruit } from '@onepiece/core'
+  import InfoButton from '@onepiece/core/ui/InfoButton.svelte'
   import type { Character, Compagnon } from '../model/character'
 
   // Fruit du démon (cahier joueur §4.3, D-J4). Mode jeu : bloc replié (nom, type), masqué si vide ;
@@ -33,7 +34,10 @@
   {#if character.fruit}
     {@const fruit = character.fruit}
     <section class="card fruit" aria-labelledby="fruit-titre">
-      <h2 class="label" id="fruit-titre">Fruit du démon</h2>
+      <div class="title-row">
+        <h2 class="label" id="fruit-titre">Fruit du démon</h2>
+        <InfoButton memo={MEMO_FRUIT} />
+      </div>
       <div class="form">
         <label class="wide">
           <span class="label">Nom du fruit</span>
@@ -65,12 +69,15 @@
 {:else if character.fruit && !isFruitEmpty(character.fruit)}
   {@const fruit = character.fruit}
   <section class="card fruit" aria-label="Fruit du démon">
+    <div class="head-row">
     <button class="head" onclick={() => (open = !open)} aria-expanded={open}>
       <span class="label">Fruit du démon</span>
       <span class="name">{fruit.nom || 'Sans nom'}</span>
       {#if fruit.type}<span class="pill">{fruit.type}</span>{/if}
       <span class="chevron" aria-hidden="true">{open ? '▴' : '▾'}</span>
     </button>
+    <InfoButton memo={MEMO_FRUIT} />
+    </div>
     {#if open}
       <div class="details">
         {#if fruit.description}<p class="text">{fruit.description}</p>{/if}
@@ -92,7 +99,18 @@
     border-left: 4px solid var(--fruit);
   }
   h2 {
-    margin: 0 0 8px;
+    margin: 0;
+  }
+  .title-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .head-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
   }
   .form {
     display: grid;
@@ -112,6 +130,8 @@
     color: var(--muted);
   }
   .head {
+    flex: 1;
+    min-width: 0;
     display: flex;
     flex-wrap: wrap;
     align-items: center;

@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **J6 — Sauvegarde** (code fait, à essayer sur téléphone). J4 et les retours sur la fiche sont aussi à confirmer sur téléphone. Ensuite : J5 (mémos restants + aide-mémoire, plus rien ne bloque) puis J7.
+Étape en cours : **J5 — Mémos** (code fait, à essayer sur téléphone). Ensuite : **J7 — Finitions** (mode sombre / clair, notice joueurs, icône Q-T4, 1re release), puis l'appli MJ (M0).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -10,7 +10,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 |---|---|---|---|---|
 | C0 | Cadrage | Specs, décisions, questions | — | fait (v0.2) |
 | C1 | Socle monorepo | workspaces npm, `packages/core` (caracs, races, classes, paliers, `Resource`, `TempBonus`), composants repris de Sans Nom (StatGrid, ResourceDiamond, TempBonuses, Sheet, NumberInput, back.ts), Vitest, `npm run check` | — | fait |
-| C2 | Règles et mémos | `packages/core/src/rules` (stats, ressources bornées, ambition/race, transfert, xp) + `memos.ts` depuis REGLES_ONE_PIECE.md ; tests | — | à faire |
+| C2 | Règles et mémos | `packages/core/src/rules` (stats, ressources bornées, ambition/race, transfert, xp) + `memos.ts` depuis REGLES_ONE_PIECE.md ; tests | — | fait (au fil de J1 à J5) |
 
 ## Appli joueur
 
@@ -20,9 +20,9 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | J1 | Onglet Fiche | identité, caracs, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition), ressources perso, XP, équipement, inventaire, modes jeu/édition, sauvegarde auto | — | fait |
 | J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | fait |
 | J3 | Compétences | SkillList, coût en Endurance, origine + filtre | — | fait |
-| J4 | Compagnons | liste + fiche compagnon | — | en cours (code fait, test téléphone à faire) |
-| J5 | Mémos | boutons « i », aide-mémoire | — | en cours (mémos Caractéristiques et Ressources faits) |
-| J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | en cours (code fait, test téléphone à faire) |
+| J4 | Compagnons | liste + fiche compagnon | — | fait |
+| J5 | Mémos | boutons « i », aide-mémoire | — | en cours (code fait, test téléphone à faire) |
+| J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | fait |
 | J7 | Finitions | mode sombre/clair, notice joueurs, icône, **1re release** | Q-T4 | à faire |
 
 ## Appli MJ
@@ -154,3 +154,14 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - **Prime** : la ligne n'apparaît plus si aucune prime n'est saisie (D-J14 précisée).
 - **Compagnons** (D-J17, plan validé avec le MJ) : même fiche qu'un PJ ; type supprimé ; race = 5 races jouables + « Autre race… » (champ libre) ; « Humain » → tribu et Ambition. Interface `Fiche` commune, `createFiche`, normalisation commune (`readFiche`) ; `IdentityBlock` (option `freeRace`), `FruitBlock`, `ResourcesBlock` et `FicheTab` acceptent un PJ ou un compagnon ; `CompagnonView` = `FicheTab` + compétences + suppression ; lien des techniques du fruit qui filtre et descend jusqu'à la liste (défilement direct : le défilement « doux » ne s'exécutait pas dans le navigateur de test). Core : `hasAmbition` / `hasTribu` / `setRace` acceptent une race libre, nouveau `isAutreRace`.
 - Vérifié : check, 61 tests, parcours navigateur 360 × 780 (prime vidée, « Autre race… » ↔ « Humain », Ambition et tribu, classe, âge, prime, fruit + lien, compétence, XP, rechargement), console sans erreur ; fiche de test supprimée, « Ozmo » intacte.
+
+### Session 7 · 2026-10-11 (J4 et J6 close, J5 — mémos)
+- J4, J6 et la fiche compagnon (D-J17) testés sur téléphone par le MJ : OK.
+- `packages/core/src/rules/memos.ts` : tables `DIFFICULTES`, `ENDURANCE_COSTS`, `XP_PAR_ADVERSAIRE`, `ATTAQUE_DE_BASE`, `REGLE_AVANTAGES` (formulation unique, aussi utilisée par le mémo des caracs) ; mémos `MEMO_XP`, `MEMO_COMPETENCES`, `MEMO_FRUIT` ; `AIDE_MEMOIRE` (Jets, Critiques, Combat, Ressources, XP) ; tests `memos.test.ts`.
+- `ui/AideMemoire.svelte` (sections et tableaux, réutilisable par l'appli MJ) ; « i » ajouté à `SkillList` (donc aussi chez les compagnons) ; description de la carac dans le détail de `StatGrid`.
+- `apps/joueur` : « i » sur Fruit (édition et jeu) et XP ; menu ⋮ → « Aide-mémoire » (fenêtre du bas défilante).
+- C2 marquée faite : ses règles et mémos ont été livrés au fil de J1 à J5.
+- Vérifié : check, 67 tests, navigateur 360 × 780 (5 boutons « i » sur la fiche, détail d'une carac, aide-mémoire complète et défilante, « i » des compétences), console sans erreur ; fiche de test supprimée.
+- Non fait : l'option « désactiver les i » prévue dans D-J7 (aucun écran de réglages) — à trancher avec le MJ pour J7.
+- Retour du MJ (D-J18) : retirés de Vivre Card l'XP par adversaire et l'XP narratif (le « i » de l'XP disparaît), le barème d'Endurance, les règles de création et l'attaque de base (mémos Compétences et Fruit, section « Combat » de l'aide-mémoire), et la valeur 2D6 de la régénération. Tables gardées dans core pour l'appli MJ ; test garde-fou ajouté. Vérifié : check, 72 tests, navigateur (2 « i » sur la fiche, mémos et aide-mémoire épurés).
+- Suite (même jour) : seuils de difficulté retirés de l'aide-mémoire (info MJ, D-J18) ; coûts de dépense d'XP gardés ; encart « Réglages » à l'accueil avec « Afficher les boutons « i » » (store `showInfo` dans `core/ui/prefs.ts`, lu par `InfoButton` ; valeur dans la table `meta`, clé `show_info`, chargée au démarrage). Vérifié : check, 73 tests, navigateur (masquage conservé après rechargement, réaffichage, aide-mémoire sans seuils).

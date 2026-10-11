@@ -21,3 +21,4 @@ export * from './rules/prime'
 export * from './rules/memos'
 
 export * from './ui/back'
+export * from './ui/prefs'

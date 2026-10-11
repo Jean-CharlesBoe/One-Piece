@@ -91,7 +91,11 @@ Demande du MJ : un compagnon peut être un être vivant à part entière (race p
 Race : les 5 races jouables + « Autre race… » avec un champ libre ; choisir « Humain » fait apparaître tribu et Ambition, comme pour un PJ.
 Mise en œuvre : une interface `Fiche` commune à `Character` et `Compagnon`, l'onglet Fiche réutilisé tel quel pour le compagnon (option `freeRace`), `normalizeFiche` commun. Les anciens compagnons sont relus sans migration (aucune version publiée).
 
+### D-J18 · 2026-10-11 · Vivre Card n'affiche pas les règles réservées au MJ — *validée*
+Retour du MJ sur J5 : les seuils de difficulté (Facile 8 … Légendaire 70), l'XP gagnée par adversaire et l'XP narratif, le barème des coûts d'Endurance (2 à 5 / 6 à 10 / 11 à 15), les règles de création (compétence de fruit à coût ≤ 5, capacité de style de combat), l'attaque de base et les dés de régénération (2D6, susceptibles d'évoluer) sont des infos MJ : elles n'apparaissent ni dans les mémos « i » ni dans l'aide-mémoire. Le « i » de l'XP disparaît (les coûts de dépense restent sous le compteur). Les tables restent dans `packages/core/src/rules/memos.ts` pour l'appli MJ ; un test vérifie qu'elles ne réapparaissent pas côté joueur.
+
 ### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *validée* (Q-J5, 2026-10-11)
+Mise en œuvre (2026-10-11) : les « i » se masquent dans l'encart « Réglages » de l'accueil (réglage enregistré dans la table `meta`) ; l'aide-mémoire est dans le menu ⋮ de la fiche. Les infos réservées au MJ en sont exclues (D-J18).
 Bouton « i » discret sur les blocs (carac, ressources, rêve, ambition, XP, compétences) ouvrant une fenêtre du bas avec la règle courte (pas de mémo Haki : règle du MJ). Plus une page « Aide-mémoire » accessible depuis le menu de la fiche (seuils, critiques des trois paliers de dé, coûts d'XP, coûts d'endurance).
 **Pourquoi (challenge de l'idée de départ)** : en partie, le joueur cherche une réponse précise à l'endroit où il regarde ; un onglet Règles complet serait lu une fois puis ignoré, et dupliquerait le rôle du MJ. Les textes vivent dans `packages/core/src/rules/memos.ts` : les modifier demande une nouvelle version de l'APK, acceptable puisque le MJ est aussi le développeur.
 

@@ -1,14 +1,18 @@
 <script lang="ts">
   import type { Memo } from '../rules/memos'
+  import { showInfo } from './prefs'
   import Sheet from './Sheet.svelte'
 
-  // Petit bouton « i » qui ouvre un mémo de règle dans une fenêtre du bas (D-J7).
+  // Petit bouton « i » qui ouvre un mémo de règle dans une fenêtre du bas (D-J7). Masqué si le joueur
+  // a désactivé les « i » dans les réglages.
   let { memo }: { memo: Memo } = $props()
 
   let open = $state(false)
 </script>
 
-<button class="info" onclick={() => (open = true)} aria-label="Règle : {memo.titre}">i</button>
+{#if $showInfo}
+  <button class="info" onclick={() => (open = true)} aria-label="Règle : {memo.titre}">i</button>
+{/if}
 
 <Sheet bind:open title={memo.titre}>
   <div class="memo">

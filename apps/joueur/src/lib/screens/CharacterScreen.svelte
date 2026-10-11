@@ -2,6 +2,7 @@
   import { App as CapApp } from '@capacitor/app'
   import { Capacitor } from '@capacitor/core'
   import type { SkillFilter } from '@onepiece/core'
+  import AideMemoire from '@onepiece/core/ui/AideMemoire.svelte'
   import Sheet from '@onepiece/core/ui/Sheet.svelte'
   import SkillList from '@onepiece/core/ui/SkillList.svelte'
   import { onDestroy, onMount } from 'svelte'
@@ -64,8 +65,14 @@
     onBack()
   }
 
-  /* ---------- Menu ⋮ : exporter, dupliquer (J6) ---------- */
+  /* ---------- Menu ⋮ : aide-mémoire (J5), exporter, dupliquer (J6) ---------- */
   let menuOpen = $state(false)
+  let aideOpen = $state(false)
+
+  function openAide() {
+    menuOpen = false
+    aideOpen = true
+  }
   let busy = $state(false)
   let menuMessage = $state('')
 
@@ -156,10 +163,15 @@
 
 <Sheet bind:open={menuOpen} title={character?.nom || 'Personnage'}>
   <div class="menu">
+    <button onclick={openAide}>Aide-mémoire</button>
     <button onclick={exportOne} disabled={busy}>Exporter ce personnage</button>
     <button onclick={duplicate} disabled={busy}>Dupliquer</button>
     {#if menuMessage}<p class="menu-msg" role="status">{menuMessage}</p>{/if}
   </div>
+</Sheet>
+
+<Sheet bind:open={aideOpen} title="Aide-mémoire">
+  <AideMemoire />
 </Sheet>
 
 <div class="tabs" role="tablist" aria-label="Sections de la fiche">

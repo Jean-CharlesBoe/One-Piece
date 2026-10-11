@@ -4,7 +4,9 @@
   import type { Skill } from '../model/skills'
   import { moveItem, removeById } from '../rules/lists'
   import { parseIntInput } from '../rules/numbers'
+  import { MEMO_COMPETENCES } from '../rules/memos'
   import { addSkill, filterSkills, updateSkill, usedOrigins, type SkillFilter } from '../rules/skills'
+  import InfoButton from './InfoButton.svelte'
 
   // Liste de compétences (cahier joueur §4.7), reprise de Sans Nom. Sert au personnage, aux compagnons
   // et aux PNJ. Coût en Endurance affiché seulement : la dépense se fait dans le losange (D-J12).
@@ -72,7 +74,10 @@
 </script>
 
 <div class="head">
-  <span class="label">{shown.length} compétence{shown.length > 1 ? 's' : ''}</span>
+  <span class="count">
+    <span class="label">{shown.length} compétence{shown.length > 1 ? 's' : ''}</span>
+    <InfoButton memo={MEMO_COMPETENCES} />
+  </span>
   {#if !editing && shown.length > 1}
     <button class="small" onclick={toggleAll}>{allOpen ? 'Tout replier' : 'Tout déplier'}</button>
   {/if}
@@ -187,6 +192,11 @@
     justify-content: space-between;
     min-height: 36px;
     margin-bottom: 8px;
+  }
+  .count {
+    display: flex;
+    align-items: center;
+    gap: 8px;
   }
   .filters {
     display: flex;
