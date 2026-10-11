@@ -6,6 +6,7 @@
 import {
   createResource,
   emptyStats,
+  LIMITS,
   newId,
   type Classe,
   type CustomResource,
@@ -114,6 +115,16 @@ export function createCompagnon(nom: string): Compagnon {
     inventaire: '',
     competences: [],
   }
+}
+
+/** Suggestions du champ « Type » d'un compagnon (saisie libre, cahier joueur §4.8). */
+export const COMPAGNON_TYPES = ['Animal', 'Monture', 'Den Den Mushi', 'Autre'] as const
+
+/** Ajoute un compagnon (pas de limite de nombre) et le renvoie. */
+export function addCompagnon(c: Pick<Character, 'compagnons'>, nom: string): Compagnon {
+  const compagnon = createCompagnon(nom.trim().slice(0, LIMITS.textShort))
+  c.compagnons.push(compagnon)
+  return compagnon
 }
 
 export function summarize(c: Pick<Character, 'id' | 'nom' | 'race' | 'classes' | 'updatedAt'>): CharacterSummary {

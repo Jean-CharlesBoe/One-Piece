@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **J3 — Compétences**. C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
+Étape en cours : **J4 — Compagnons** (code fait, à essayer sur téléphone). Ensuite : J5 (mémos, bloquée par Q-J5) et J6 (sauvegarde). C2 attend Q-R1, Q-R2, Q-R5 pour les textes des mémos.
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -19,8 +19,8 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | J0 | Socle Android | Capacitor, `appId`, SQLite + repository + repli web, accueil (liste), CI `joueur.yml`, APK debug, clé de signature | — | fait |
 | J1 | Onglet Fiche | identité, caracs, bonus temporaires, ressources (Vitalité, Endurance, Rêve, Ambition), ressources perso, XP, équipement, inventaire, modes jeu/édition, sauvegarde auto | — | fait |
 | J2 | Fruit du démon | bloc fruit (nom, type, description, éveil), lien vers ses techniques | — | fait |
-| J3 | Compétences | SkillList, coût en Endurance, origine + filtre | — | en cours (code fait, test téléphone à faire) |
-| J4 | Compagnons | liste + fiche compagnon | — | à faire |
+| J3 | Compétences | SkillList, coût en Endurance, origine + filtre | — | fait |
+| J4 | Compagnons | liste + fiche compagnon | — | en cours (code fait, test téléphone à faire) |
 | J5 | Mémos | boutons « i », aide-mémoire | Q-J5 | à faire |
 | J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | à faire |
 | J7 | Finitions | mode sombre/clair, notice joueurs, icône, **1re release** | Q-T4 | à faire |
@@ -123,3 +123,10 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Vérifié : check, 42 tests, parcours dans le navigateur à 360 × 780 (4 compétences, filtres, lien du fruit, dépliage, rechargement, réordonnancement, suppression), console sans erreur.
 - Point d'attention : le stockage du navigateur intégré semble repartir de zéro à chaque nouvelle session de travail (les fiches de test « ozmo » / « Osmo » n'y étaient plus) ; sans incidence sur les téléphones.
 - Reste pour clore J3 : test sur téléphone. Ensuite : J4 (compagnons).
+
+### Session 6 · 2026-10-11 (J3 close, J4 — compagnons)
+- J3 terminée : testée sur téléphone par le MJ.
+- `apps/joueur` : `COMPAGNON_TYPES` (Animal, Monture, Den Den Mushi, Autre) et `addCompagnon` + test ; `CompagnonsTab` (liste : nom, « type · race », Vitalité et Endurance en résumé ; « + Ajouter » par une fenêtre du bas ; ↑ ↓ en édition) et `CompagnonView` (nom, type avec suggestions, race libre, caracs, bonus temporaires, losanges Vitalité / Endurance deux par ligne, équipement, inventaire, compétences avec la liste partagée de J3, suppression en deux temps), repris de `InvocationsTab` / `CreatureView` de Sans Nom. Bouton retour Android : fiche du compagnon → liste des compagnons.
+- Vérifié : check, 43 tests, parcours dans le navigateur à 360 × 780 (création, fiche, ressources, compétence, rechargement, retour à la liste, suppression), console sans erreur.
+- `.claude/launch.json` : serveurs de dev passés sur les ports 5183 (joueur) et 5184 (MJ), le 5173 étant pris par un autre projet.
+- Reste pour clore J4 : test sur téléphone. Ensuite : **Q-J5** à trancher pour J5 (mémos « i » contextuels + aide-mémoire, D-J7), ou J6 (sauvegarde fichier) qui n'est bloquée par rien.

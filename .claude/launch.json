@@ -4,14 +4,14 @@
     {
       "name": "joueur",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/vite/bin/vite.js", "apps/joueur", "--port", "5173", "--strictPort"],
-      "port": 5173
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "apps/joueur", "--port", "5183", "--strictPort"],
+      "port": 5183
     },
     {
       "name": "mj",
       "runtimeExecutable": "node",
-      "runtimeArgs": ["node_modules/vite/bin/vite.js", "apps/mj", "--port", "5174", "--strictPort"],
-      "port": 5174
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "apps/mj", "--port", "5184", "--strictPort"],
+      "port": 5184
     }
   ]
 }

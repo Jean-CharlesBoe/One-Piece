@@ -6,6 +6,7 @@
   import { onDestroy, onMount } from 'svelte'
   import type { Character } from '../model/character'
   import { getRepository } from '../storage/repository'
+  import CompagnonsTab from './CompagnonsTab.svelte'
   import FicheTab from './FicheTab.svelte'
 
   let { id, onBack }: { id: string; onBack: () => void } = $props()
@@ -133,7 +134,7 @@
     {:else if tab === 'competences'}
       <SkillList owner={character} {editing} bind:filter={skillFilter} />
     {:else}
-      <p class="soon">Les compagnons arrivent à l'étape J4.</p>
+      <CompagnonsTab {character} {editing} />
     {/if}
   {/if}
 </main>
@@ -210,9 +211,5 @@
   }
   .error {
     color: var(--danger);
-  }
-  .soon {
-    color: var(--muted);
-    text-align: center;
   }
 </style>

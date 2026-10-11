@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { createCharacter, createCompagnon, summarize } from './character'
+import { addCompagnon, createCharacter, createCompagnon, summarize } from './character'
 import { normalizeCharacter } from './normalize'
 
 describe('personnage', () => {
@@ -69,5 +69,16 @@ describe('normalizeCharacter', () => {
 
   it('signale une fiche venant d’une version plus récente', () => {
     expect(normalizeCharacter({ schemaVersion: 99 }).warnings[0]).toMatch(/plus récente/)
+  })
+})
+
+describe('compagnons', () => {
+  it('ajout sans limite de nombre, nom nettoyé, Vitalité et Endurance vides', () => {
+    const c = createCharacter('Osmo')
+    const karoo = addCompagnon(c, '  Karoo ')
+    addCompagnon(c, 'Den Den Mushi')
+    expect(c.compagnons.map(x => x.nom)).toEqual(['Karoo', 'Den Den Mushi'])
+    expect(karoo.ressources.vitalite).toMatchObject({ cur: 0, max: 0 })
+    expect(karoo.competences).toEqual([])
   })
 })
