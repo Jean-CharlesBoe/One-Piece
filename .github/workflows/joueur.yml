@@ -85,7 +85,8 @@ jobs:
           if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
             echo "::error::Secret ANDROID_KEYSTORE_BASE64 manquant (voir docs/RELEASE.md)"; exit 1
           fi
-          echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > "$RUNNER_TEMP/release.jks"
+          # Ne garder que les caractères base64 : un secret envoyé depuis Windows PowerShell peut finir par un retour à la ligne.
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -cd 'A-Za-z0-9+/=' | base64 -d > "$RUNNER_TEMP/release.jks"
           export ANDROID_KEYSTORE_FILE="$RUNNER_TEMP/release.jks"
           ./gradlew assembleRelease
           cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/VivreCard-${GITHUB_REF_NAME#joueur-}.apk"
