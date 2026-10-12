@@ -12,6 +12,7 @@
   import { getRepository } from '../storage/repository'
   import CompagnonsTab from './CompagnonsTab.svelte'
   import FicheTab from './FicheTab.svelte'
+  import NotebookTab from './NotebookTab.svelte'
 
   let { id, onBack }: { id: string; onBack: () => void } = $props()
 
@@ -19,6 +20,7 @@
     ['fiche', 'Fiche'],
     ['competences', 'Compétences'],
     ['compagnons', 'Compagnons'],
+    ['carnet', 'Carnet'],
   ] as const
   type Tab = (typeof TABS)[number][0]
 
@@ -201,8 +203,10 @@
       />
     {:else if tab === 'competences'}
       <SkillList owner={character} {editing} bind:filter={skillFilter} />
-    {:else}
+    {:else if tab === 'compagnons'}
       <CompagnonsTab {character} {editing} />
+    {:else}
+      <NotebookTab {character} {editing} />
     {/if}
   {/if}
 </main>

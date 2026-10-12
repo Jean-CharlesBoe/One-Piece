@@ -12,8 +12,11 @@ import {
   type Classe,
   type CustomResource,
   type Fruit,
+  type LoreSection,
+  type Photo,
   type Race,
   type Resource,
+  type SessionEntry,
   type Skill,
   type Stats,
   type TempBonus,
@@ -25,6 +28,8 @@ export const SCHEMA_VERSION = 1
 /** Tout ce qu'une fiche contient, pour un PJ comme pour un compagnon. */
 export interface Fiche {
   nom: string
+  /** Portrait recadré (D-J22, repris de Sans Nom v0.5) ; null = pas de photo. */
+  photo: Photo | null
   titre: string
   age: string
   /** Humains seulement ; valeur conservée si la race change. */
@@ -63,6 +68,9 @@ export interface Character extends Fiche {
   updatedAt: string
   race: Race | ''
   compagnons: Compagnon[]
+  /** Carnet (D-J22) : sections du Lore, séances de l'Histoire. Le compagnon n'en a pas. */
+  lore: LoreSection[]
+  histoire: SessionEntry[]
 }
 
 /** Résumé affiché dans la liste d'accueil. */
@@ -72,12 +80,15 @@ export interface CharacterSummary {
   /** « Race · Classe », vide si ni l'une ni l'autre. */
   sousTitre: string
   updatedAt: string
+  /** Miniature de la photo (data URL), ou null. */
+  thumb: string | null
 }
 
 /** Fiche vierge : caracs à 0, Rêve et Ambition à 10 / 10, Transfert à 1 / 1, rien d'autre. */
 export function createFiche(nom: string): Fiche {
   return {
     nom,
+    photo: null,
     titre: '',
     age: '',
     tribu: '',
@@ -112,6 +123,8 @@ export function createCharacter(nom: string): Character {
     race: '',
     ...createFiche(nom),
     compagnons: [],
+    lore: [],
+    histoire: [],
   }
 }
 
@@ -131,6 +144,8 @@ export function sousTitre(c: { race: string; classes: Classe[] }): string {
   return [c.race, c.classes.join(', ')].filter(Boolean).join(' · ')
 }
 
-export function summarize(c: Pick<Character, 'id' | 'nom' | 'race' | 'classes' | 'updatedAt'>): CharacterSummary {
-  return { id: c.id, nom: c.nom, sousTitre: sousTitre(c), updatedAt: c.updatedAt }
+export function summarize(
+  c: Pick<Character, 'id' | 'nom' | 'race' | 'classes' | 'updatedAt' | 'photo'>,
+): CharacterSummary {
+  return { id: c.id, nom: c.nom, sousTitre: sousTitre(c), updatedAt: c.updatedAt, thumb: c.photo?.miniature ?? null }
 }

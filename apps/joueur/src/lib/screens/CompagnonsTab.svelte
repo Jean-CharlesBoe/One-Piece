@@ -1,6 +1,7 @@
 <script lang="ts">
   import { moveItem, onBack, removeById } from '@onepiece/core'
   import Sheet from '@onepiece/core/ui/Sheet.svelte'
+  import Thumb from '@onepiece/core/ui/Thumb.svelte'
   import { addCompagnon, sousTitre, type Character } from '../model/character'
   import CompagnonView from './CompagnonView.svelte'
 
@@ -54,6 +55,8 @@
       {#each character.compagnons as cp, i (cp.id)}
         <li>
           <button class="card item" onclick={() => (openId = cp.id)}>
+            <Thumb src={cp.photo?.miniature} nom={cp.nom} />
+            <span class="info">
             <span class="name">{cp.nom || 'Sans nom'}</span>
             {#if sousTitre(cp)}
               <span class="meta">{sousTitre(cp)}</span>
@@ -61,6 +64,7 @@
             <span class="res">
               <span class="vitalite">Vitalité {cp.ressources.vitalite.cur}/{cp.ressources.vitalite.max}</span>
               <span class="endurance">Endurance {cp.ressources.endurance.cur}/{cp.ressources.endurance.max}</span>
+            </span>
             </span>
           </button>
           {#if editing}
@@ -111,10 +115,16 @@
   .item {
     flex: 1;
     min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+    padding: 10px 12px;
+  }
+  .info {
     display: grid;
     gap: 2px;
-    text-align: left;
-    padding: 10px 14px;
+    min-width: 0;
   }
   .name {
     font-weight: 600;

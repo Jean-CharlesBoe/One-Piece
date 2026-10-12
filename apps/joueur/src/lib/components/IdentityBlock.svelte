@@ -14,6 +14,7 @@
     type Classe,
     type Tribu,
   } from '@onepiece/core'
+  import PhotoAvatar from '@onepiece/core/ui/PhotoAvatar.svelte'
   import type { Character, Compagnon } from '../model/character'
 
   // Bloc « Info » (cahier joueur §4.1, D-J13, D-J14), pour un PJ comme pour un compagnon (D-J17).
@@ -71,10 +72,13 @@
 <h2 class="label" id="{uid}-info">Info</h2>
 {#if editing}
   <div class="form">
-    <label class="wide">
-      <span class="label">Nom</span>
-      <input bind:value={character.nom} maxlength="120" autocomplete="off" />
-    </label>
+    <div class="wide photo-row">
+      <PhotoAvatar owner={character} {editing} />
+      <label>
+        <span class="label">Nom</span>
+        <input bind:value={character.nom} maxlength="120" autocomplete="off" />
+      </label>
+    </div>
     <label class="wide">
       <span class="label">Surnom / titre</span>
       <input bind:value={character.titre} maxlength="120" placeholder="ex. le Démon rouge" autocomplete="off" />
@@ -143,6 +147,8 @@
   </div>
 {:else}
   <div class="view">
+    <PhotoAvatar owner={character} {editing} />
+    <div class="text">
     {#if character.titre}<p class="titre">{character.titre}</p>{/if}
     {#if summary}<p class="summary">{summary}</p>{/if}
     {#if character.reve}<p class="summary reve"><span class="strong">Rêve :</span> {character.reve}</p>{/if}
@@ -150,8 +156,9 @@
       <p class="summary"><span class="strong">Prime :</span> {formatPrime(character.prime)}</p>
     {/if}
     {#if !character.titre && !summary && !character.reve && character.prime === null}
-      <p class="summary hint">Surnom, race, classe, rêve, prime… : touche le crayon pour remplir.</p>
+      <p class="summary hint">Photo, surnom, race, classe, rêve, prime… : touche le crayon pour remplir.</p>
     {/if}
+    </div>
   </div>
 {/if}
 </section>
@@ -171,11 +178,27 @@
     grid-column: 1 / -1;
   }
   .view {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .text {
     display: grid;
     gap: 4px;
+    min-width: 0;
   }
   .view p {
     margin: 0;
+  }
+  .photo-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .photo-row label {
+    flex: 1;
+    display: grid;
+    gap: 4px;
   }
   .titre {
     font-style: italic;

@@ -34,11 +34,13 @@ Fiche de personnage sur téléphone, rapide à consulter et à mettre à jour **
 Liste des personnages (nom, sous-titre « Race · Classe », date de modification), créer, ouvrir, supprimer en 2 temps ; version de l'app. **Roue dentée** en haut à droite (D-J19) : fenêtre « Réglages » avec **Sauvegarde** (sauvegarder tous les persos, importer), **Thème** (Automatique / Clair / Sombre) et **Affichage** (boutons « i »). Plus d'encart de sauvegarde sur l'accueil : seulement un **avertissement rouge** (aucune sauvegarde, ou modifications et ≥ 7 jours sans sauvegarde) qui ouvre les réglages.
 
 ### Dans un personnage
-Onglets : **`Fiche | Compétences | Compagnons`**. Deux modes comme Sans Nom : **jeu** (par défaut) et **édition** (crayon). Sauvegarde automatique 400 ms après chaque modification, immédiate au retour et à la mise en arrière-plan. Bouton retour Android : ferme la fenêtre ouverte → revient à la liste → quitte.
+Onglets : **`Fiche | Compétences | Compagnons | Carnet`** (Carnet : D-J22). Deux modes comme Sans Nom : **jeu** (par défaut) et **édition** (crayon). Sauvegarde automatique 400 ms après chaque modification, immédiate au retour et à la mise en arrière-plan. Bouton retour Android : ferme la fenêtre ouverte → revient à la liste → quitte.
 
 Menu de la fiche (⋮ en haut à droite) : **Aide-mémoire** (§4.6), Dupliquer, Exporter ce personnage.
 
 ### 4.1 Fiche — Identité
+**Photo** (D-J22, reprise de Sans Nom v0.5.2) : portrait rond dans le bloc Info, pour le personnage et chaque compagnon ; miniature dans la liste d'accueil et dans celle des compagnons (initiale à défaut). Un tap montre la photo en grand. Ajouter, changer, recadrer (glisser, zoom à deux doigts ou curseur) ou retirer : en mode édition. Photo recadrée en carré 512 px (JPEG), avec une miniature de 96 px, incluse dans la fiche et la sauvegarde.
+
 | Champ | Type | Remarque |
 |---|---|---|
 | Nom | texte | obligatoire |
@@ -56,6 +58,8 @@ Mode jeu : bloc titré **« Info »** (D-J13) : surnom en italique, « Race · T
 
 ### 4.2 Fiche — Caractéristiques
 Bloc titré **« Caractéristiques »** avec son bouton « i » (mémo : jet = dé + carac, avantages = relances, descriptions des 8 caracs ; D-J13).
+
+En mode édition, le cercle d'une caractéristique est un **champ de saisie** (taper 40 directement) ; les boutons + / − restent pour les petits ajustements (D-J22, Sans Nom v0.5.1).
 
 **Identique à Sans Nom** : 8 caracs en grille 3 colonnes (3 + 3 + 2), cercle = valeur finale, pastille d'avantages signés, + / − en mode édition, tap = détail (valeur, bonus, total, description de la carac). Bonus temporaires (carac, ±N, origine), ajout rapide, suppression d'un tap, « Tout retirer ».
 
@@ -117,6 +121,12 @@ Seule différence : la **race** propose les 5 races jouables **et « Autre race�
 - Rédaction : phrases complètes, sans abréviation (« caractéristique », « maximum », « points »…).
 - Textes dans `packages/core/src/rules/memos.ts`, rédigés à partir de [REGLES_ONE_PIECE.md](../REGLES_ONE_PIECE.md). Aucun texte de règle en dur dans un composant.
 
+### 4.10 Carnet (D-J22, repris de Sans Nom v0.5)
+Onglet du personnage (pas des compagnons), avec deux sous-onglets **Lore | Histoire** :
+- **Lore** : sections titrées (titre + texte long), repliées avec aperçu, « + Section », réordonnables.
+- **Histoire** : une entrée par séance (date + titre + texte), la plus récente en haut ; « + Séance » crée une entrée datée du jour.
+- Écrire et ajouter : à tout moment (mode jeu compris). Supprimer et réordonner : mode édition.
+
 ## 5. Règles appliquées par l'app
 
 | Élément | Règle |
@@ -138,6 +148,7 @@ Stockage comme Sans Nom : table `characters (id, nom, updated_at, data)` + `meta
 ```ts
 // Fiche = champs communs au PJ et au compagnon (D-J17) : nom, titre, age, tribu, classes, reve, prime, stats,
 // bonusTemporaires, ressources, ressourcesPerso, fruit, xp, equipement, inventaire, competences.
+// Fiche contient aussi photo: { image, miniature } | null (D-J22).
 interface Character {
   id: string; schemaVersion: 1; createdAt: string; updatedAt: string
   nom: string; titre: string; age: string
@@ -158,6 +169,8 @@ interface Character {
   equipement: string; inventaire: string
   competences: Skill[]            // Skill = { id, titre, cout: number|null, origine: '' | 'fruit' | 'combat' | 'race' | 'haki' | 'autre', description }
   compagnons: Compagnon[]         // Compagnon = Fiche + { id, race: string } (race jouable ou libre)
+  lore: { id, titre, texte }[]            // Carnet (D-J22)
+  histoire: { id, date AAAA-MM-JJ, titre, texte }[]
 }
 interface Resource { cur: number; max: number; regeneration: string }
 ```

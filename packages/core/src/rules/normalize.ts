@@ -1,9 +1,12 @@
 import type { Fruit } from '../model/fruit'
 import { newId } from '../model/ids'
 import { isFruitType, isSkillOrigin } from '../model/identity'
+import type { LoreSection, SessionEntry } from '../model/notebook'
+import type { Photo } from '../model/photo'
 import type { CustomResource, Resource } from '../model/resources'
 import type { Skill } from '../model/skills'
 import { emptyStats, isStatKey, STATS, type Stats, type TempBonus } from '../model/stats'
+import { isIsoDate, todayIso } from './notebook'
 import { clampInt, LIMITS } from './numbers'
 
 // Briques de normalisation des données lues (base, import, sauvegarde) : champs manquants complétés,
@@ -95,4 +98,39 @@ export function normalizeFruit(raw: unknown): Fruit | null {
     description: str(r.description, LIMITS.textLong),
     eveil: str(r.eveil, LIMITS.textLong),
   }
+}
+
+const PHOTO_RE = /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/
+
+/** Photo : seules les data URL d'image en base64, de taille raisonnable, sont acceptées (sinon null + avertissement). */
+export function normalizePhoto(raw: unknown, w: string[], who = ''): Photo | null {
+  if (raw === null || raw === undefined) return null
+  const r = obj(raw)
+  const ok = (v: unknown, max: number) => typeof v === 'string' && v.length <= max && PHOTO_RE.test(v)
+  if (ok(r.image, LIMITS.photoImage) && ok(r.miniature, LIMITS.photoMiniature)) {
+    return { image: r.image as string, miniature: r.miniature as string }
+  }
+  w.push(`${who}photo illisible ou trop lourde, ignorée`)
+  return null
+}
+
+export function normalizeLore(raw: unknown): LoreSection[] {
+  return arr(raw)
+    .map(obj)
+    .map(s => ({ id: id(s.id), titre: str(s.titre, LIMITS.textShort), texte: str(s.texte, LIMITS.textChapter) }))
+}
+
+/** Une date de séance invalide est remplacée par la date du jour, avec un avertissement. */
+export function normalizeSessions(raw: unknown, w: string[]): SessionEntry[] {
+  return arr(raw)
+    .map(obj)
+    .map(e => {
+      const titre = str(e.titre, LIMITS.textShort)
+      let date = e.date
+      if (!isIsoDate(date)) {
+        w.push(`séance « ${titre || 'sans titre'} » : date « ${String(date)} » invalide, remplacée par aujourd'hui`)
+        date = todayIso()
+      }
+      return { id: id(e.id), date: date as string, titre, texte: str(e.texte, LIMITS.textChapter) }
+    })
 }

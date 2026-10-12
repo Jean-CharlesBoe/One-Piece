@@ -33,14 +33,15 @@ Tes personnages sont enregistrés **dans le téléphone**, pas sur internet. Pou
 - La **roue dentée ⚙** ouvre les réglages : sauvegarde, thème (automatique, clair ou sombre) et affichage des boutons « i ».
 
 ### Dans un personnage
-- Trois onglets : **Fiche**, **Compétences**, **Compagnons**.
+- Quatre onglets : **Fiche**, **Compétences**, **Compagnons**, **Carnet**.
 - Par défaut, tu es en **mode jeu** : tu dépenses et récupères tes ressources, tu ajoutes des bonus temporaires, tu gères ton expérience, ton équipement et ton inventaire.
-- Le **crayon ✎** en haut à droite passe en **mode édition** pour tout le reste : nom, race, classe, valeurs des caractéristiques, maximums des ressources, compétences… Touche **✓** quand tu as fini.
+- Le **crayon ✎** en haut à droite passe en **mode édition** pour tout le reste : photo, nom, race, classe, valeurs des caractéristiques (touche le cercle pour taper la valeur), maximums des ressources, compétences… Touche **✓** quand tu as fini.
 - Tout s'enregistre tout seul.
 - Le bouton **⋮** ouvre l'**aide-mémoire** des règles, **Exporter ce personnage** (un fichier pour ce seul personnage) et **Dupliquer**.
 - Les petits boutons **« i »** à côté des titres rappellent la règle du bloc. Tu peux les masquer dans les réglages.
 
 ### La fiche
+- **Photo** : en mode édition, touche le rond **+ Photo**, choisis une photo (appareil photo ou galerie), puis place le visage dans le cercle (fais glisser, zoome à deux doigts ou avec le curseur) et touche **Valider**. En mode jeu, touche la photo pour la voir en grand.
 - **Info** : surnom, race, tribu (pour un Humain), classe, âge, rêve et prime.
 - **Fruit du démon** : en mode édition, touche **+ Fruit du démon** pour le décrire. En mode jeu, touche le bloc pour le déplier ; **Voir les techniques** ouvre tes compétences d'origine « Fruit ».
 - **Caractéristiques** : touche un cercle pour voir le détail (valeur, bonus, total, avantages). Les bonus temporaires s'ajoutent avec **+ Bonus** et se retirent d'un tap.
@@ -56,8 +57,13 @@ Tes personnages sont enregistrés **dans le téléphone**, pas sur internet. Pou
 - Quand tu utilises une compétence, retire toi-même son coût dans le losange **Endurance**.
 - Les boutons du haut filtrent la liste par origine.
 
+### Le carnet
+- **Lore** : l'histoire de ton personnage en sections (Origines, Famille, Équipage…). **+ Section** en crée une.
+- **Histoire** : une entrée par séance, datée, la plus récente en haut. **+ Séance** en crée une à la date du jour.
+- Tu peux écrire à tout moment ; touche une entrée pour la lire, puis **✎ Écrire** pour la compléter. Supprimer ou changer l'ordre : mode édition.
+
 ### Les compagnons
-- **+ Ajouter** crée un compagnon. Sa fiche est la même que celle d'un personnage ; sa race peut être une race jouable ou une autre (« Autre race… »).
+- **+ Ajouter** crée un compagnon. Sa fiche est la même que celle d'un personnage, photo comprise ; sa race peut être une race jouable ou une autre (« Autre race… »). Il n'a pas de carnet.
 
 ### Le bouton retour du téléphone
 Il ferme d'abord la fenêtre ouverte, puis revient à la liste, puis quitte l'application.

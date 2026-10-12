@@ -1,5 +1,6 @@
 <script lang="ts">
   import Sheet from '@onepiece/core/ui/Sheet.svelte'
+  import Thumb from '@onepiece/core/ui/Thumb.svelte'
   import { onMount } from 'svelte'
   import { backupStatus } from '../backup/format'
   import SettingsPanel from '../components/SettingsPanel.svelte'
@@ -106,11 +107,14 @@
       {#each characters as c (c.id)}
         <li>
           <button class="open" onclick={() => onOpen(c.id)}>
-            <span class="name">{c.nom || 'Sans nom'}</span>
-            {#if c.sousTitre}
-              <span class="small">{c.sousTitre}</span>
-            {/if}
-            <span class="muted small">Modifié le {fmtDate(c.updatedAt)}</span>
+            <Thumb src={c.thumb} nom={c.nom} />
+            <span class="info">
+              <span class="name">{c.nom || 'Sans nom'}</span>
+              {#if c.sousTitre}
+                <span class="small">{c.sousTitre}</span>
+              {/if}
+              <span class="muted small">Modifié le {fmtDate(c.updatedAt)}</span>
+            </span>
           </button>
           <button class="danger" onclick={() => remove(c.id)} aria-label="Supprimer {c.nom}">
             {confirmDelete === c.id ? 'Confirmer' : 'Supprimer'}
@@ -187,10 +191,15 @@
     flex: 1;
     min-width: 0;
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 10px 14px;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 12px;
     text-align: left;
+  }
+  .info {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
   }
   .name {
     font-weight: 600;

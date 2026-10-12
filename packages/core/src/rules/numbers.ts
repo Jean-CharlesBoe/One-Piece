@@ -13,6 +13,11 @@ export const LIMITS = {
   textShort: 120,
   textMedium: 2000,
   textLong: 20000,
+  /** Texte d'une section de Lore ou d'une séance. */
+  textChapter: 50000,
+  /** Photo en data URL (512 px JPEG ≈ 50–80 Ko ; marge pour une image plus lourde). */
+  photoImage: 1_500_000,
+  photoMiniature: 60_000,
 } as const
 
 export function clampInt(n: number, lo: number, hi: number): number {

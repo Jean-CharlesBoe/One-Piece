@@ -133,3 +133,30 @@ describe('Transfert', () => {
     expect(character.ressources.transfert).toMatchObject({ cur: 1, max: 1 })
   })
 })
+
+describe('photo et carnet (D-J22)', () => {
+  const PNG = 'data:image/png;base64,iVBORw0KGgo='
+  const JPG = 'data:image/jpeg;base64,/9j/4AAQSkZJRg=='
+
+  it('une fiche enregistrée avant reçoit photo nulle, Lore et Histoire vides', () => {
+    const old = JSON.parse(JSON.stringify(createCharacter('Osmo')))
+    delete old.photo
+    delete old.lore
+    delete old.histoire
+    const { character, warnings } = normalizeCharacter(old)
+    expect(warnings).toEqual([])
+    expect(character).toMatchObject({ photo: null, lore: [], histoire: [] })
+  })
+
+  it('aller-retour avec photo du PJ et du compagnon, Lore et Histoire ; miniature dans le résumé', () => {
+    const c = createCharacter('Osmo')
+    c.photo = { image: JPG, miniature: PNG }
+    addCompagnon(c, 'Karoo').photo = { image: JPG, miniature: PNG }
+    c.lore.push({ id: 'l1', titre: 'Origines', texte: 'Né à Loguetown.' })
+    c.histoire.push({ id: 'h1', date: '2026-10-12', titre: 'Départ', texte: '…' })
+    const { character, warnings } = normalizeCharacter(JSON.parse(JSON.stringify(c)))
+    expect(warnings).toEqual([])
+    expect(character).toEqual(c)
+    expect(summarize(character).thumb).toBe(PNG)
+  })
+})

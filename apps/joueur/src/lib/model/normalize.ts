@@ -7,7 +7,10 @@ import {
   LIMITS,
   normalizeCustomResources,
   normalizeFruit,
+  normalizeLore,
+  normalizePhoto,
   normalizeResource,
+  normalizeSessions,
   normalizeSkills,
   normalizeStats,
   normalizeTempBonuses,
@@ -47,6 +50,8 @@ export function normalizeCharacter(raw: unknown): { character: Character; warnin
   else if (r.race) w.push(`race inconnue « ${String(r.race)} » ignorée`)
   readFiche(c, r, w, '')
   c.compagnons = arr(r.compagnons).map(x => compagnon(x, w))
+  c.lore = normalizeLore(r.lore)
+  c.histoire = normalizeSessions(r.histoire, w)
   c.schemaVersion = SCHEMA_VERSION
   return { character: c, warnings: w }
 }
@@ -64,6 +69,7 @@ function compagnon(raw: unknown, w: string[]): Compagnon {
 /** Champs communs à un PJ et à un compagnon. */
 function readFiche(f: Fiche, r: Record<string, unknown>, w: string[], who: string): void {
   f.nom = str(r.nom, LIMITS.textShort)
+  f.photo = normalizePhoto(r.photo, w, who)
   f.titre = str(r.titre, LIMITS.textShort)
   f.age = str(r.age, 40)
   if (isTribu(r.tribu)) f.tribu = r.tribu

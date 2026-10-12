@@ -105,6 +105,14 @@ Demande du MJ : le Transfert (1 fois par jour, toutes races) apparaît comme une
 ### D-J21 · 2026-10-12 · Textes joueurs sans abréviation — *validée*
 Demande du MJ : les phrases des mémos et de l'aide-mémoire sont complètes et correctes, sans abréviation (« caractéristique » et non « carac », « maximum » et non « max », « points »…). Un test vérifie l'absence des abréviations courantes. La notice joueurs suit la même règle.
 
+### D-J22 · 2026-10-12 · Reprise de Sans Nom v0.5 : photo, Carnet, saisie directe des caracs — *validée*
+Demande du MJ après relecture de Sans Nom v0.5.2 :
+- **Photo** du personnage et de chaque compagnon (portrait rond, miniature dans les listes, recadrage glisser / zoom), stockée dans la fiche en data URL JPEG (512 px + miniature 96 px), donc incluse dans la sauvegarde. Changer, recadrer ou retirer : mode édition. Comme D9 et D11 de Sans Nom.
+- **Carnet** (onglet du personnage seulement, pas des compagnons) : Lore en sections titrées, Histoire en une entrée datée par séance ; écrire sans passer par le crayon.
+- **Saisie directe** de la valeur d'une caractéristique en mode édition (D10 de Sans Nom).
+Différence avec Sans Nom : pas de colonne SQLite `thumb` ni de migration 2. La liste d'accueil de Vivre Card relit déjà chaque fiche (pour « Race · Classe ») ; elle en tire aussi la miniature. Pas de changement de `SCHEMA_VERSION` (aucune version publiée ; les fiches existantes reçoivent `photo: null`, `lore: []`, `histoire: []` à la lecture).
+Code partagé dans core : modèles `Photo`, `LoreSection`, `SessionEntry`, `photo/crop.ts` (testé), `photo/resize.ts`, `rules/notebook.ts`, `normalizePhoto` / `normalizeLore` / `normalizeSessions`, composants `Thumb`, `PhotoAvatar`, `PhotoCropper`.
+
 ### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *validée* (Q-J5, 2026-10-11)
 Mise en œuvre (2026-10-11) : les « i » se masquent dans l'encart « Réglages » de l'accueil (réglage enregistré dans la table `meta`) ; l'aide-mémoire est dans le menu ⋮ de la fiche. Les infos réservées au MJ en sont exclues (D-J18).
 Bouton « i » discret sur les blocs (carac, ressources, rêve, ambition, XP, compétences) ouvrant une fenêtre du bas avec la règle courte (pas de mémo Haki : règle du MJ). Plus une page « Aide-mémoire » accessible depuis le menu de la fiche (seuils, critiques des trois paliers de dé, coûts d'XP, coûts d'endurance).
