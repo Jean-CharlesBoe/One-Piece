@@ -8,7 +8,11 @@
 
   // Sauvegarde de tous les personnages dans un fichier (seule vraie protection contre la perte ou le
   // changement de téléphone) et import, avec un choix par personnage (cahier joueur §4.0, D-T4).
-  let { characters, onImported }: { characters: CharacterSummary[]; onImported: () => void } = $props()
+  let {
+    characters,
+    onImported,
+    onSaved,
+  }: { characters: CharacterSummary[]; onImported: () => void; onSaved?: () => void } = $props()
 
   type Choice = 'importer' | 'remplacer' | 'copie' | 'ignorer'
   interface Pending {
@@ -49,6 +53,7 @@
       if (shared) {
         lastBackup = now.toISOString()
         await repo.setMeta(META_LAST_BACKUP, lastBackup)
+        onSaved?.()
         message = `${all.length} personnage${all.length > 1 ? 's' : ''} sauvegardé${all.length > 1 ? 's' : ''}.`
       }
     } catch (e) {

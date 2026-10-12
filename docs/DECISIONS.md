@@ -81,6 +81,7 @@ Demande du MJ : un titre « Caractéristiques » au-dessus de la grille, avec le
 Les personnages finiront avec une prime sur la tête : ligne « Prime : 30 000 000 ฿ » en bas du bloc Info, **absente si aucune prime n'est saisie** (retour du MJ), même aspect que les autres infos ; saisie en mode édition, séparateurs acceptés. Champ `prime: number | null`. Un premier encart à part a été jugé trop encombrant par le MJ. Pas de champ berries : l'argent en poche est une entrée de l'inventaire (Q-J2).
 
 ### D-J15 · 2026-10-11 · Transfert et Ambition quotidienne gérés à la main — *validée*
+Complétée par D-J20 (losange Transfert 1 / 1).
 Réponse du MJ à Q-J3 : pas de bouton « Nouveau jour » ni d'assistant de Transfert ; le joueur ajuste ses losanges. Le bloc Ressources a un bouton « i » qui rappelle Rêve, Ambition (1 pt = +2), Transfert (25 %, sans dépasser le max) et régénération (2D6 hors combat).
 
 ### D-J16 · 2026-10-11 · Sauvegarde fichier de Vivre Card — *validée*
@@ -93,6 +94,13 @@ Mise en œuvre : une interface `Fiche` commune à `Character` et `Compagnon`, l'
 
 ### D-J18 · 2026-10-11 · Vivre Card n'affiche pas les règles réservées au MJ — *validée*
 Retour du MJ sur J5 : les seuils de difficulté (Facile 8 … Légendaire 70), l'XP gagnée par adversaire et l'XP narratif, le barème des coûts d'Endurance (2 à 5 / 6 à 10 / 11 à 15), les règles de création (compétence de fruit à coût ≤ 5, capacité de style de combat), l'attaque de base et les dés de régénération (2D6, susceptibles d'évoluer) sont des infos MJ : elles n'apparaissent ni dans les mémos « i » ni dans l'aide-mémoire. Le « i » de l'XP disparaît (les coûts de dépense restent sous le compteur). Les tables restent dans `packages/core/src/rules/memos.ts` pour l'appli MJ ; un test vérifie qu'elles ne réapparaissent pas côté joueur.
+
+### D-J19 · 2026-10-12 · Réglages derrière une roue dentée, thème clair / sombre — *validée*
+Demande du MJ : l'accueil ne garde que la liste des personnages. Une roue dentée en haut à droite ouvre la fenêtre « Réglages » : Sauvegarde (sauvegarder / importer), Thème (Automatique / Clair / Sombre, automatique = celui du téléphone) et Affichage (boutons « i »). L'accueil n'affiche plus que l'avertissement de sauvegarde (aucune sauvegarde, ou modifications et ≥ 7 jours), qui ouvre les réglages.
+Mise en œuvre : `theme.css` passe d'une requête média à l'attribut `data-theme` posé par `watchTheme` (`core/ui/prefs.ts`), aussi utilisé par l'appli MJ ; réglage enregistré dans la table `meta` (clé `theme`).
+
+### D-J20 · 2026-10-12 · Losange « Transfert » sur la fiche — *validée*
+Demande du MJ : le Transfert (1 fois par jour, toutes races) apparaît comme une ressource à part, **1 / 1** par défaut (régénération « chaque jour »), pour que le joueur n'oublie pas qu'il existe. Il reste géré à la main (D-J15). Présent aussi sur la fiche des compagnons ; ajouté sans migration aux fiches existantes.
 
 ### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *validée* (Q-J5, 2026-10-11)
 Mise en œuvre (2026-10-11) : les « i » se masquent dans l'encart « Réglages » de l'accueil (réglage enregistré dans la table `meta`) ; l'aide-mémoire est dans le menu ⋮ de la fiche. Les infos réservées au MJ en sont exclues (D-J18).

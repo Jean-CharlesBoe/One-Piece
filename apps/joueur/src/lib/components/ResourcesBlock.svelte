@@ -14,7 +14,7 @@
   import ResourceDiamond from '@onepiece/core/ui/ResourceDiamond.svelte'
   import type { Character, Compagnon } from '../model/character'
 
-  // Ressources (cahier joueur §4.4) : Vitalité, Endurance, Rêve, Ambition (Humain) puis les ressources
+  // Ressources (cahier joueur §4.4) : Vitalité, Endurance, Rêve, Ambition (Humain), Transfert puis les ressources
   // personnelles, toutes en losanges, deux par ligne. Nom, règle, ordre et suppression d'une ressource
   // personnelle se règlent dans sa fenêtre, en mode édition.
   let { character, editing }: { character: Character | Compagnon; editing: boolean } = $props()
@@ -66,6 +66,7 @@
     {#if hasAmbition(character)}
       <ResourceDiamond label="Ambition" res={r.ambition} color="--ambition" {editing} />
     {/if}
+    <ResourceDiamond label="Transfert" res={r.transfert} color="--transfert" {editing} />
     {#each perso as res, i (res.id)}
       <ResourceDiamond
         label={res.nom || 'Sans nom'}

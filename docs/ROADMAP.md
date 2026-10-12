@@ -23,7 +23,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | J4 | Compagnons | liste + fiche compagnon | — | fait |
 | J5 | Mémos | boutons « i », aide-mémoire | — | en cours (code fait, test téléphone à faire) |
 | J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | fait |
-| J7 | Finitions | mode sombre/clair, notice joueurs, icône, **1re release** | Q-T4 | à faire |
+| J7 | Finitions | mode sombre/clair (fait, D-J19), notice joueurs, icône, **1re release** | Q-T4 | en cours |
 
 ## Appli MJ
 
@@ -165,3 +165,11 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Non fait : l'option « désactiver les i » prévue dans D-J7 (aucun écran de réglages) — à trancher avec le MJ pour J7.
 - Retour du MJ (D-J18) : retirés de Vivre Card l'XP par adversaire et l'XP narratif (le « i » de l'XP disparaît), le barème d'Endurance, les règles de création et l'attaque de base (mémos Compétences et Fruit, section « Combat » de l'aide-mémoire), et la valeur 2D6 de la régénération. Tables gardées dans core pour l'appli MJ ; test garde-fou ajouté. Vérifié : check, 72 tests, navigateur (2 « i » sur la fiche, mémos et aide-mémoire épurés).
 - Suite (même jour) : seuils de difficulté retirés de l'aide-mémoire (info MJ, D-J18) ; coûts de dépense d'XP gardés ; encart « Réglages » à l'accueil avec « Afficher les boutons « i » » (store `showInfo` dans `core/ui/prefs.ts`, lu par `InfoButton` ; valeur dans la table `meta`, clé `show_info`, chargée au démarrage). Vérifié : check, 73 tests, navigateur (masquage conservé après rechargement, réaffichage, aide-mémoire sans seuils).
+
+### Session 8 · 2026-10-12 (retours du MJ : réglages, thème, Transfert)
+- J5 testée sur téléphone : OK (commit `d7136d8`).
+- **Réglages** (D-J19) : roue dentée en haut à droite de l'accueil → fenêtre « Réglages » (Sauvegarde, Thème, Affichage) ; encarts Sauvegarde et Réglages retirés de l'accueil ; avertissement rouge sur l'accueil si aucune sauvegarde ou ≥ 7 jours avec modifications (il ouvre les réglages). `BackupPanel` prévient l'accueil après une sauvegarde (`onSaved`).
+- **Thème** (D-J19, première brique de J7) : `theme`, `THEMES`, `isTheme`, `watchTheme` dans `core/ui/prefs.ts` ; `theme.css` piloté par `data-theme` ; `watchTheme()` au démarrage des deux apps ; réglage en table `meta` (clé `theme`).
+- **Transfert** (D-J20) : `ressources.transfert` (1 / 1, « chaque jour ») sur les PJ et compagnons, losange après l'Ambition, couleur `--transfert` ; normalisation avec valeur par défaut ; tests.
+- Vérifié : check, 75 tests, navigateur 360 × 780 en thème sombre émulé (avertissement, roue dentée, réglages, Clair conservé après rechargement, retour en Automatique, losange Transfert 1 / 1), console sans erreur.
+- Point d'attention : au démarrage, le thème part en automatique le temps de lire le réglage ; si le joueur a choisi un thème différent de celui du téléphone, un bref changement de couleurs est possible.

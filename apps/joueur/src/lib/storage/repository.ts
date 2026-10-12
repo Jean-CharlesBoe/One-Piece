@@ -17,6 +17,8 @@ export interface CharacterRepository {
 export const META_LAST_BACKUP = 'last_backup_at'
 /** Réglage : afficher les boutons « i » ('false' = masqués). */
 export const META_SHOW_INFO = 'show_info'
+/** Réglage : thème 'auto' | 'clair' | 'sombre'. */
+export const META_THEME = 'theme'
 
 let instance: Promise<CharacterRepository> | null = null
 

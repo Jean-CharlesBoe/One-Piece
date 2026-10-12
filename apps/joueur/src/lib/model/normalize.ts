@@ -78,6 +78,7 @@ function readFiche(f: Fiche, r: Record<string, unknown>, w: string[], who: strin
     endurance: normalizeResource(res.endurance, 'Endurance', w, who),
     reve: normalizeResource(res.reve, 'Rêve', w, who, createResource(10)),
     ambition: normalizeResource(res.ambition, 'Ambition', w, who, createResource(10)),
+    transfert: normalizeResource(res.transfert, 'Transfert', w, who, createResource(1, 'chaque jour')),
   }
   f.ressourcesPerso = normalizeCustomResources(r.ressourcesPerso, w, who)
   f.fruit = normalizeFruit(r.fruit)

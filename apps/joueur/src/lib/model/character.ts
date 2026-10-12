@@ -37,8 +37,11 @@ export interface Fiche {
   prime: number | null
   stats: Stats
   bonusTemporaires: TempBonus[]
-  /** Ambition : affichée pour un Humain seulement, valeurs conservées sinon. */
-  ressources: { vitalite: Resource; endurance: Resource; reve: Resource; ambition: Resource }
+  /**
+   * Ambition : affichée pour un Humain seulement, valeurs conservées sinon.
+   * Transfert : 1 utilisation par jour (REGLES §3), losange affiché pour que le joueur n'oublie pas qu'il existe.
+   */
+  ressources: { vitalite: Resource; endurance: Resource; reve: Resource; ambition: Resource; transfert: Resource }
   ressourcesPerso: CustomResource[]
   fruit: Fruit | null
   xp: number
@@ -71,7 +74,7 @@ export interface CharacterSummary {
   updatedAt: string
 }
 
-/** Fiche vierge : caracs à 0, Rêve et Ambition à 10 / 10, rien d'autre. */
+/** Fiche vierge : caracs à 0, Rêve et Ambition à 10 / 10, Transfert à 1 / 1, rien d'autre. */
 export function createFiche(nom: string): Fiche {
   return {
     nom,
@@ -88,6 +91,7 @@ export function createFiche(nom: string): Fiche {
       endurance: createResource(),
       reve: createResource(10),
       ambition: createResource(10),
+      transfert: createResource(1, 'chaque jour'),
     },
     ressourcesPerso: [],
     fruit: null,

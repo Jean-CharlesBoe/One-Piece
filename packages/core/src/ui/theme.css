@@ -16,6 +16,7 @@
   --reve: #b8860b;
   --ambition: #7b4fb8;
   --perso: #1f8a8a;
+  --transfert: #5b6b7a;
   --fruit: #b5368a;
   /* Origines des compétences */
   --o-fruit: var(--fruit);
@@ -33,30 +34,30 @@
   -webkit-tap-highlight-color: transparent;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #15161a;
-    --surface: #1f2126;
-    --text: #e9e7e2;
-    --muted: #9a978f;
-    --line: #34363d;
-    --accent: #e0a840;
-    --accent-text: #1a1406;
-    --danger: #ff6b6b;
-    --up: #5fd08e;
-    --down: #ff7b72;
-    --vitalite: #ef6f60;
-    --endurance: #6aa5ff;
-    --reve: #e8c15a;
-    --ambition: #b08cf0;
-    --perso: #5cc8c8;
-    --fruit: #ea7cc4;
-    --o-combat: #f0a060;
-    --o-race: #7cd383;
-    --o-haki: #9aa6ff;
-    --o-autre: #9a978f;
-    color-scheme: dark;
-  }
+/* Thème sombre : appliqué par `watchTheme` (core/ui/prefs.ts) selon le réglage, ou le thème du téléphone en automatique. */
+:root[data-theme='dark'] {
+  --bg: #15161a;
+  --surface: #1f2126;
+  --text: #e9e7e2;
+  --muted: #9a978f;
+  --line: #34363d;
+  --accent: #e0a840;
+  --accent-text: #1a1406;
+  --danger: #ff6b6b;
+  --up: #5fd08e;
+  --down: #ff7b72;
+  --vitalite: #ef6f60;
+  --endurance: #6aa5ff;
+  --reve: #e8c15a;
+  --ambition: #b08cf0;
+  --perso: #5cc8c8;
+  --transfert: #a9b8c6;
+  --fruit: #ea7cc4;
+  --o-combat: #f0a060;
+  --o-race: #7cd383;
+  --o-haki: #9aa6ff;
+  --o-autre: #9a978f;
+  color-scheme: dark;
 }
 
 *,

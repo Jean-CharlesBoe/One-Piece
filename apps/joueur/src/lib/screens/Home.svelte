@@ -1,9 +1,10 @@
 <script lang="ts">
+  import Sheet from '@onepiece/core/ui/Sheet.svelte'
   import { onMount } from 'svelte'
-  import BackupPanel from '../components/BackupPanel.svelte'
+  import { backupStatus } from '../backup/format'
   import SettingsPanel from '../components/SettingsPanel.svelte'
   import { createCharacter, type CharacterSummary } from '../model/character'
-  import { getRepository } from '../storage/repository'
+  import { getRepository, META_LAST_BACKUP } from '../storage/repository'
 
   let { onOpen }: { onOpen: (id: string) => void } = $props()
 
@@ -13,12 +14,19 @@
   let newName = $state('')
   let confirmDelete = $state<string | null>(null)
   let confirmTimer: ReturnType<typeof setTimeout> | undefined
+  let settingsOpen = $state(false)
+  let lastBackup = $state<string | null>(null)
+
+  // Rappel de sauvegarde : la sauvegarde elle-même est dans les réglages (roue dentée, D-J19).
+  const backup = $derived(backupStatus(lastBackup, characters))
 
   const message = (e: unknown) => (e instanceof Error ? e.message : String(e))
 
   async function refresh() {
     try {
-      characters = await (await getRepository()).list()
+      const repo = await getRepository()
+      characters = await repo.list()
+      lastBackup = await repo.getMeta(META_LAST_BACKUP)
       error = ''
     } catch (e) {
       error = 'Impossible de lire les personnages : ' + message(e)
@@ -65,8 +73,19 @@
 </script>
 
 <main>
-  <h1>Vivre Card</h1>
-  <p class="subtitle">Fiches de personnage · JDR One Piece</p>
+  <header>
+    <div>
+      <h1>Vivre Card</h1>
+      <p class="subtitle">Fiches de personnage · JDR One Piece</p>
+    </div>
+    <button class="gear" onclick={() => (settingsOpen = true)} aria-label="Réglages et sauvegarde">⚙</button>
+  </header>
+
+  {#if !loading && backup.warn}
+    <button class="backup-warn" onclick={() => (settingsOpen = true)}>
+      <strong>{backup.text}</strong> Pense à sauvegarder tes personnages (⚙ Réglages).
+    </button>
+  {/if}
 
   <form onsubmit={create}>
     <label class="visually-hidden" for="new-name">Nom du nouveau personnage</label>
@@ -101,15 +120,9 @@
     </ul>
   {/if}
 
-  {#if !loading}
-    <div class="backup">
-      <BackupPanel {characters} onImported={refresh} />
-    </div>
-  {/if}
-
-  <div class="settings">
-    <SettingsPanel />
-  </div>
+  <Sheet bind:open={settingsOpen} title="Réglages">
+    <SettingsPanel {characters} onChanged={refresh} />
+  </Sheet>
 
   <p class="version">Vivre Card v{__APP_VERSION__}</p>
 </main>
@@ -125,9 +138,34 @@
     font-size: 1.8rem;
     letter-spacing: 0.02em;
   }
+  header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
   .subtitle {
-    margin: 0 0 20px;
+    margin: 0;
     color: var(--muted);
+  }
+  .gear {
+    min-width: 44px;
+    padding: 0 8px;
+    border: none;
+    background: none;
+    font-size: 1.6rem;
+    line-height: 1;
+    color: var(--muted);
+  }
+  .backup-warn {
+    display: block;
+    width: 100%;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    border-color: var(--danger);
+    color: var(--danger);
+    text-align: left;
   }
   form {
     display: flex;
@@ -169,12 +207,6 @@
   }
   .error {
     color: var(--danger);
-  }
-  .backup {
-    margin-top: 28px;
-  }
-  .settings {
-    margin-top: 12px;
   }
   .version {
     margin-top: 24px;

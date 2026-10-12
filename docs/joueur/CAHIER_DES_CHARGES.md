@@ -31,7 +31,7 @@ Fiche de personnage sur téléphone, rapide à consulter et à mettre à jour **
 ## 4. Écrans
 
 ### 4.0 Accueil
-Identique à Sans Nom : liste des personnages (nom, sous-titre « Race · Classe », date de modification), créer, ouvrir, supprimer en 2 temps ; encart **Sauvegarde** (sauvegarder tous les persos, importer, rappel si modifications et ≥ 7 jours) ; encart **Réglages** (afficher ou masquer les « i ») ; version de l'app.
+Liste des personnages (nom, sous-titre « Race · Classe », date de modification), créer, ouvrir, supprimer en 2 temps ; version de l'app. **Roue dentée** en haut à droite (D-J19) : fenêtre « Réglages » avec **Sauvegarde** (sauvegarder tous les persos, importer), **Thème** (Automatique / Clair / Sombre) et **Affichage** (boutons « i »). Plus d'encart de sauvegarde sur l'accueil : seulement un **avertissement rouge** (aucune sauvegarde, ou modifications et ≥ 7 jours sans sauvegarde) qui ouvre les réglages.
 
 ### Dans un personnage
 Onglets : **`Fiche | Compétences | Compagnons`**. Deux modes comme Sans Nom : **jeu** (par défaut) et **édition** (crayon). Sauvegarde automatique 400 ms après chaque modification, immédiate au retour et à la mise en arrière-plan. Bouton retour Android : ferme la fenêtre ouverte → revient à la liste → quitte.
@@ -86,7 +86,7 @@ Losanges `actuel / max` comme Sans Nom, tap = fenêtre du bas (−10 / −5 / �
 
 - Une ressource ne dépasse jamais son max (règle Sans Nom Q 20).
 - Champ **Régénération / récupération** (texte) par ressource, comme Sans Nom (ex. Rêve : « 2D6+4 + points dépensés », Ambition : « chaque jour »).
-- **Transfert**, Ambition rechargée chaque jour : gérés **à la main** par le joueur dans les losanges (Q-J3, D-J15). Pas de bouton « Nouveau jour » ni d'assistant ; la règle est dans le mémo « i » du bloc Ressources.
+- **Transfert** : losange à part (D-J20), **1 / 1** par défaut, régénération « chaque jour » : le joueur le dépense quand il l'utilise et le remet au maximum le lendemain, à la main. Ambition rechargée chaque jour : à la main aussi (Q-J3, D-J15). Pas de bouton « Nouveau jour » ni d'assistant ; la règle est dans le mémo « i » du bloc Ressources.
 - Section **« Ressources »** : titre et bouton « + Ressource » (mode édition) sur la même ligne ; **deux losanges par ligne**, lignes bien espacées (D-J11).
 - Ressources personnalisées : ajout en mode édition ; nom, règle, ordre (↑ Avant / ↓ Après) et suppression en deux temps dans leur fenêtre, en mode édition ; même fenêtre d'ajustement que les autres losanges. Exemple : *Chance*, max 5, « 1 pt = +1 à un jet ; 10 pts = créer ou annuler un critique ; recharge en courant ».
 
@@ -111,7 +111,7 @@ Fiche compagnon : **la même fiche qu'un PJ** (D-J17) — bloc Info (nom, surnom
 Seule différence : la **race** propose les 5 races jouables **et « Autre race… »**, qui ouvre un champ libre (Canard, Den Den Mushi…). Choisir « Humain » fait apparaître la tribu et l'Ambition.
 
 ### 4.9 Mémos et aide-mémoire (D-J7, validée)
-- Bouton **« i »** (petit, discret) à côté des titres : **Caractéristiques** (jet, avantages, description des 8 caracs), **Ressources** (Vitalité, Endurance, Rêve, Ambition, Transfert, régénération possible hors combat, ressources perso), **Fruit du démon** (nage, techniques = compétences « Fruit »), **Compétences** (coût retiré à la main). Le détail d'une carac (tap sur le cercle) affiche aussi sa description. Les « i » se masquent dans l'encart **« Réglages »** de l'accueil (case « Afficher les boutons « i » », cochée par défaut, enregistrée dans l'app).
+- Bouton **« i »** (petit, discret) à côté des titres : **Caractéristiques** (jet, avantages, description des 8 caracs), **Ressources** (Vitalité, Endurance, Rêve, Ambition, Transfert, régénération possible hors combat, ressources perso), **Fruit du démon** (nage, techniques = compétences « Fruit »), **Compétences** (coût retiré à la main). Le détail d'une carac (tap sur le cercle) affiche aussi sa description. Les « i » se masquent dans les **Réglages** (roue dentée de l'accueil) (case « Afficher les boutons « i » », cochée par défaut, enregistrée dans l'app).
 - **Infos réservées au MJ, jamais affichées** (D-J18) : seuils de difficulté, XP par adversaire et XP narratif, barème des coûts d'Endurance, règles de création (compétence de fruit ≤ 5, capacité de style de combat), attaque de base, dés de régénération.
 - **Aide-mémoire** (menu ⋮ de la fiche, fenêtre du bas) : **Jets** (dé + carac comparé au seuil fixé par le MJ, avantages), **Critiques** (règle + paliers D10, D20, D100), **Ressources** (Vitalité, Endurance, Rêve, Ambition, Transfert, régénération), **XP** (coûts de dépense).
 - Textes dans `packages/core/src/rules/memos.ts`, rédigés à partir de [REGLES_ONE_PIECE.md](../REGLES_ONE_PIECE.md). Aucun texte de règle en dur dans un composant.
@@ -148,7 +148,7 @@ interface Character {
   stats: Record<StatKey, { valeur: number; avantages: number }>
   bonusTemporaires: { id: string; carac: StatKey; valeur: number; origine: string }[]
   ressources: {
-    vitalite: Resource; endurance: Resource; reve: Resource; ambition: Resource
+    vitalite: Resource; endurance: Resource; reve: Resource; ambition: Resource; transfert: Resource  // transfert : 1/1 (D-J20)
   }
   ressourcesPerso: (Resource & { id: string; nom: string; regle: string })[]
   transfertUtilise: boolean

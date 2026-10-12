@@ -119,3 +119,17 @@ describe('compagnon = fiche PJ complète (D-J17)', () => {
     expect(karoo.ressources.reve).toMatchObject({ cur: 10, max: 10 })
   })
 })
+
+describe('Transfert', () => {
+  it('1 utilisation par jour, pour un PJ comme pour un compagnon', () => {
+    const c = createCharacter('Osmo')
+    expect(c.ressources.transfert).toEqual({ cur: 1, max: 1, regeneration: 'chaque jour' })
+    expect(addCompagnon(c, 'Karoo').ressources.transfert).toMatchObject({ cur: 1, max: 1 })
+  })
+
+  it('ajouté aux fiches enregistrées avant son apparition', () => {
+    const { character, warnings } = normalizeCharacter({ nom: 'Osmo', ressources: { vitalite: { cur: 20, max: 30 } } })
+    expect(warnings).toEqual([])
+    expect(character.ressources.transfert).toMatchObject({ cur: 1, max: 1 })
+  })
+})
