@@ -11,6 +11,7 @@ on:
       - 'package-lock.json'
       - 'vitest.config.ts'
       - '.github/workflows/joueur.yml'
+      - '.github/release-notes-joueur.md'
   pull_request:
     paths:
       - 'apps/joueur/**'
@@ -102,4 +103,4 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/VivreCard-${GITHUB_REF_NAME#joueur-}.apk" \
-            --title "Vivre Card ${GITHUB_REF_NAME#joueur-}" --generate-notes
+            --title "Vivre Card ${GITHUB_REF_NAME#joueur-}" --notes-file .github/release-notes-joueur.md --generate-notes

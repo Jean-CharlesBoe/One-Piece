@@ -93,7 +93,7 @@ Race : les 5 races jouables + « Autre race… » avec un champ libre ; choisir 
 Mise en œuvre : une interface `Fiche` commune à `Character` et `Compagnon`, l'onglet Fiche réutilisé tel quel pour le compagnon (option `freeRace`), `normalizeFiche` commun. Les anciens compagnons sont relus sans migration (aucune version publiée).
 
 ### D-J18 · 2026-10-11 · Vivre Card n'affiche pas les règles réservées au MJ — *validée*
-Retour du MJ sur J5 : les seuils de difficulté (Facile 8 … Légendaire 70), l'XP gagnée par adversaire et l'XP narratif, le barème des coûts d'Endurance (2 à 5 / 6 à 10 / 11 à 15), les règles de création (compétence de fruit à coût ≤ 5, capacité de style de combat), l'attaque de base et les dés de régénération (2D6, susceptibles d'évoluer) sont des infos MJ : elles n'apparaissent ni dans les mémos « i » ni dans l'aide-mémoire. Le « i » de l'XP disparaît (les coûts de dépense restent sous le compteur). Les tables restent dans `packages/core/src/rules/memos.ts` pour l'appli MJ ; un test vérifie qu'elles ne réapparaissent pas côté joueur.
+Retour du MJ sur J5 : les seuils de difficulté (Facile 8 … Légendaire 70), les valeurs des critiques par dé (D10 : 1 · 10, D20 : 1 · 20, D100 : 1 à 5 · 96 à 100 ; retirées le 2026-10-12), l'XP gagnée par adversaire et l'XP narratif, le barème des coûts d'Endurance (2 à 5 / 6 à 10 / 11 à 15), les règles de création (compétence de fruit à coût ≤ 5, capacité de style de combat), l'attaque de base et les dés de régénération (2D6, susceptibles d'évoluer) sont des infos MJ : elles n'apparaissent ni dans les mémos « i » ni dans l'aide-mémoire. Le « i » de l'XP disparaît (les coûts de dépense restent sous le compteur). Les tables restent dans `packages/core/src/rules/memos.ts` pour l'appli MJ ; un test vérifie qu'elles ne réapparaissent pas côté joueur.
 
 ### D-J19 · 2026-10-12 · Réglages derrière une roue dentée, thème clair / sombre — *validée*
 Demande du MJ : l'accueil ne garde que la liste des personnages. Une roue dentée en haut à droite ouvre la fenêtre « Réglages » : Sauvegarde (sauvegarder / importer), Thème (Automatique / Clair / Sombre, automatique = celui du téléphone) et Affichage (boutons « i »). L'accueil n'affiche plus que l'avertissement de sauvegarde (aucune sauvegarde, ou modifications et ≥ 7 jours), qui ouvre les réglages.
@@ -101,6 +101,9 @@ Mise en œuvre : `theme.css` passe d'une requête média à l'attribut `data-the
 
 ### D-J20 · 2026-10-12 · Losange « Transfert » sur la fiche — *validée*
 Demande du MJ : le Transfert (1 fois par jour, toutes races) apparaît comme une ressource à part, **1 / 1** par défaut (régénération « chaque jour »), pour que le joueur n'oublie pas qu'il existe. Il reste géré à la main (D-J15). Présent aussi sur la fiche des compagnons ; ajouté sans migration aux fiches existantes.
+
+### D-J21 · 2026-10-12 · Textes joueurs sans abréviation — *validée*
+Demande du MJ : les phrases des mémos et de l'aide-mémoire sont complètes et correctes, sans abréviation (« caractéristique » et non « carac », « maximum » et non « max », « points »…). Un test vérifie l'absence des abréviations courantes. La notice joueurs suit la même règle.
 
 ### D-J7 · 2026-10-09 · Mémos pédagogiques contextuels plutôt qu'un onglet Règles — *validée* (Q-J5, 2026-10-11)
 Mise en œuvre (2026-10-11) : les « i » se masquent dans l'encart « Réglages » de l'accueil (réglage enregistré dans la table `meta`) ; l'aide-mémoire est dans le menu ⋮ de la fiche. Les infos réservées au MJ en sont exclues (D-J18).

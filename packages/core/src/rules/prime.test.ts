@@ -38,6 +38,6 @@ describe('mémo des ressources', () => {
   it('couvre les ressources et le transfert', () => {
     const labels = MEMO_RESSOURCES.liste!.map(([l]) => l)
     expect(labels).toEqual(expect.arrayContaining(['Vitalité', 'Endurance', 'Rêve', 'Ambition', 'Transfert']))
-    expect(MEMO_RESSOURCES.liste!.find(([l]) => l === 'Ambition')![1]).toMatch(/\+2/)
+    expect(MEMO_RESSOURCES.liste!.find(([l]) => l === 'Ambition')![1]).toMatch(/ajoute 2 au résultat/)
   })
 })

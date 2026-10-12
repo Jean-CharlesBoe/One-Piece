@@ -23,7 +23,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | J4 | Compagnons | liste + fiche compagnon | — | fait |
 | J5 | Mémos | boutons « i », aide-mémoire | — | en cours (code fait, test téléphone à faire) |
 | J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | fait |
-| J7 | Finitions | mode sombre/clair (fait, D-J19), notice joueurs, icône, **1re release** | Q-T4 | en cours |
+| J7 | Finitions | mode sombre/clair (fait, D-J19), notice joueurs (fait), icône, **1re release** | Q-T4 | en cours |
 
 ## Appli MJ
 
@@ -173,3 +173,9 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - **Transfert** (D-J20) : `ressources.transfert` (1 / 1, « chaque jour ») sur les PJ et compagnons, losange après l'Ambition, couleur `--transfert` ; normalisation avec valeur par défaut ; tests.
 - Vérifié : check, 75 tests, navigateur 360 × 780 en thème sombre émulé (avertissement, roue dentée, réglages, Clair conservé après rechargement, retour en Automatique, losange Transfert 1 / 1), console sans erreur.
 - Point d'attention : au démarrage, le thème part en automatique le temps de lire le réglage ; si le joueur a choisi un thème différent de celui du téléphone, un bref changement de couleurs est possible.
+
+### Session 8 (suite) · 2026-10-12 (aide-mémoire, notice joueurs)
+- Réglages, thème et Transfert testés sur téléphone par le MJ : OK (commit `fa7570a`).
+- Aide-mémoire : tableau des critiques par dé retiré (info MJ, D-J18 complétée) ; textes des mémos et de l'aide-mémoire réécrits sans abréviation (D-J21) : `REGLE_JET`, `REGLE_AVANTAGES`, `REGLE_REGENERATION` partagés ; section « XP » renommée « Expérience » ; coûts d'XP réécrits (« +1 dans une caractéristique », « +2 au maximum de Vitalité ou d'Endurance »…). Tables MJ regroupées en fin de `memos.ts`. Tests : garde-fou étendu (paliers des critiques, abréviations).
+- **Notice joueurs** : `docs/joueur/NOTICE.md` (installer, mettre à jour, sauvegarder, utiliser : accueil et roue dentée, modes jeu / édition, fiche, compétences, compagnons, aide-mémoire, bouton retour). README réorganisé avec un lien de téléchargement et la notice ; texte des Releases (`.github/release-notes-joueur.md`) qui renvoie à la notice.
+- Reste pour J7 : icône (Q-T4), éventuellement une notice illustrée (PDF avec captures, comme Sans Nom), puis la première release `joueur-v0.1.0`.

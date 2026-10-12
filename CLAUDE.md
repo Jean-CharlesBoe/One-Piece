@@ -18,6 +18,7 @@ Langue du projet : **français** (UI, docs, messages de commit). Identifiants de
 | [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) | Stack, monorepo, paquet partagé, stockage, CI, conventions |
 | [docs/REGLES_ONE_PIECE.md](docs/REGLES_ONE_PIECE.md) | Les règles du jeu (reprises de Notion) : **source unique** des mémos et du module de règles |
 | [docs/joueur/CAHIER_DES_CHARGES.md](docs/joueur/CAHIER_DES_CHARGES.md) | Ce que fait l'appli joueur : écrans, règles, modèle |
+| [docs/joueur/NOTICE.md](docs/joueur/NOTICE.md) | Notice pour les joueurs (à tenir à jour avec l'app) |
 | [docs/mj/CAHIER_DES_CHARGES.md](docs/mj/CAHIER_DES_CHARGES.md) | Ce que fait l'appli MJ : base de connaissances, sessions, documents |
 | [docs/mj/MODELE_DONNEES.md](docs/mj/MODELE_DONNEES.md) | Schéma SQLite de l'appli MJ, registre des types de fiches |
 | [docs/mj/IMPORT_NOTION.md](docs/mj/IMPORT_NOTION.md) | Migration unique Notion → appli MJ |

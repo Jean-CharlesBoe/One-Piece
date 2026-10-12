@@ -94,6 +94,8 @@ Le `versionCode` Android est calculé à partir du tag (`X*10000 + Y*100 + Z`) :
 
 ## Installer sur le téléphone d'un joueur
 
+Notice à donner aux joueurs : [joueur/NOTICE.md](joueur/NOTICE.md) (installation, mise à jour, sauvegarde, utilisation). Le texte de la Release GitHub ([.github/release-notes-joueur.md](../.github/release-notes-joueur.md)) y renvoie.
+
 1. Sur le téléphone, ouvrir la page **Releases** du dépôt et télécharger `VivreCard-vX.Y.Z.apk`.
 2. Ouvrir le fichier ; autoriser l'installation depuis le navigateur (« sources inconnues »).
 3. Installer. Une mise à jour s'installe **par-dessus** et garde les données.

@@ -112,8 +112,9 @@ Seule différence : la **race** propose les 5 races jouables **et « Autre race�
 
 ### 4.9 Mémos et aide-mémoire (D-J7, validée)
 - Bouton **« i »** (petit, discret) à côté des titres : **Caractéristiques** (jet, avantages, description des 8 caracs), **Ressources** (Vitalité, Endurance, Rêve, Ambition, Transfert, régénération possible hors combat, ressources perso), **Fruit du démon** (nage, techniques = compétences « Fruit »), **Compétences** (coût retiré à la main). Le détail d'une carac (tap sur le cercle) affiche aussi sa description. Les « i » se masquent dans les **Réglages** (roue dentée de l'accueil) (case « Afficher les boutons « i » », cochée par défaut, enregistrée dans l'app).
-- **Infos réservées au MJ, jamais affichées** (D-J18) : seuils de difficulté, XP par adversaire et XP narratif, barème des coûts d'Endurance, règles de création (compétence de fruit ≤ 5, capacité de style de combat), attaque de base, dés de régénération.
-- **Aide-mémoire** (menu ⋮ de la fiche, fenêtre du bas) : **Jets** (dé + carac comparé au seuil fixé par le MJ, avantages), **Critiques** (règle + paliers D10, D20, D100), **Ressources** (Vitalité, Endurance, Rêve, Ambition, Transfert, régénération), **XP** (coûts de dépense).
+- **Infos réservées au MJ, jamais affichées** (D-J18) : seuils de difficulté, valeurs des critiques par dé, XP par adversaire et XP narratif, barème des coûts d'Endurance, règles de création (compétence de fruit ≤ 5, capacité de style de combat), attaque de base, dés de régénération.
+- **Aide-mémoire** (menu ⋮ de la fiche, fenêtre du bas) : **Jets** (calcul d'un jet, avantages), **Critiques** (règle de la réussite et de l'échec critiques, sans le tableau des paliers : info MJ), **Ressources** (Vitalité, Endurance, Rêve, Ambition, Transfert, régénération), **Expérience** (dépense manuelle, coûts).
+- Rédaction : phrases complètes, sans abréviation (« caractéristique », « maximum », « points »…).
 - Textes dans `packages/core/src/rules/memos.ts`, rédigés à partir de [REGLES_ONE_PIECE.md](../REGLES_ONE_PIECE.md). Aucun texte de règle en dur dans un composant.
 
 ## 5. Règles appliquées par l'app

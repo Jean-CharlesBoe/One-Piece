@@ -18,16 +18,13 @@ describe('aide-mémoire', () => {
     expect(section('Jets').tableau).toBeUndefined()
   })
 
-  it('donne les critiques des trois paliers de dé', () => {
-    expect(section('Critiques').tableau!.lignes).toEqual([
-      ['D10', '1 · 10'],
-      ['D20', '1 · 20'],
-      ['D100', '1 à 5 · 96 à 100'],
-    ])
+  it('explique les critiques sans le tableau des paliers (info MJ)', () => {
+    expect(section('Critiques').texte).toHaveLength(2)
+    expect(section('Critiques').tableau).toBeUndefined()
   })
 
   it('rappelle les ressources et les coûts d’XP', () => {
-    expect(section('XP').tableau!.lignes.map(([, c]) => c)).toEqual(['1 XP', '1 XP', '10 XP'])
+    expect(section('Expérience').tableau!.lignes.map(([, c]) => c)).toEqual(['1 point d’expérience', '1 point d’expérience', '10 points d’expérience'])
     expect(section('Ressources').tableau!.lignes.map(([r]) => r)).toContain('Ambition')
   })
 })
@@ -58,6 +55,8 @@ describe('pas d’info réservée au MJ côté joueur (D-J18)', () => {
     ['attaque de base', /1D6/],
     ['dés de régénération', /2D6 de/],
     ['seuils de difficulté', /Héroïque|Légendaire|Très difficile/],
+    ['paliers des critiques', /D10|D20|D100|96 à 100/],
+    ['abréviations', /\bcarac\b|\bmax\b|\bpts?\b|\bEnd\./],
   ])('%s', (_, motif) => {
     expect(texte).not.toMatch(motif)
   })
