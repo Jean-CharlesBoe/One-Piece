@@ -101,3 +101,13 @@ Notice à donner aux joueurs : [joueur/NOTICE.md](joueur/NOTICE.md) (installatio
 3. Installer. Une mise à jour s'installe **par-dessus** et garde les données.
 
 ⚠️ Ne pas installer un APK de **debug** puis un APK de **release** (ou l'inverse) : signatures différentes → il faudrait désinstaller.
+
+## Régénérer la notice PDF
+
+Source : `docs/notice/notice.html` + captures dans `docs/notice/img/` (format téléphone 375 × 812, thème clair, personnage d'exemple « Osmo le Chanceux » avec son compagnon Karoo). Les captures se refont dans le navigateur intégré (`npm run dev:joueur`) : mettre de côté le stockage du navigateur, charger le personnage d'exemple, capturer, puis remettre le stockage. Après modification, dans PowerShell :
+
+```powershell
+& "C:\Program Files (x86)\Microsoft\Edge\Application\msedge.exe" --headless=new --disable-gpu --no-pdf-header-footer --user-data-dir="$env:TEMP\edge-pdf" --print-to-pdf="C:\Repos\One Piece\docs\Notice-Vivre-Card.pdf" "file:///C:/Repos/One%20Piece/docs/notice/notice.html"
+```
+
+Chaque partie tient sur une page A4 : le PDF doit compter une page de couverture + une page par partie (12 actuellement).

@@ -2,6 +2,8 @@
 
 **Vivre Card** est la fiche de personnage du JDR One Piece, sur ton téléphone Android. Elle fonctionne sans internet et sans compte : tes personnages restent dans ton téléphone.
 
+> Version illustrée avec captures d'écran : [Notice-Vivre-Card.pdf](../Notice-Vivre-Card.pdf)
+
 ## Installer l'application (première fois)
 
 1. Récupère le fichier **`VivreCard-vX.Y.Z.apk`** : soit dans le message du MJ, soit sur la page **https://github.com/Jean-CharlesBoe/One-Piece/releases** (dernière version « Vivre Card », partie **Assets**).

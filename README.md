@@ -9,6 +9,8 @@ Deux applications Android indépendantes pour le JDR One Piece :
 
 👉 **[Télécharger Vivre Card](https://github.com/Jean-CharlesBoe/One-Piece/releases)** (fichier `VivreCard-vX.Y.Z.apk` de la dernière version « Vivre Card »), puis suivre la **[notice](docs/joueur/NOTICE.md)** : installation, mise à jour, sauvegarde et utilisation.
 
+📄 **[Notice illustrée (PDF)](docs/Notice-Vivre-Card.pdf)** : la même chose, avec des captures d'écran.
+
 ## Développement
 
 Monorepo Vite + TypeScript + Svelte 5, emballé en applis Android par Capacitor, données en SQLite.

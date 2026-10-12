@@ -23,7 +23,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | J4 | Compagnons | liste + fiche compagnon | — | fait |
 | J5 | Mémos | boutons « i », aide-mémoire | — | en cours (code fait, test téléphone à faire) |
 | J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | fait |
-| J7 | Finitions | mode sombre/clair (fait, D-J19), notice joueurs (fait), icône, **1re release** | Q-T4 | en cours |
+| J7 | Finitions | mode sombre/clair (fait, D-J19), notice joueurs texte et PDF (fait), icône, **1re release** | Q-T4 | en cours |
 
 ## Appli MJ
 
@@ -187,3 +187,8 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - `apps/joueur` : `photo` dans `Fiche`, `lore` / `histoire` dans `Character`, `thumb` dans le résumé ; photo dans le bloc Info ; miniatures dans les listes d'accueil et des compagnons ; onglet **Carnet** (`NotebookTab`, `NoteList`) ; tests (anciennes fiches, aller-retour complet).
 - Vérifié : check, 90 tests, navigateur 360 × 780 (photo générée → recadrage → avatar et miniature, carac saisie à 40, Lore et Histoire, 4 onglets sans débordement, rechargement, compagnon avec « + Photo »), aucune erreur sur une page fraîchement chargée (une erreur vue dans la console venait d'un rechargement à chaud de la veille). Notice joueurs mise à jour.
 - Reste pour J7 : icône (dessin à venir), notice PDF illustrée, release `joueur-v0.1.0`.
+
+### Session 9 (suite) · 2026-10-12 (notice PDF)
+- Photo, Carnet et saisie des caracs testés sur téléphone par le MJ : OK (`921b023`).
+- **Notice PDF** `docs/Notice-Vivre-Card.pdf` (12 pages A4 : couverture + 11 parties), générée par Edge sans interface depuis `docs/notice/notice.html` ; 23 captures 375 × 812 en thème clair (une en sombre) dans `docs/notice/img/`, prises dans le navigateur intégré sur un personnage d'exemple (« Osmo le Chanceux », compagnon Karoo, photos dessinées). Le stockage du navigateur a été mis de côté puis remis à l'identique (fiche « ozmo » du MJ). Liens depuis le README, la notice texte et le texte des Releases ; procédure de régénération dans RELEASE.md.
+- Icône : le dessin arrivera plus tard (plusieurs semaines possibles).

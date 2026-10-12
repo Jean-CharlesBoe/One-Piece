@@ -1,0 +1,266 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<title>Vivre Card — Notice de l'application</title>
+<style>
+  @page { size: A4; margin: 16mm 15mm 16mm; }
+  :root { --accent: #8a5a00; --text: #1c1b19; --muted: #6b6963; --line: #d9d6cf; --soft: #f6f5f1; --vitalite: #c0392b; --endurance: #2a6fd6; --reve: #b8860b; --ambition: #7b4fb8; --transfert: #5b6b7a; --perso: #1f8a8a; --fruit: #b5368a; --up: #1f7a45; --down: #b3261e; }
+  * { box-sizing: border-box; }
+  body { margin: 0; font-family: 'Segoe UI', system-ui, sans-serif; font-size: 10.5pt; line-height: 1.45; color: var(--text); }
+  h1 { font-size: 30pt; margin: 0; letter-spacing: .01em; }
+  h2 { font-size: 17pt; margin: 0 0 4mm; padding-bottom: 2mm; border-bottom: 2px solid var(--accent); color: var(--accent); }
+  h3 { font-size: 12pt; margin: 5mm 0 1.5mm; }
+  p { margin: 0 0 2.5mm; }
+  ul, ol { margin: 0 0 3mm; padding-left: 5mm; }
+  li { margin-bottom: 1.2mm; }
+  .page { page-break-after: always; }
+  .page:last-child { page-break-after: auto; }
+  .row { display: flex; gap: 7mm; align-items: flex-start; }
+  .row .text { flex: 1; min-width: 0; }
+  .shots { display: flex; gap: 5mm; justify-content: center; margin: 3mm 0; }
+  figure { margin: 0; text-align: center; break-inside: avoid; }
+  figure img { width: 52mm; border: 1.5px solid #bdb9b0; border-radius: 4mm; display: block; }
+  .shots.small figure img { width: 46mm; }
+  figcaption { font-size: 8.5pt; color: var(--muted); margin-top: 1.5mm; max-width: 52mm; }
+  .tip { background: var(--soft); border-left: 4px solid var(--accent); padding: 2.5mm 4mm; border-radius: 0 2mm 2mm 0; margin: 3mm 0; }
+  .warn { background: #fdf0ef; border-left: 4px solid var(--down); padding: 2.5mm 4mm; border-radius: 0 2mm 2mm 0; margin: 3mm 0; }
+  .kbd { display: inline-block; padding: 0 2mm; border: 1px solid var(--line); border-radius: 1.5mm; background: #fff; font-weight: 600; }
+  .cover { display: flex; flex-direction: column; align-items: center; text-align: center; padding-top: 6mm; }
+  .cover .sub { font-size: 14pt; color: var(--muted); margin: 2mm 0 7mm; }
+  .cover figure img { width: 56mm; }
+  .toc { margin-top: 10mm; text-align: left; font-size: 11pt; }
+  .toc ol { padding-left: 6mm; }
+  .vitalite { color: var(--vitalite); } .endurance { color: var(--endurance); } .reve { color: var(--reve); } .ambition { color: var(--ambition); } .transfert { color: var(--transfert); } .perso { color: var(--perso); } .fruit { color: var(--fruit); } .down { color: var(--down); }
+  .footer-note { font-size: 8.5pt; color: var(--muted); margin-top: 6mm; }
+</style>
+</head>
+<body>
+
+<!-- Couverture -->
+<section class="page cover">
+  <h1>Vivre Card</h1>
+  <p class="sub">Notice de la fiche de personnage du JDR One Piece</p>
+  <figure><img src="img/02-fiche-haut.jpg" alt="Fiche d'un personnage"></figure>
+  <div class="toc">
+    <ol>
+      <li>Installer et mettre à jour l'application</li>
+      <li>L'écran d'accueil et les réglages</li>
+      <li>La fiche</li>
+      <li>Pendant la partie : ressources, bonus, détails</li>
+      <li>Le mode édition</li>
+      <li>La photo du personnage et des compagnons</li>
+      <li>L'onglet Compétences</li>
+      <li>L'onglet Compagnons</li>
+      <li>L'onglet Carnet : Lore et Histoire</li>
+      <li>Le menu de la fiche et l'aide-mémoire</li>
+      <li>Sauvegarder et retrouver ses fiches</li>
+    </ol>
+  </div>
+  <p class="footer-note">Les captures montrent un personnage d'exemple, « Osmo le Chanceux », et son compagnon Karoo.</p>
+</section>
+
+<!-- 1. Installation -->
+<section class="page">
+  <h2>1. Installer et mettre à jour l'application</h2>
+  <p>L'application n'est pas sur le Play Store : elle s'installe à partir d'un fichier <b>VivreCard-vX.Y.Z.apk</b> (par exemple <i>VivreCard-v0.1.0.apk</i>), envoyé par le MJ ou téléchargé sur <b>github.com/Jean-CharlesBoe/One-Piece/releases</b> (dernière version « Vivre Card », partie <i>Assets</i>). C'est sans danger, mais Android demande une autorisation la première fois.</p>
+
+  <h3>Première installation</h3>
+  <ol>
+    <li>Sur ton <b>téléphone Android</b>, touche le fichier <b>VivreCard-vX.Y.Z.apk</b> pour le télécharger. Attends la fin du téléchargement.</li>
+    <li>Ouvre le fichier : touche la notification « Téléchargement terminé », ou va dans l'application <b>Fichiers</b> → <b>Téléchargements</b>.</li>
+    <li>Android indique que ton téléphone n'est pas autorisé à installer des applications inconnues : touche <b>Paramètres</b>, active <b>Autoriser depuis cette source</b>, puis reviens en arrière (flèche ←).</li>
+    <li>Touche <b>Installer</b>.</li>
+    <li>Si <b>Play Protect</b> affiche « application inconnue » : touche <b>Plus d'infos</b>, puis <b>Installer quand même</b>. C'est normal pour une application qui ne vient pas du Play Store.</li>
+    <li>Touche <b>Ouvrir</b>. <b>Vivre Card</b> apparaît ensuite avec tes autres applications.</li>
+  </ol>
+  <div class="tip">Le message d'autorisation (étape 3) peut nommer ta messagerie, <b>Fichiers</b> ou ton navigateur, selon l'endroit d'où tu ouvres le fichier : autorise celui qui est affiché. Tu peux ensuite retirer cette autorisation dans les paramètres, l'application reste installée.</div>
+
+  <h3>Mettre à jour</h3>
+  <p>Quand le MJ annonce une nouvelle version, refais les étapes 1 et 2, puis touche <b>Mettre à jour</b>. La nouvelle version s'installe <b>par-dessus</b> l'ancienne et <b>garde tous tes personnages</b>. Le numéro de la version installée est écrit en bas de l'écran d'accueil.</p>
+
+  <div class="warn"><b>Ne désinstalle jamais l'application pour la mettre à jour</b> : la désinstaller efface les fiches enregistrées sur le téléphone. Si tu dois vraiment la désinstaller, fais d'abord une sauvegarde (partie 11).</div>
+
+  <h3>Où sont mes données ?</h3>
+  <p>Tes personnages sont enregistrés <b>dans le téléphone</b>, pas sur internet : l'application fonctionne sans connexion, et personne d'autre n'y a accès. En contrepartie, c'est à toi de faire une sauvegarde de temps en temps (un seul bouton, partie 11).</p>
+</section>
+
+<!-- 2. Accueil -->
+<section class="page">
+  <h2>2. L'écran d'accueil et les réglages</h2>
+  <div class="row">
+    <div class="text">
+      <p>C'est la liste de tes personnages.</p>
+      <ul>
+        <li><b>Créer un personnage</b> : écris son nom dans le champ du haut et touche <span class="kbd">Créer</span>. Sa fiche s'ouvre directement.</li>
+        <li><b>Ouvrir une fiche</b> : touche le personnage. Sa photo (ou son initiale) l'identifie d'un coup d'œil, avec sa race et sa classe.</li>
+        <li><b>Supprimer</b> : touche <span class="kbd">Supprimer</span> puis, pour confirmer, <span class="kbd">Confirmer</span> dans les 4 secondes. La suppression est définitive.</li>
+      </ul>
+      <p>La <b>roue dentée ⚙</b> en haut à droite ouvre les <b>réglages</b> :</p>
+      <ul>
+        <li><b>Sauvegarde</b> : sauvegarder ou importer tes fiches (partie 11) ;</li>
+        <li><b>Thème</b> : <i>Automatique</i> (comme ton téléphone), <i>Clair</i> ou <i>Sombre</i> ;</li>
+        <li><b>Affichage</b> : afficher ou masquer les petits boutons « i » qui rappellent les règles.</li>
+      </ul>
+      <p>Tout en bas de l'accueil : le numéro de version de l'application.</p>
+      <div class="tip">Le bouton <b>retour</b> du téléphone ferme d'abord une fenêtre ouverte, puis revient à la liste, puis quitte l'application.</div>
+    </div>
+  </div>
+  <div class="shots">
+    <figure><img src="img/01-accueil.jpg" alt="Écran d'accueil"><figcaption>L'accueil : la liste des personnages.</figcaption></figure>
+    <figure><img src="img/20-reglages.jpg" alt="Réglages"><figcaption>La roue dentée : sauvegarde, thème, affichage.</figcaption></figure>
+  </div>
+</section>
+
+<!-- 3. Fiche -->
+<section class="page">
+  <h2>3. La fiche</h2>
+  <p>En haut, la flèche <b>←</b> revient à la liste, le <b>crayon ✎</b> passe en mode édition (partie 5) et le bouton <b>⋮</b> ouvre le menu (partie 10). Juste en dessous, quatre onglets : <b>Fiche</b>, <b>Compétences</b>, <b>Compagnons</b> et <b>Carnet</b>. <b>Tout s'enregistre automatiquement</b>, il n'y a pas de bouton « Enregistrer ».</p>
+  <div class="shots">
+    <figure><img src="img/02-fiche-haut.jpg" alt="Fiche, haut"><figcaption>Info, fruit du démon et caractéristiques.</figcaption></figure>
+    <figure><img src="img/03-fiche-ressources.jpg" alt="Fiche, ressources"><figcaption>Ressources et expérience.</figcaption></figure>
+  </div>
+  <ul>
+    <li><b>Info</b> : la photo, le surnom, la race (et la tribu pour un Humain), la classe, l'âge, le rêve et la prime.</li>
+    <li><b class="fruit">Fruit du démon</b> : touche le bloc pour lire sa description. <b>Voir les techniques</b> ouvre les compétences d'origine « Fruit ».</li>
+    <li><b>Caractéristiques</b> : le nombre dans le cercle est la valeur finale, bonus temporaires compris (vert s'il y a un bonus, rouge s'il y a un malus). La pastille indique les avantages (+1 = une relance) ou les désavantages.</li>
+    <li><b>Ressources</b> : <span class="vitalite">Vitalité</span>, <span class="endurance">Endurance</span>, <span class="reve">Rêve</span>, <span class="ambition">Ambition</span> (Humains seulement), <span class="transfert">Transfert</span> et tes ressources personnelles (<span class="perso">Chance</span> dans l'exemple). Chaque losange affiche « actuel / maximum ».</li>
+    <li><b>Expérience</b>, <b>Équipement</b> et <b>Inventaire</b> : tout en bas, modifiables à tout moment. L'argent (berries) se note dans l'inventaire.</li>
+  </ul>
+  <div class="tip">Les petits boutons <b>« i »</b> à côté des titres rappellent la règle du bloc. Tu peux les masquer dans les réglages (roue dentée de l'accueil).</div>
+</section>
+
+<!-- 4. Pendant la partie -->
+<section class="page">
+  <h2>4. Pendant la partie</h2>
+  <div class="shots small">
+    <figure><img src="img/04-ressource.jpg" alt="Fenêtre d'une ressource"><figcaption>Toucher un losange : dépenser ou récupérer.</figcaption></figure>
+    <figure><img src="img/06-bonus.jpg" alt="Ajouter un bonus"><figcaption>« + Bonus » : ajouter un bonus temporaire.</figcaption></figure>
+    <figure><img src="img/05-detail-carac.jpg" alt="Détail d'une caractéristique"><figcaption>Toucher un cercle : le détail du calcul.</figcaption></figure>
+  </div>
+  <h3>Dépenser ou récupérer une ressource</h3>
+  <p>Touche un losange : <b>−10, −5, −1, +1, +5, +10</b>, ou un montant libre avec <b>Retirer</b> / <b>Ajouter</b>, ou <b>Remettre au maximum</b>. Une ressource ne descend jamais sous 0 et ne dépasse jamais son maximum. Quand tu utilises une compétence, retire son coût dans le losange <span class="endurance">Endurance</span>. Si l'Endurance tombe à 0, un bandeau « Évanoui » apparaît.</p>
+  <p>Le <span class="transfert">Transfert</span> vaut 1 : passe-le à 0 quand tu l'utilises, et remets-le au maximum le lendemain. Fais de même pour l'<span class="ambition">Ambition</span>, qui se recharge chaque jour.</p>
+  <h3>Bonus temporaires</h3>
+  <p><b>+ Bonus</b> : choisis la caractéristique, la valeur (+ ou −) et, si tu veux, l'origine (« Chant de Brook »). Le bonus s'ajoute au cercle jusqu'à ce que tu le retires avec la croix ✕.</p>
+  <h3>Le détail d'une caractéristique</h3>
+  <p>Touche un cercle : la description de la caractéristique, sa valeur, chaque bonus, le total et les avantages.</p>
+</section>
+
+<!-- 5. Mode édition -->
+<section class="page">
+  <h2>5. Le mode édition</h2>
+  <p>Le <b>crayon ✎</b> en haut à droite passe en mode édition (un bandeau « Mode édition » s'affiche) ; touche <b>✓</b> quand tu as fini. C'est là que tu modifies tout ce qui ne bouge pas en partie.</p>
+  <div class="shots small">
+    <figure><img src="img/07-edition-info.jpg" alt="Édition de l'info"><figcaption>Info : photo, nom, surnom, race, âge, tribu, classe, rêve, prime.</figcaption></figure>
+    <figure><img src="img/08-edition-caracs.jpg" alt="Édition des caractéristiques"><figcaption>Caractéristiques : touche le cercle pour taper la valeur, ou − / + ; ligne « Av. » pour les avantages.</figcaption></figure>
+    <figure><img src="img/09-edition-ressource.jpg" alt="Édition d'une ressource"><figcaption>Dans un losange : maximum, régénération, et pour une ressource personnelle son nom et sa règle.</figcaption></figure>
+  </div>
+  <ul>
+    <li><b>Fruit du démon</b> : <b>+ Fruit du démon</b> pour le décrire (nom, type, description, éveil), <b>Retirer le fruit</b> en deux temps.</li>
+    <li><b>Ressources</b> : touche un losange pour régler son maximum et sa régénération. <b>+ Ressource</b> ajoute une ressource propre à ton personnage ; dans sa fenêtre, tu règles son nom, sa règle, son ordre (<b>↑ Avant</b>, <b>↓ Après</b>) ou tu la supprimes.</li>
+    <li>L'application ne vérifie pas les règles de création : tu saisis tes valeurs librement.</li>
+  </ul>
+</section>
+
+<!-- 6. Photo -->
+<section class="page">
+  <h2>6. La photo du personnage et des compagnons</h2>
+  <div class="row">
+    <div class="text">
+      <ol>
+        <li>Passe en mode édition (crayon ✎).</li>
+        <li>Touche le rond <b>+ Photo</b> à côté du nom, puis choisis l'appareil photo ou une image de ta galerie.</li>
+        <li>Place le visage dans le cercle : fais glisser la photo avec un doigt, zoome avec deux doigts ou avec le curseur, puis touche <b>Valider</b>.</li>
+      </ol>
+      <p>En mode jeu, touche la photo pour la voir en grand. En mode édition, la même fenêtre propose <b>Changer la photo</b>, <b>Recadrer</b> et <b>Retirer</b>.</p>
+      <p>La photo apparaît aussi en miniature dans la liste d'accueil et dans celle des compagnons. Elle est enregistrée avec la fiche, donc incluse dans la sauvegarde.</p>
+    </div>
+  </div>
+  <div class="shots">
+    <figure><img src="img/16-photo.jpg" alt="Photo en grand, mode édition"><figcaption>La photo en grand, en mode édition.</figcaption></figure>
+    <figure><img src="img/17-recadrage.jpg" alt="Recadrage"><figcaption>Le recadrage : glisser et zoomer.</figcaption></figure>
+  </div>
+</section>
+
+<!-- 7. Compétences -->
+<section class="page">
+  <h2>7. L'onglet Compétences</h2>
+  <div class="shots">
+    <figure><img src="img/10-competences-jeu.jpg" alt="Compétences en mode jeu"><figcaption>En partie : les cartes repliées, une carte dépliée.</figcaption></figure>
+    <figure><img src="img/11-competences-edition.jpg" alt="Compétences en mode édition"><figcaption>En mode édition : titre, coût, origine, description.</figcaption></figure>
+  </div>
+  <ul>
+    <li>Chaque carte montre le titre, l'<b>origine</b> (Fruit, Combat, Race, Haki, Autre), le <b>coût en Endurance</b> et la première ligne de la description. Touche-la pour lire la description complète ; <b>Tout déplier</b> ouvre toutes les cartes.</li>
+    <li>Les boutons du haut <b>filtrent</b> la liste par origine.</li>
+    <li>Quand tu utilises une compétence, retire toi-même son coût dans le losange Endurance de la fiche.</li>
+    <li>En mode édition : <b>+ Ajouter une compétence</b>, puis titre, coût (facultatif), origine et description ; <b>↑ ↓</b> pour l'ordre ; <b>Supprimer</b> en deux temps.</li>
+  </ul>
+</section>
+
+<!-- 8. Compagnons -->
+<section class="page">
+  <h2>8. L'onglet Compagnons</h2>
+  <div class="shots">
+    <figure><img src="img/12-compagnons.jpg" alt="Liste des compagnons"><figcaption>La liste, avec la Vitalité et l'Endurance de chacun.</figcaption></figure>
+    <figure><img src="img/13-compagnon.jpg" alt="Fiche d'un compagnon"><figcaption>La fiche d'un compagnon.</figcaption></figure>
+  </div>
+  <ul>
+    <li><b>+ Ajouter</b> : donne un nom à ton compagnon (animal, monture, Den Den Mushi…) ; sa fiche s'ouvre.</li>
+    <li>Sa fiche est la même que celle d'un personnage : photo, info, fruit du démon, caractéristiques, bonus, ressources, expérience, équipement, inventaire, puis ses compétences sur la même page.</li>
+    <li>Sa race peut être une race jouable ou une autre : choisis <b>Autre race…</b> et écris-la (« Canard des sables »).</li>
+    <li><b>← Compagnons</b> revient à la liste. En mode édition, <b>↑ ↓</b> change l'ordre et <b>Supprimer ce compagnon</b> le retire, en deux temps.</li>
+  </ul>
+</section>
+
+<!-- 9. Carnet -->
+<section class="page">
+  <h2>9. L'onglet Carnet : Lore et Histoire</h2>
+  <div class="shots">
+    <figure><img src="img/14-lore.jpg" alt="Lore"><figcaption>Le Lore : une carte par section.</figcaption></figure>
+    <figure><img src="img/15-histoire.jpg" alt="Histoire"><figcaption>L'Histoire : une entrée par séance.</figcaption></figure>
+  </div>
+  <ul>
+    <li><b>Lore</b> : l'histoire de ton personnage, en sections (Origines, Famille, Équipage…). <b>+ Section</b> en crée une.</li>
+    <li><b>Histoire</b> : une entrée par séance, avec sa date ; la plus récente est en haut. <b>+ Séance</b> crée une entrée à la date du jour.</li>
+    <li>Tu peux écrire à tout moment, même en mode jeu : touche une entrée pour la lire, puis <b>✎ Écrire</b> pour la compléter, et <b>Terminé</b> quand tu as fini.</li>
+    <li>En mode édition : changer l'ordre des sections ou supprimer une entrée (en deux temps).</li>
+  </ul>
+</section>
+
+<!-- 10. Menu et aide-mémoire -->
+<section class="page">
+  <h2>10. Le menu de la fiche et l'aide-mémoire</h2>
+  <div class="shots">
+    <figure><img src="img/19-menu.jpg" alt="Menu de la fiche"><figcaption>Le bouton ⋮ de la fiche.</figcaption></figure>
+    <figure><img src="img/18-aide-memoire.jpg" alt="Aide-mémoire"><figcaption>L'aide-mémoire des règles.</figcaption></figure>
+  </div>
+  <ul>
+    <li><b>Aide-mémoire</b> : le calcul d'un jet, les avantages, les réussites et échecs critiques, les ressources et les coûts de l'expérience.</li>
+    <li><b>Exporter ce personnage</b> : un fichier pour ce seul personnage, par exemple pour l'envoyer sur un autre téléphone.</li>
+    <li><b>Dupliquer</b> : crée une copie du personnage, nommée « (copie) ».</li>
+  </ul>
+</section>
+
+<!-- 11. Sauvegarde -->
+<section class="page">
+  <h2>11. Sauvegarder et retrouver ses fiches</h2>
+  <p>Tes fiches restent dans ton téléphone. Elles survivent aux mises à jour, mais <b>pas</b> à une désinstallation, ni à la perte ou au changement de téléphone. Le fichier de sauvegarde est ta vraie protection.</p>
+  <h3>Sauvegarder</h3>
+  <ol>
+    <li>Accueil → <b>roue dentée ⚙</b> → <b>Sauvegarde</b> → <b>Sauvegarder</b>.</li>
+    <li>La fenêtre de partage d'Android s'ouvre : choisis <b>Drive</b>, ou envoie-toi le fichier par mail ou par message. Le fichier contient <b>tous</b> tes personnages, avec leurs compagnons, leurs photos et leur carnet.</li>
+  </ol>
+  <p>Un message <b class="down">rouge</b> apparaît sur l'accueil si tu n'as jamais sauvegardé, ou si tu as modifié tes fiches sans sauvegarder depuis 7 jours ou plus.</p>
+  <h3>Retrouver ses fiches</h3>
+  <p>Sur un nouveau téléphone (ou après une réinstallation) : installe l'application, puis roue dentée ⚙ → <b>Importer</b> → choisis ton fichier. Pour une fiche déjà présente sur le téléphone, tu choisis <b>Remplacer</b>, <b>Garder les deux</b> ou <b>Ignorer</b>.</p>
+  <div class="shots small">
+    <figure><img src="img/22-avertissement.jpg" alt="Rappel de sauvegarde"><figcaption>Le rappel sur l'accueil.</figcaption></figure>
+    <figure><img src="img/21-import.jpg" alt="Fenêtre d'import"><figcaption>L'import : un choix par personnage.</figcaption></figure>
+    <figure><img src="img/23-sombre.jpg" alt="Thème sombre"><figcaption>Le thème sombre (roue dentée → Thème).</figcaption></figure>
+  </div>
+  <p class="footer-note">Un problème, une idée ? Préviens le MJ.</p>
+</section>
+
+</body>
+</html>
