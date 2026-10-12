@@ -57,8 +57,7 @@ Commandes **PowerShell** :
    gh secret set ANDROID_KEY_ALIAS --body onepiece --repo Jean-CharlesBoe/One-Piece
    gh secret list --repo Jean-CharlesBoe/One-Piece
    ```
-   Windows PowerShell 5.1 ajoute un retour à la ligne (`
-`) au texte envoyé par `|` : la CI ne garde que les caractères base64 avant de décoder la clé, ce n'est donc pas gênant.
+   Windows PowerShell 5.1 ajoute un retour à la ligne au texte envoyé par `|` : la CI ne garde que les caractères base64 avant de décoder la clé, ce n'est donc pas gênant.
 4. Copier `onepiece-release.jks` en lieu sûr et garder le mot de passe à part.
 5. Noter ci-dessous l'empreinte SHA-256 du certificat (après la première release).
 
