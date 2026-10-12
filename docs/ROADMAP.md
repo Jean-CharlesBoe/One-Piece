@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **J5 — Mémos** (code fait, à essayer sur téléphone). Ensuite : **J7 — Finitions** (mode sombre / clair, notice joueurs, icône Q-T4, 1re release), puis l'appli MJ (M0).
+Étape en cours : **Vivre Card v0.1.0 publiée** (2026-10-12). Reste pour l'appli joueur : l'icône (dessin à venir, Q-T4) dans une version suivante. Ensuite : l'appli MJ (M0).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -23,7 +23,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | J4 | Compagnons | liste + fiche compagnon | — | fait |
 | J5 | Mémos | boutons « i », aide-mémoire | — | en cours (code fait, test téléphone à faire) |
 | J6 | Sauvegarde | export/import JSON, rappel, test de mise à jour par-dessus | — | fait |
-| J7 | Finitions | mode sombre/clair (fait, D-J19), notice joueurs texte et PDF (fait), icône, **1re release** | Q-T4 | en cours |
+| J7 | Finitions | mode sombre/clair (fait, D-J19), notice joueurs texte et PDF (fait), **1re release** (faite : v0.1.0), icône (à venir) | Q-T4 | en cours (icône seulement) |
 
 ## Appli MJ
 
@@ -192,3 +192,10 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Photo, Carnet et saisie des caracs testés sur téléphone par le MJ : OK (`921b023`).
 - **Notice PDF** `docs/Notice-Vivre-Card.pdf` (12 pages A4 : couverture + 11 parties), générée par Edge sans interface depuis `docs/notice/notice.html` ; 23 captures 375 × 812 en thème clair (une en sombre) dans `docs/notice/img/`, prises dans le navigateur intégré sur un personnage d'exemple (« Osmo le Chanceux », compagnon Karoo, photos dessinées). Le stockage du navigateur a été mis de côté puis remis à l'identique (fiche « ozmo » du MJ). Liens depuis le README, la notice texte et le texte des Releases ; procédure de régénération dans RELEASE.md.
 - Icône : le dessin arrivera plus tard (plusieurs semaines possibles).
+
+### Session 9 (fin) · 2026-10-12 (première release)
+- **Vivre Card v0.1.0 publiée** : https://github.com/Jean-CharlesBoe/One-Piece/releases/tag/joueur-v0.1.0 (`VivreCard-v0.1.0.apk`, 12 Mo, signé avec la clé officielle ; empreinte SHA-256 notée dans RELEASE.md). Icône Capacitor par défaut en attendant le dessin.
+- Deux échecs avant la publication, sans rien publier : la CI ne savait pas décoder le secret `ANDROID_KEYSTORE_BASE64` (`base64: invalid input`). Correctif dans la CI (ne garder que les caractères base64, utile si le secret finit par \r\n) et secret renvoyé par le MJ avec `gh secret set … --body (…)`, sans `|`. Le tag `joueur-v0.1.0` a été replacé une fois sur le commit corrigé (`3b05c50`), aucune Release n'existant encore.
+- `appId` `fr.onepiecejdr.joueur` et clé de signature désormais **définitifs** (D-T5).
+- À faire par le MJ : sauvegarder ses fiches, désinstaller l'APK de debug (signature différente), installer `VivreCard-v0.1.0.apk`, réimporter la sauvegarde. Ensuite, les versions suivantes s'installeront par-dessus.
+- Suite : icône (Q-T4) dans une prochaine version ; appli MJ (M0, avec D-M10).

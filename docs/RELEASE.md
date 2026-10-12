@@ -71,7 +71,8 @@ keyPassword=...
 
 ## Empreinte de la clé officielle
 
-À renseigner après la première release : `(en attente)`.
+Les APK de release (Vivre Card, et plus tard l'appli MJ) doivent tous porter ce certificat (SHA-256), relevé sur `VivreCard-v0.1.0.apk` le 2026-10-12 :
+`894f3895112ec92857940f786e76b123c8ac11936889fa973b1664319e2a2826`
 
 Vérifier un APK :
 ```bash

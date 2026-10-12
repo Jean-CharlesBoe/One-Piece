@@ -24,7 +24,7 @@ En production, les données vivent uniquement dans la base SQLite native de l'ap
 ### D-T4 · 2026-10-09 · Sauvegarde par fichier via la feuille de partage — *proposée*
 Reprise de D5/D8 de Sans Nom, adaptée (zip avec médias pour le MJ). Voir [ARCHITECTURE.md §4](ARCHITECTURE.md).
 
-### D-T5 · 2026-10-09 · Noms et identifiants Android — *validée (noms), proposée (identifiants)*
+### D-T5 · 2026-10-09 · Noms et identifiants Android — *validée* (identifiant de Vivre Card **définitif** depuis la release v0.1.0 du 2026-10-12)
 - Appli joueur : **« Vivre Card »**. Appli MJ : **« One Piece »**.
 - `appId` : `fr.onepiecejdr.joueur` et `fr.onepiecejdr.mj`, définitifs après la première release. Une seule clé de signature pour les deux apps, sauvegardée hors GitHub.
 
