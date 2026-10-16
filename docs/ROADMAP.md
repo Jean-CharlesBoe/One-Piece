@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **Vivre Card v0.1.0 publiée** (2026-10-12). Reste pour l'appli joueur : l'icône (dessin à venir, Q-T4) dans une version suivante. Ensuite : l'appli MJ (M0).
+Étape en cours : **appli MJ, M0** (code fait le 2026-10-12, premier APK à produire par la CI). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -29,7 +29,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 
 | # | Étape | Contenu | Bloquée par | Statut |
 |---|---|---|---|---|
-| M0 | Socle Android | Capacitor, `appId`, schéma SQLite (migration 1), repository, repli web (jeep-sqlite), CI `mj.yml`, disposition 3 colonnes | — | à faire |
+| M0 | Socle Android | Capacitor, `appId`, schéma SQLite (migration 1), repository, repli web (jeep-sqlite), CI `mj.yml`, disposition 3 colonnes | — | en cours (code fait, premier run CI à faire) |
 | M1 | Vérifications appareil | APK sur le Chromebook, **FTS5 disponible ?**, sélecteur de fichiers, écriture dans `media/` | Q-T3 | à faire |
 | M2 | Fiches | registre des types, lecture (propriétés, Markdown rendu), édition (formulaire + CodeMirror, `[[`), liens et rétroliens, pages enfants, archives, changement de type, alias, avertissement de doublon, fusion, vue Doublons probables | — | à faire |
 | M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique | Q-M1 | à faire |
@@ -199,3 +199,15 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - `appId` `fr.onepiecejdr.joueur` et clé de signature désormais **définitifs** (D-T5).
 - À faire par le MJ : sauvegarder ses fiches, désinstaller l'APK de debug (signature différente), installer `VivreCard-v0.1.0.apk`, réimporter la sauvegarde. Ensuite, les versions suivantes s'installeront par-dessus.
 - Suite : icône (Q-T4) dans une prochaine version ; appli MJ (M0, avec D-M10).
+
+### Session 10 · 2026-10-12 (M0 — socle de l'appli MJ)
+- `apps/mj` : Capacitor 8 (`fr.onepiecejdr.mj`, « One Piece »), projet `apps/mj/android` généré puis aligné sur Vivre Card (`build.gradle` : signature par variables d'environnement ou `keystore.properties`, version depuis le tag `mj-v…` ; `debug.keystore` copié, D-T8) ; manifeste : écran tactile non requis (Chromebook).
+- Modèle : registre des 11 types (identité seulement, les champs viennent en M2), `Entity`, `createEntity`, `normalizeEntity` (lit les colonnes SQL ou le modèle, ne lève jamais).
+- Stockage : migration 1 (MODELE_DONNEES §2), clés étrangères actives, refus d'une base plus récente que l'app ; repository (réglages, compteurs par type, liste, lecture, enregistrement) sur une petite interface SQL commune au plugin natif, à jeep-sqlite (dev web) et à sql.js (tests).
+- **D-M11** (proposée) : sql.js n'a pas FTS5 → l'index `search_index` sort des migrations ; créé à l'ouverture en FTS5, sinon FTS4, sinon aucun ; moteur affiché dans Réglages › À propos.
+- Repli web : jeep-sqlite 2.8.0 embarque le code de sql.js **1.12** ; le wasm de sql.js 1.13+ ne se charge pas (« LinkError … Import #34 »). sql.js fixé à 1.12.0 dans `apps/mj`, wasm servi par le serveur de dev seulement (absent du build). À revoir à chaque mise à jour de jeep-sqlite.
+- Interface (D-M10) : barre latérale (recherche inactive, types avec compteurs, Épinglés et Sessions vides, ⚙, version), liste du type, fiche (en-tête seulement, « M2 »), panneau Liens (sections vides) ; 2 colonnes : liste en volet ; 1 colonne : liste ou fiche, barre latérale et Liens en volets. Création d'une fiche (Ctrl+N, type + titre). Réglages : thème (table `meta`), état de la base. Bouton retour Android : fenêtre / volet ouvert, puis fiche → liste en 1 colonne, puis quitter.
+- CI `.github/workflows/mj.yml` (artefact `onepiece-mj-debug-apk`, tags `mj-vX.Y.Z` → `OnePiece-vX.Y.Z.apk`), `.github/release-notes-mj.md`, scripts `android:mj` / `android:mj:open`. RELEASE.md, ARCHITECTURE, MODELE_DONNEES et DECISIONS à jour.
+- Vérifié : check, 103 tests (13 nouveaux, dont le schéma et le repository sur une vraie base sql.js), build sans wasm, `cap add android` ; navigateur à 1366 × 768 (3 colonnes 230 / 300 / 556 / 280), 1100 × 768 (volet liste) et 800 × 700 (volets ☰ et Liens), création, rechargement (fiche et thème conservés), aucune erreur de l'app dans la console. Fiche de test « Drake » laissée dans la base de dev MJ (port 5184), stockage de Vivre Card non touché.
+- **Non vérifié** : APK (Gradle ne tourne pas sur le poste) → premier run de `mj.yml` au prochain push.
+- Reste pour clore M0 : run CI vert. Ensuite M1 (vérifications sur le Chromebook) attend **Q-T3** ; M2 (fiches) n'est bloquée par aucune question et peut démarrer.

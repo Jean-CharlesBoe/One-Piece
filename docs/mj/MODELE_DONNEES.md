@@ -98,15 +98,26 @@ CREATE TABLE not_duplicates (
   PRIMARY KEY (a_id, b_id)
 );
 
--- Recherche plein texte (contenu externe synchronisé par le repository, pas par triggers)
+```
+
+Recherche plein texte (**hors migrations**, D-M11) : donnée dérivée, créée par le repository à l'ouverture si elle manque, avec le premier moteur accepté par le SQLite de l'appareil, puis remplie depuis `entities`. Le moteur retenu est noté dans `meta.search_engine` (`fts5` | `fts4` | `aucun`) et affiché dans Réglages › À propos.
+
+```sql
+-- FTS5 (attendu sur l'appareil, à vérifier en M1)
 CREATE VIRTUAL TABLE search_index USING fts5(
   entity_id UNINDEXED, title, aliases, props_text, body_text,
   tokenize = 'unicode61 remove_diacritics 2'
 );
+-- FTS4 (repli ; c'est le cas de sql.js, moteur du repli web). Pas d'espace autour des « = » des options.
+CREATE VIRTUAL TABLE search_index USING fts4(
+  entity_id, title, aliases, props_text, body_text,
+  notindexed=entity_id, tokenize=unicode61 "remove_diacritics=2"
+);
 ```
 
 Notes :
-- `search_index` est alimentée par le repository à chaque enregistrement (texte Markdown dépouillé, valeurs de propriétés lisibles, titres des relations). Si FTS5 n'est pas disponible sur l'appareil (vérification étape M1), repli FTS4 ou recherche `LIKE` sur une colonne normalisée (minuscules, sans accents).
+- Migration 1 = toutes les tables ci-dessus (code : `apps/mj/src/lib/storage/schema.ts`), sans `search_index`.
+- `search_index` est alimentée par le repository à chaque enregistrement (M0 : titre, alias et Markdown brut ; à partir de M2 : texte Markdown dépouillé, valeurs de propriétés lisibles, titres des relations). Une fiche archivée en est retirée. Sans moteur plein texte (`aucun`), la recherche se fera par `LIKE` sur une colonne normalisée (minuscules, sans accents) [M3].
 - `PRAGMA foreign_keys = ON` à chaque ouverture.
 - Le journal est indexé dans une seconde table FTS si la recherche dans le journal est retenue **[Q-M5]**.
 

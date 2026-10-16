@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">One Piece</string>
+    <string name="title_activity_main">One Piece</string>
+    <string name="package_name">fr.onepiecejdr.mj</string>
+    <string name="custom_url_scheme">fr.onepiecejdr.mj</string>
+</resources>

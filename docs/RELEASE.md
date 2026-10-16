@@ -8,6 +8,7 @@
 ```bash
 npm install            # une fois
 npm run dev:joueur     # Vivre Card dans le navigateur (http://localhost:5173), stockage navigateur
+npm run dev:mj         # appli MJ dans le navigateur, SQLite web (jeep-sqlite) gardé dans IndexedDB
 npm run check          # vérification des types, tout le monorepo
 npm test               # tests unitaires, tout le monorepo
 ```
@@ -93,6 +94,29 @@ Le workflow [.github/workflows/joueur.yml](../.github/workflows/joueur.yml) :
    ```
 
 Le `versionCode` Android est calculé à partir du tag (`X*10000 + Y*100 + Z`) : chaque tag doit être **supérieur** au précédent.
+
+## Appli MJ « One Piece » (Chromebook)
+
+Même chaîne que Vivre Card, avec ses propres noms :
+
+| | Vivre Card | One Piece (MJ) |
+|---|---|---|
+| Workflow | `joueur.yml` | [.github/workflows/mj.yml](../.github/workflows/mj.yml) |
+| Préparer Android en local | `npm run android:joueur` | `npm run android:mj` puis `npm run android:mj:open` |
+| Artefact de debug | `vivrecard-debug-apk` | `onepiece-mj-debug-apk` |
+| Tag de release | `joueur-vX.Y.Z` | `mj-vX.Y.Z` (= version de `apps/mj/package.json`) |
+| APK publié | `VivreCard-vX.Y.Z.apk` | `OnePiece-vX.Y.Z.apk` |
+| Texte de la Release | `.github/release-notes-joueur.md` | `.github/release-notes-mj.md` |
+
+Même clé de signature (empreinte ci-dessus), même clé de debug versionnée (`apps/mj/android/debug.keystore`, D-T8). L'`appId` `fr.onepiecejdr.mj` devient définitif à la première release `mj-v…` (D-T5).
+
+Installation sur le Chromebook : à préciser à l'étape M1 (Q-T3 : apps Android activées, installation d'un APK hors Play Store).
+
+### Que vérifier sur le Chromebook (M1)
+- L'app s'ouvre en plein écran paysage avec les 3 colonnes ; réduire la fenêtre (demi-écran) → 2 puis 1 colonne.
+- Créer une fiche, **fermer complètement l'app**, la rouvrir : la fiche est toujours là → SQLite fonctionne.
+- Roue dentée ⚙ → « À propos » : noter le moteur de recherche affiché (**FTS5** attendu ; FTS4 ou « aucun index » à signaler, D-M11).
+- Thème Clair / Sombre / Automatique, conservé après redémarrage.
 
 ## Installer sur le téléphone d'un joueur
 

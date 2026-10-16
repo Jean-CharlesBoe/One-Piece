@@ -164,3 +164,8 @@ Cible : écran du Chromebook en plein écran paysage (vérifié en 1366 × 768).
 | < 900 px | 1 colonne : la fiche seule ; barre latérale, liste et panneau Liens en volets |
 
 **Pourquoi** : sur ChromeOS, une app Android peut être redimensionnée ou passer en portrait en mode tablette ; prévoir ces paliers dès M0 coûte peu, les ajouter après coup serait pénible.
+Mise en œuvre (M0, 2026-10-12) : en 2 colonnes, la barre latérale reste à gauche et la liste s'ouvre en volet (bouton « ☰ Liste » ou clic sur un type) ; en 1 colonne, la liste du type choisi occupe l'écran tant qu'aucune fiche n'est ouverte, barre latérale (☰) et Liens en volets.
+
+### D-M11 · 2026-10-12 · Index de recherche hors migrations, moteur choisi à l'ouverture — *proposée*
+La table `search_index` ne fait pas partie de la migration 1. Le repository la crée à l'ouverture si elle manque, avec le premier moteur accepté : **FTS5**, sinon **FTS4**, sinon aucun (recherche `LIKE` en M3), la remplit depuis les fiches et note le moteur dans `meta.search_engine`. Réglages › À propos l'affiche.
+**Pourquoi** : constaté en M0, sql.js (moteur du repli web jeep-sqlite) n'a pas FTS5, et sa présence sur le Chromebook ne sera vérifiée qu'en M1. Une migration 1 avec FTS5 aurait empêché le repli web de s'ouvrir, et peut-être l'appareil. L'index est une donnée dérivée (déjà exclue de la sauvegarde `.opmj`) : le recréer ne perd rien. Si FTS5 n'est pas disponible sur l'appareil, rien d'autre à changer.

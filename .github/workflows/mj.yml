@@ -1,0 +1,107 @@
+name: One Piece (MJ)
+
+on:
+  push:
+    branches: [main]
+    tags: ['mj-v*']
+    paths:
+      - 'apps/mj/**'
+      - 'packages/core/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - 'vitest.config.ts'
+      - '.github/workflows/mj.yml'
+      - '.github/release-notes-mj.md'
+  pull_request:
+    paths:
+      - 'apps/mj/**'
+      - 'packages/core/**'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/mj.yml'
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: npm
+
+      - uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: 21
+          cache: gradle
+
+      - name: Dépendances
+        run: npm ci
+
+      - name: Vérification des types et tests (tout le monorepo)
+        run: |
+          npm run check
+          npm test
+
+      - name: Build web + synchro Capacitor
+        run: |
+          npm run android:mj
+          chmod +x apps/mj/android/gradlew
+
+      - name: Version depuis le tag
+        if: startsWith(github.ref, 'refs/tags/mj-v')
+        run: |
+          VERSION="${GITHUB_REF_NAME#mj-v}"
+          IFS=. read -r MAJ MIN PAT <<< "$VERSION"
+          echo "VERSION_NAME=$VERSION" >> "$GITHUB_ENV"
+          echo "VERSION_CODE=$(( MAJ * 10000 + MIN * 100 + PAT ))" >> "$GITHUB_ENV"
+          APP_VERSION=$(node -p "require('./apps/mj/package.json').version")
+          if [ "$APP_VERSION" != "$VERSION" ]; then
+            echo "::error::Le tag ($VERSION) ne correspond pas à apps/mj/package.json ($APP_VERSION)"; exit 1
+          fi
+
+      - name: APK de debug
+        if: "!startsWith(github.ref, 'refs/tags/mj-v')"
+        working-directory: apps/mj/android
+        run: ./gradlew assembleDebug
+
+      - name: APK de release signé
+        if: startsWith(github.ref, 'refs/tags/mj-v')
+        working-directory: apps/mj/android
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          if [ -z "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "::error::Secret ANDROID_KEYSTORE_BASE64 manquant (voir docs/RELEASE.md)"; exit 1
+          fi
+          # Ne garder que les caractères base64 : un secret envoyé depuis Windows PowerShell peut finir par un retour à la ligne.
+          printf '%s' "$ANDROID_KEYSTORE_BASE64" | tr -cd 'A-Za-z0-9+/=' | base64 -d > "$RUNNER_TEMP/release.jks"
+          export ANDROID_KEYSTORE_FILE="$RUNNER_TEMP/release.jks"
+          ./gradlew assembleRelease
+          cp app/build/outputs/apk/release/app-release.apk "$RUNNER_TEMP/OnePiece-${GITHUB_REF_NAME#mj-}.apk"
+
+      - name: Artefact (APK de debug)
+        if: "!startsWith(github.ref, 'refs/tags/mj-v')"
+        uses: actions/upload-artifact@v7
+        with:
+          name: onepiece-mj-debug-apk
+          path: apps/mj/android/app/build/outputs/apk/debug/app-debug.apk
+
+      - name: Publication de la Release
+        if: startsWith(github.ref, 'refs/tags/mj-v')
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "$GITHUB_REF_NAME" "$RUNNER_TEMP/OnePiece-${GITHUB_REF_NAME#mj-}.apk" \
+            --title "One Piece ${GITHUB_REF_NAME#mj-}" --notes-file .github/release-notes-mj.md --generate-notes

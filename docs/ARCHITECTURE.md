@@ -72,10 +72,11 @@ Médias (images, PDF) : fichiers dans `Directory.Data/media/<id>.<ext>`, référ
 
 ### Développement dans le navigateur
 - Joueur : repli `localStorage` comme Sans Nom.
-- MJ : l'implémentation web de `@capacitor-community/sqlite` (jeep-sqlite / sql.js) pour garder le même SQL, médias en `IndexedDB`. Réservé au développement ; jamais utilisé en production.
+- MJ : l'implémentation web de `@capacitor-community/sqlite` (jeep-sqlite / sql.js) pour garder le même SQL, base gardée dans `IndexedDB` (médias aussi, à partir de M6). Réservé au développement ; jamais utilisé en production. Le moteur `sql-wasm.wasm` est servi par le serveur de dev seulement (`apps/mj/vite.config.ts`) et n'entre pas dans l'APK ; il doit correspondre à la version de sql.js embarquée par jeep-sqlite (sql.js **1.12.0** pour jeep-sqlite 2.8.0, fixé dans `apps/mj/package.json`). sql.js n'a pas FTS5 : l'index de recherche y est en FTS4 (D-M11).
+- Le repository MJ repose sur une petite interface SQL (`apps/mj/src/lib/storage/db.ts`) : plugin natif, jeep-sqlite, et sql.js directement dans les tests Vitest (schéma et repository testés sur une vraie base).
 
 ### Migrations
-Comme Sans Nom : liste `MIGRATIONS` ordonnée, version dans `meta.schema_version`, une migration publiée n'est jamais modifiée.
+Comme Sans Nom : liste `MIGRATIONS` ordonnée, version dans `meta.schema_version`, une migration publiée n'est jamais modifiée. L'appli MJ refuse d'ouvrir une base d'un schéma plus récent qu'elle. Autre particularité côté MJ : l'index plein texte `search_index`, donnée dérivée, est créé hors migrations avec le meilleur moteur disponible (D-M11).
 
 ## 4. Sauvegarde
 
