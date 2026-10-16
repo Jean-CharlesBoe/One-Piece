@@ -1,8 +1,16 @@
-import type { Entity, EntitySummary } from '../model/entity'
+import { toCatalogEntry, type CatalogEntry, type Entity } from '../model/entity'
+import { computeLinks, plainText } from '../model/links'
 import { normalizeEntity } from '../model/normalize'
-import { isEntityType, type EntityType } from '../model/types'
+import { displayValue, relationIds } from '../model/props'
+import { TYPE_DEFS } from '../model/types'
 import type { Db, Row } from './db'
-import { META_LAST_CHANGE, META_SCHEMA_VERSION, META_SEARCH_ENGINE, type MjRepository } from './repository'
+import {
+  META_LAST_CHANGE,
+  META_SCHEMA_VERSION,
+  META_SEARCH_ENGINE,
+  type Backlink,
+  type MjRepository,
+} from './repository'
 import { MIGRATIONS, SEARCH_INDEX_DDL, type SearchEngine } from './schema'
 
 async function schemaVersion(db: Db): Promise<number> {
@@ -31,14 +39,28 @@ async function tableExists(db: Db, name: string): Promise<boolean> {
   return (await db.query(`SELECT name FROM sqlite_master WHERE name = ?`, [name])).length > 0
 }
 
+/** Valeurs lisibles des propriétés, pour la recherche : relations par le titre des fiches liées. */
+async function propsText(db: Db, e: Entity): Promise<string> {
+  const ids = TYPE_DEFS[e.type].fields.flatMap(f => (f.field.kind === 'relation' ? relationIds(e.props[f.key]) : []))
+  const titles = new Map<string, string>()
+  if (ids.length) {
+    const r = await db.query(`SELECT id, title FROM entities WHERE id IN (${ids.map(() => '?').join(', ')})`, ids)
+    for (const row of r) titles.set(String(row.id), String(row.title))
+  }
+  return TYPE_DEFS[e.type].fields
+    .filter(f => f.field.kind !== 'gameBlock' && f.field.kind !== 'asset')
+    .map(f => displayValue(f, e.props[f.key], id => titles.get(id) ?? ''))
+    .filter(Boolean)
+    .join(' · ')
+}
+
 async function indexEntity(db: Db, engine: SearchEngine, e: Entity): Promise<void> {
   if (engine === 'aucun') return
   await db.run(`DELETE FROM search_index WHERE entity_id = ?`, [e.id])
   if (e.archived) return
-  // M2 rendra lisibles les propriétés (relations par leur titre) et dépouillera le Markdown.
   await db.run(
     `INSERT INTO search_index (entity_id, title, aliases, props_text, body_text) VALUES (?, ?, ?, ?, ?)`,
-    [e.id, e.title, e.aliases.join(' '), '', e.bodyMd],
+    [e.id, e.title, e.aliases.join(' · '), await propsText(db, e), plainText(e.bodyMd)],
   )
 }
 
@@ -93,6 +115,18 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
     ])
   }
 
+  /** Table links dérivée de la fiche : relations et mentions vers des fiches existantes. */
+  async function writeLinks(e: Entity) {
+    await db.run(`DELETE FROM links WHERE from_kind = 'entity' AND from_id = ?`, [e.id])
+    for (const l of computeLinks(e)) {
+      await db.run(
+        `INSERT INTO links (from_kind, from_id, to_id, kind)
+           SELECT 'entity', ?, ?, ? WHERE EXISTS (SELECT 1 FROM entities WHERE id = ?)`,
+        [e.id, l.toId, l.kind, l.toId],
+      )
+    }
+  }
+
   return {
     searchEngine: engine,
     async getMeta(key) {
@@ -103,22 +137,12 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
       await setMeta(key, value)
       await db.persist()
     },
-    async countByType() {
-      const r = await db.query(`SELECT type, COUNT(*) AS n FROM entities WHERE archived = 0 GROUP BY type`)
-      const counts: Partial<Record<EntityType, number>> = {}
-      for (const row of r) if (isEntityType(row.type)) counts[row.type] = Number(row.n)
-      return counts
-    },
-    async listEntities(type): Promise<EntitySummary[]> {
+    async listCatalog(): Promise<CatalogEntry[]> {
       const r = await db.query(
-        `SELECT id, type, title, pinned, updated_at FROM entities
-          WHERE type = ? AND archived = 0 ORDER BY title COLLATE NOCASE`,
-        [type],
+        `SELECT id, type, title, aliases, parent_id, pinned, archived, updated_at FROM entities
+          ORDER BY title COLLATE NOCASE`,
       )
-      return r.map(row => {
-        const e = parse(row)
-        return { id: e.id, type: e.type, title: e.title, pinned: e.pinned, updatedAt: e.updatedAt }
-      })
+      return r.map(row => toCatalogEntry(parse(row)))
     },
     async getEntity(id) {
       const r = await db.query(`SELECT * FROM entities WHERE id = ?`, [id])
@@ -153,9 +177,27 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
           e.updatedAt,
         ],
       )
+      await writeLinks(e)
       await indexEntity(db, engine, e)
       await setMeta(META_LAST_CHANGE, new Date().toISOString())
       await db.persist()
     },
+    async backlinks(id): Promise<Backlink[]> {
+      const r = await db.query(
+        `SELECT from_id, kind FROM links WHERE to_id = ? AND from_kind = 'entity' ORDER BY kind`,
+        [id],
+      )
+      return r.map(row => ({ fromId: String(row.from_id), kind: String(row.kind) }))
+    },
+    async deleteEntity(id) {
+      // Liens entrants, paires « pas des doublons » : supprimés par les clés étrangères (ON DELETE CASCADE) ;
+      // pages enfants : rattachées à la racine (ON DELETE SET NULL).
+      await db.run(`DELETE FROM links WHERE from_kind = 'entity' AND from_id = ?`, [id])
+      if (engine !== 'aucun') await db.run(`DELETE FROM search_index WHERE entity_id = ?`, [id])
+      await db.run(`DELETE FROM entities WHERE id = ?`, [id])
+      await setMeta(META_LAST_CHANGE, new Date().toISOString())
+      await db.persist()
+    },
   }
+
 }

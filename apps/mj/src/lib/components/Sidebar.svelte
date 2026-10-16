@@ -1,19 +1,27 @@
 <script lang="ts">
-  import { ENTITY_TYPES, TYPE_DEFS, type EntityType } from '../model/types'
+  import { catalog } from '../catalog.svelte'
+  import { ENTITY_TYPES, TYPE_DEFS } from '../model/types'
+  import type { ListMode } from './EntityList.svelte'
 
-  // Barre latérale (cahier MJ §3) : recherche, types de fiches, épinglés, sessions, réglages.
-  // M0 : recherche (M3), épinglés (M3) et sessions (M8) sont des emplacements vides.
+  // Barre latérale (cahier MJ §3) : recherche, types de fiches, archives, épinglés, sessions, réglages.
+  // Recherche (M3) et sessions (M8) sont encore des emplacements vides.
   let {
-    counts,
     selected,
     onSelect,
+    onOpen,
     onSettings,
   }: {
-    counts: Partial<Record<EntityType, number>>
-    selected: EntityType
-    onSelect: (type: EntityType) => void
+    selected: ListMode
+    onSelect: (mode: ListMode) => void
+    onOpen: (id: string) => void
     onSettings: () => void
   } = $props()
+
+  const counts = $derived(
+    catalog.active.reduce<Record<string, number>>((acc, e) => ((acc[e.type] = (acc[e.type] ?? 0) + 1), acc), {}),
+  )
+  const archived = $derived(catalog.entries.filter(e => e.archived).length)
+  const pinned = $derived(catalog.active.filter(e => e.pinned))
 </script>
 
 <nav class="sidebar" aria-label="Navigation">
@@ -37,12 +45,34 @@
             </button>
           </li>
         {/each}
+        {#if archived}
+          <li>
+            <button class="type" class:on={selected === 'archives'} aria-current={selected === 'archives'} onclick={() => onSelect('archives')}>
+              <span class="icon" aria-hidden="true">🗃</span>
+              <span class="name">Archives</span>
+              <span class="count">{archived}</span>
+            </button>
+          </li>
+        {/if}
       </ul>
     </section>
 
     <section aria-labelledby="epingles-titre">
       <h2 class="label" id="epingles-titre">Épinglés</h2>
-      <p class="empty">Aucune fiche épinglée.</p>
+      {#if pinned.length}
+        <ul>
+          {#each pinned as e (e.id)}
+            <li>
+              <button class="type" onclick={() => onOpen(e.id)}>
+                <span class="icon" aria-hidden="true">{TYPE_DEFS[e.type].icon}</span>
+                <span class="name">{e.title}</span>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p class="empty">Aucune fiche épinglée (📌 sur une fiche).</p>
+      {/if}
     </section>
 
     <section aria-labelledby="sessions-titre">
@@ -124,6 +154,9 @@
   }
   .name {
     flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   .count {
     color: var(--muted);

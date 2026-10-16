@@ -22,13 +22,24 @@ export interface Entity {
   updatedAt: string
 }
 
-/** Ligne de liste : de quoi afficher une fiche sans la relire en entier. */
-export interface EntitySummary {
+/**
+ * Entrée du catalogue : de quoi lister, nommer et relier une fiche sans la relire en entier
+ * (listes, barre latérale, titres des liens, autocomplétion `[[`, doublons, archives, pages enfants).
+ */
+export interface CatalogEntry {
   id: string
   type: EntityType
   title: string
+  aliases: string[]
+  parentId: string | null
   pinned: boolean
+  archived: boolean
   updatedAt: string
+}
+
+export function toCatalogEntry(e: Entity): CatalogEntry {
+  const { id, type, title, aliases, parentId, pinned, archived, updatedAt } = e
+  return { id, type, title, aliases: [...aliases], parentId, pinned, archived, updatedAt }
 }
 
 export function createEntity(type: EntityType, title: string): Entity {

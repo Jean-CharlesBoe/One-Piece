@@ -1,29 +1,39 @@
-<script lang="ts">
-  import type { EntitySummary } from '../model/entity'
-  import { TYPE_DEFS, type EntityType } from '../model/types'
+<script lang="ts" module>
+  import type { EntityType } from '../model/types'
 
-  // Liste des fiches d'un type (cahier MJ §4.5). Filtres et tri arrivent en M3.
+  /** Contenu de la colonne liste : un type de fiches, ou les archives. */
+  export type ListMode = EntityType | 'archives'
+</script>
+
+<script lang="ts">
+  import { catalog } from '../catalog.svelte'
+  import { TYPE_DEFS } from '../model/types'
+
+  // Liste des fiches d'un type, ou des fiches archivées (cahier MJ §4.3, §4.5). Filtres et tri : M3.
   let {
-    type,
-    items,
+    mode,
     selectedId,
     onOpen,
     onCreate,
   }: {
-    type: EntityType
-    items: EntitySummary[]
+    mode: ListMode
     selectedId: string | null
     onOpen: (id: string) => void
     onCreate: () => void
   } = $props()
 
-  const def = $derived(TYPE_DEFS[type])
+  const items = $derived(
+    mode === 'archives' ? catalog.entries.filter(e => e.archived) : catalog.active.filter(e => e.type === mode),
+  )
+  const title = $derived(mode === 'archives' ? 'Archives' : TYPE_DEFS[mode].plural)
 </script>
 
 <section class="list" aria-labelledby="liste-titre">
   <header>
-    <h2 id="liste-titre">{def.plural} <span class="count">{items.length}</span></h2>
-    <button class="primary" onclick={onCreate} title="Nouvelle fiche (Ctrl+N)">+ Nouvelle</button>
+    <h2 id="liste-titre">{title} <span class="count">{items.length}</span></h2>
+    {#if mode !== 'archives'}
+      <button class="primary" onclick={onCreate} title="Nouvelle fiche (Ctrl+N)">+ Nouvelle</button>
+    {/if}
   </header>
 
   {#if items.length}
@@ -31,14 +41,17 @@
       {#each items as e (e.id)}
         <li>
           <button class:on={e.id === selectedId} aria-current={e.id === selectedId} onclick={() => onOpen(e.id)}>
-            <span aria-hidden="true">{def.icon}</span>
+            <span aria-hidden="true">{TYPE_DEFS[e.type].icon}</span>
             <span class="title">{e.title}</span>
+            {#if e.pinned}<span class="pin" title="Épinglée">📌</span>{/if}
           </button>
         </li>
       {/each}
     </ul>
   {:else}
-    <p class="empty">Aucune fiche de ce type pour l'instant.</p>
+    <p class="empty">
+      {mode === 'archives' ? 'Aucune fiche archivée.' : "Aucune fiche de ce type pour l'instant."}
+    </p>
   {/if}
 </section>
 
@@ -54,6 +67,7 @@
     align-items: center;
     justify-content: space-between;
     gap: 8px;
+    min-height: 61px;
     padding: 12px;
     border-bottom: 1px solid var(--line);
   }
@@ -98,9 +112,13 @@
     font-weight: 600;
   }
   .title {
+    flex: 1;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+  }
+  .pin {
+    font-size: 0.8rem;
   }
   .empty {
     margin: 16px 12px;

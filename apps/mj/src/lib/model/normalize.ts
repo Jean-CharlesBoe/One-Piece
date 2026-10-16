@@ -1,5 +1,6 @@
 import { LIMITS, read } from '@onepiece/core'
 import type { Entity } from './entity'
+import { normalizeProps } from './props'
 import { isEntityType, TYPE_DEFS } from './types'
 
 // Toute fiche lue (base, sauvegarde .opmj, import Notion) passe par ici : champs manquants complétés,
@@ -49,7 +50,7 @@ export function normalizeEntity(raw: unknown): { entity: Entity; warnings: strin
       aliases: strings(r.aliases),
       parentId: nullableStr(pick('parentId', 'parent_id')),
       sortOrder: read.num(pick('sortOrder', 'sort_order'), 0),
-      props: read.obj(rawProps),
+      props: normalizeProps(type as Entity['type'], rawProps, w, `« ${title} » : `),
       bodyMd: read.str(pick('bodyMd', 'body_md'), LIMITS.textChapter),
       tags: strings(r.tags),
       coverAsset: nullableStr(pick('coverAsset', 'cover_asset')),

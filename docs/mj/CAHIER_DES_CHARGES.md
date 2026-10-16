@@ -38,7 +38,8 @@ Deux usages :
 ```
 - **Largeur de fenêtre** (D-M10) : ≥ 1280 px → 3 colonnes ci-dessus ; 900 à 1279 px → 2 colonnes, la liste se replie (ouverte à la demande) ; < 900 px → la fiche seule, barre latérale, liste et panneau Liens en volets. Référence de vérification : 1366 × 768.
 - La liste se masque quand on navigue de fiche en fiche (mode deux colonnes) ; historique **Précédent / Suivant** (Alt+← / Alt+→ et bouton retour Android).
-- Onglets de fiches facultatifs **[Q-M1]** : garder plusieurs fiches ouvertes en session.
+- **Onglets de fiches** (Q-M1, D-M14) : un clic sur un lien ou une ligne de liste **remplace** la fiche affichée ; on ouvre un **nouvel onglet** à la demande (Ctrl + clic ou clic molette à la souris, appui long → « Ouvrir dans un nouvel onglet » au doigt, bouton de l'en-tête de la fiche). Barre d'onglets au-dessus de la fiche, onglets d'au moins 40 px, ✕ toujours visible ; Ctrl+W ferme l'onglet. 8 onglets au plus (le plus ancien se ferme), rouverts au démarrage ; chaque onglet a son historique Précédent / Suivant. En une colonne, les onglets se replient en un menu « n fiches ouvertes ▾ ».
+- **Souris et doigt** (Q-M1) : le Chromebook s'utilise des deux façons. Cibles d'au moins 40 px, aucune action accessible seulement au survol, appui long = équivalent du clic droit.
 
 ## 4. Base de connaissances
 
@@ -85,7 +86,7 @@ Facultatif sur un Personnage (bouton « Ajouter un bloc de jeu ») :
 Les modifications de ressources ou de bonus pendant une session créent automatiquement une entrée de journal (§5.2).
 
 ### 4.5 Navigation et recherche
-- **Recherche globale** (Ctrl+K ou « / ») : titres, alias, propriétés et texte intégral, résultats groupés par type, extrait surligné, ouverture au clavier. Insensible aux accents et à la casse.
+- **Recherche globale** (Ctrl+K ou « / ») : titres, alias, propriétés et texte intégral, résultats groupés par type, extrait surligné, ouverture au clavier. Insensible aux accents et à la casse. Sous les fiches, un groupe **« Journal »** : entrées de journal contenant les mots cherchés (« Session 4 · 21:17 — … »), 5 au plus avec « Voir tout » ; un clic ouvre le journal de la session sur l'entrée (Q-M5, D-M15).
 - **Listes par type** avec filtres sur les propriétés (ex. Personnages : rôle, état, faction, alignement ; Lieux : mer) et tri (titre, modification).
 - **Épinglés** : fiches favorites dans la barre latérale.
 - **Récents** : 20 dernières fiches ouvertes.
@@ -104,7 +105,7 @@ Réponse directe à l'éparpillement de Notion :
 ## 5. Sessions de jeu
 
 ### 5.1 Campagnes et sessions
-- **Campagne** : titre, description. **[Q-M2 : une seule campagne ?]**
+- **Campagne** : une seule (un seul groupe de joueurs, Q-M2, D-M13). Pas d'écran de campagnes : les sessions sont numérotées à la suite.
 - **Session** : numéro, titre, date réelle, scénario →, statut (Prévue / En cours / Terminée), **préparation** (Markdown), **résumé** (Markdown), PNJ épinglés.
 - Liste des sessions dans la barre latérale ; « Démarrer la session » passe en écran Session en cours.
 
@@ -122,9 +123,9 @@ Réponse directe à l'éparpillement de Notion :
 - **Saisie rapide** en bas du journal : texte libre avec `[[` ; Entrée = nouvelle entrée horodatée. Type facultatif via préfixe ou bouton : Événement (défaut), Combat, Découverte, XP, **Haki**, Note MJ.
 - **Entrée Haki** (D-M9) : PJ concerné (fiche de lore), type (Observation / Armement / Rois), résultat du D100. L'app affiche l'effet de la table (§7 des règles) et indique si c'est un « meilleur résultat ». Sur la fiche du PJ, un petit récapitulatif lit le journal : « Observation : 3 meilleurs résultats ; Rois : résultat 1–5 obtenu (session 4) ». Ce n'est pas une fiche technique du PJ (D-T0) : seulement le relevé des jets du MJ. Quand un Haki est maîtrisé, le MJ le dit au joueur, qui ajoute la compétence sur sa Vivre Card.
 - **Fiches de la session** : PNJ et lieux du scénario pré-épinglés + ajout à la volée depuis la recherche ; bloc de jeu modifiable en direct ; zone « notes rapides » par fiche.
-- Chaque changement de ressource, de bonus, d'état (ex. PNJ → Mort) d'une fiche épinglée **ajoute une entrée automatique** (regroupée si plusieurs changements en moins de 10 s sur la même ressource). **[Q-M3]**
+- Chaque changement de ressource, de bonus, d'état (ex. PNJ → Mort) d'une fiche épinglée **ajoute une entrée automatique** (regroupée si plusieurs changements en moins de 10 s sur la même ressource) : « 21:17 Drake : Vitalité 60 → 40 », « 21:40 Drake : mort ». Ces lignes sont grisées, masquables par un filtre et supprimables une à une (Q-M3, D-M15).
 - Recherche globale accessible sans quitter l'écran (ouverture dans un panneau latéral).
-- « Terminer la session » : propose de rédiger le résumé (pré-rempli avec la liste des entrées) ; option **« Remettre les PNJ à leur état de début de session »** ou conserver l'état **[Q-M3]**.
+- « Terminer la session » : propose de rédiger le résumé (pré-rempli avec la liste des entrées). L'état des PNJ **reste** tel qu'à la fin de la session (Q-M3, D-M13) ; un bouton **« Remettre à l'état de début de session »** (par PNJ ou pour tous) reste disponible ensuite, à partir de l'instantané pris au démarrage.
 
 ### 5.3 Chronologie des fiches
 Toute entrée de journal qui mentionne une fiche (lien `[[ ]]` ou entrée automatique) apparaît dans la **Chronologie** de cette fiche, avec le numéro de session. C'est ainsi que « les événements notés en session » enrichissent la base de connaissances sans recopie.
@@ -134,7 +135,8 @@ Toute entrée de journal qui mentionne une fiche (lien `[[ ]]` ou entrée automa
 - **Sauvegarder** : archive `.opmj` (base complète + médias) envoyée par la feuille de partage ou enregistrée dans les fichiers du Chromebook. Date mémorisée ; rappel rouge si modifications et ≥ 7 jours (comme Sans Nom).
 - **Restaurer** : remplace toute la base après confirmation ; refuse un fichier d'une version plus récente.
 - **Import Notion** : une seule fois, via un fichier `.opmj` produit par le script (voir [IMPORT_NOTION.md](IMPORT_NOTION.md)) ; écran d'accueil vide = bouton « Restaurer une sauvegarde ou un import Notion ».
-- Export d'une fiche en Markdown (copier / partager) **[Q-M4]**.
+- **Exports** (Q-M4, D-M16) : une fiche en Markdown (copier / partager) ou en **PDF** mis en forme, prêt à imprimer ; un **document stocké** (PDF, image) ressorti tel quel par la feuille de partage ou dans les fichiers du Chromebook, pour l'imprimer ou l'envoyer.
+- Volume des médias (Q-M6) : probablement plus de 25 Mo (nombreux PDF de personnages, images de fruits) : le backup Android automatique ne couvre pas tout, la sauvegarde `.opmj` est indispensable.
 
 ## 7. Raccourcis clavier
 

@@ -86,7 +86,7 @@ Comme Sans Nom : liste `MIGRATIONS` ordonnée, version dans `meta.schema_version
 | Envoi | feuille de partage Android (Drive, mail, WhatsApp) | feuille de partage, ou enregistrement dans « Mes fichiers » du Chromebook |
 | Rappel | rouge à l'accueil si modifications et ≥ 7 jours | idem, sur l'accueil MJ |
 | Import | par perso : Remplacer / Garder les deux / Ignorer | restauration complète (remplace tout, après confirmation) |
-| Backup Android | `allowBackup` actif | `allowBackup` actif (attention : médias volumineux, voir Q-M6) |
+| Backup Android | `allowBackup` actif | `allowBackup` actif, mais médias probablement > 25 Mo (Q-M6) : la sauvegarde `.opmj` est indispensable |
 
 L'import Notion produit **un fichier `.opmj`** que l'appli MJ restaure : un seul chemin d'entrée des données à tester (D-M5).
 

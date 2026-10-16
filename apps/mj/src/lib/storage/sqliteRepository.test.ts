@@ -60,7 +60,7 @@ describe('base MJ', () => {
     const repo = await createSqliteRepository(db)
     await repo.saveEntity(createEntity('lieu', 'Île du Sud'))
     const again = await createSqliteRepository(db)
-    expect(await again.listEntities('lieu')).toHaveLength(1)
+    expect(await again.listCatalog()).toHaveLength(1)
   })
 
   it('refuse une base plus récente que l’app', async () => {
@@ -99,7 +99,7 @@ describe('base MJ', () => {
     expect(await db.query(`SELECT entity_id FROM search_index WHERE search_index MATCH 'drake'`)).toHaveLength(1)
   })
 
-  it('fiches : aller-retour, liste par type, compteurs, archives exclues', async () => {
+  it('fiches : aller-retour, catalogue trié par titre, archivées signalées', async () => {
     const repo = await createSqliteRepository(db)
     const drake = createEntity('personnage', 'Drake')
     drake.aliases = ['Capitaine Drake']
@@ -110,16 +110,64 @@ describe('base MJ', () => {
     const vieux = createEntity('personnage', 'Oublié')
     vieux.archived = true
     await repo.saveEntity(vieux)
-    await repo.saveEntity(createEntity('lieu', 'Loguetown'))
 
     expect(await repo.getEntity(drake.id)).toEqual(drake)
-    expect((await repo.listEntities('personnage')).map(e => e.title)).toEqual(['alvida', 'Drake'])
-    expect(await repo.countByType()).toEqual({ personnage: 2, lieu: 1 })
     expect(await repo.getEntity('inconnue')).toBeNull()
+    const cat = await repo.listCatalog()
+    expect(cat.map(e => e.title)).toEqual(['alvida', 'Drake', 'Oublié'])
+    expect(cat[1]).toMatchObject({ aliases: ['Capitaine Drake'], pinned: true, archived: false })
+    expect(cat[2].archived).toBe(true)
 
     drake.title = 'Drake le Rouge'
     await repo.saveEntity(drake)
     expect((await repo.getEntity(drake.id))?.title).toBe('Drake le Rouge')
+  })
+
+  it('liens : relations et mentions vers des fiches existantes, recalculés à chaque enregistrement', async () => {
+    const repo = await createSqliteRepository(db)
+    const marine = createEntity('faction', 'Marine')
+    const ile = createEntity('lieu', 'Loguetown')
+    await repo.saveEntity(marine)
+    await repo.saveEntity(ile)
+    const smoker = createEntity('personnage', 'Smoker')
+    smoker.props = { factions: [marine.id, 'disparue'] }
+    smoker.bodyMd = `Chasseur basé à [[${ile.id}|Loguetown]], cherche [[?|Luffy]].`
+    await repo.saveEntity(smoker)
+
+    expect(await repo.backlinks(marine.id)).toEqual([{ fromId: smoker.id, kind: 'factions' }])
+    expect(await repo.backlinks(ile.id)).toEqual([{ fromId: smoker.id, kind: 'mention' }])
+
+    smoker.bodyMd = 'Plus de mention.'
+    await repo.saveEntity(smoker)
+    expect(await repo.backlinks(ile.id)).toEqual([])
+  })
+
+  it('recherche : propriétés lisibles (relations par leur titre) et texte sans balisage', async () => {
+    const repo = await createSqliteRepository(db)
+    const marine = createEntity('faction', 'Marine')
+    await repo.saveEntity(marine)
+    const smoker = createEntity('personnage', 'Smoker')
+    smoker.props = { factions: [marine.id], etat: 'En vie' }
+    smoker.bodyMd = '## Fumée\n\n**Logia** de la *fumée*.'
+    await repo.saveEntity(smoker)
+    const r = await db.query(`SELECT props_text, body_text FROM search_index WHERE entity_id = ?`, [smoker.id])
+    expect(r).toEqual([{ props_text: 'En vie · Marine', body_text: 'Fumée Logia de la fumée .' }])
+  })
+
+  it('suppression définitive : liens entrants retirés, pages enfants rattachées à la racine', async () => {
+    const repo = await createSqliteRepository(db)
+    const parent = createEntity('scenario', 'Scénario 1')
+    await repo.saveEntity(parent)
+    const enfant = createEntity('note', 'Énigme')
+    enfant.parentId = parent.id
+    enfant.bodyMd = `Voir [[${parent.id}|Scénario 1]]`
+    await repo.saveEntity(enfant)
+    await repo.deleteEntity(parent.id)
+
+    expect(await repo.getEntity(parent.id)).toBeNull()
+    expect((await repo.getEntity(enfant.id))?.parentId).toBeNull()
+    expect(await db.query(`SELECT * FROM links`)).toEqual([])
+    expect(await db.query(`SELECT * FROM search_index WHERE entity_id = ?`, [parent.id])).toEqual([])
   })
 
   it('réglages (meta)', async () => {

@@ -129,13 +129,21 @@ Chaque type déclare ses champs ; l'UI (formulaire, tableau de propriétés, fil
 type FieldKind =
   | { kind: 'text' } | { kind: 'longtext' } | { kind: 'number' }
   | { kind: 'select'; options: string[] } | { kind: 'multiselect'; options: string[] }
-  | { kind: 'relation'; to: EntityType[]; multiple: boolean }
+  | { kind: 'relation'; to: EntityType[]; multiple: boolean; inverse: string }  // inverse : titre du rétrolien
   | { kind: 'gameBlock' }                       // bloc de jeu des PNJ
   | { kind: 'asset'; accept: string[] }
 
 interface FieldDef { key: string; label: string; field: FieldKind; filterable?: boolean; inSubtitle?: boolean }
-interface TypeDef  { type: EntityType; label: string; plural: string; icon: string; fields: FieldDef[]; tree?: boolean }
+interface TypeDef  { type: EntityType; label: string; plural: string; icon: string; fields: FieldDef[] }
 ```
+
+Forme normalisée de `props` (M2, `apps/mj/src/lib/model/props.ts`) : seules les valeurs non vides sont gardées ; relation simple = identifiant, relation multiple = liste d'identifiants ; nombre = nombre (« 30 000 000 » accepté à la saisie) ; une valeur de liste inconnue (import, ancienne liste) est gardée et signalée. Changer de type range les clés inconnues du nouveau type dans `_orphelines`, et les en ressort si l'on revient à un type qui les connaît.
+
+`inverse` donne le titre du rétrolien dans le panneau Liens de la fiche visée : `personnage.factions` → « Membres » sur la faction, `personnage.fruit` → « Détenteur » sur le fruit, `faction.chef` → « Chef de » sur le personnage, `lieu.partieDe` → « Lieux contenus »… Les mentions `[[ ]]` du texte apparaissent sous « Mentionné dans » (sauf si la fiche source figure déjà dans un autre groupe).
+
+« Fait partie de » (lieux) est une relation `partieDe`, distincte des pages enfants (`parent_id`) : la hiérarchie géographique (mer › île › ville) reste une propriété filtrable, et les pages enfants servent aux sous-pages libres (énigmes d'un scénario, textes…) [D-M12].
+
+Champs des autres types (cahier §4.1) : faction (`typeFaction`, `chef` →, `navires`), lieu (`partieDe` →, `mer`, `alignement`, `affilies` →), fruit (`nomJaponais`, `typeFruit`, `eveil`), race (`avantage`, `desavantage`, `vitaliteBase`, `enduranceBase`, `capacites`), classe (`avantages`, `desavantages`), événement (`categorie`, `dateMonde`, `lieux` →, `personnages` →), scénario (`statut`, `pnj` →, `lieux` →), règle (`section`), document (`fichier`, `legende`, `rattacheA` → tous types). La liste à jour est le code.
 
 Extrait :
 

@@ -1,6 +1,5 @@
 import { Capacitor } from '@capacitor/core'
-import type { Entity, EntitySummary } from '../model/entity'
-import type { EntityType } from '../model/types'
+import type { CatalogEntry, Entity } from '../model/entity'
 import type { SearchEngine } from './schema'
 
 /**
@@ -11,12 +10,21 @@ export interface MjRepository {
   readonly searchEngine: SearchEngine
   getMeta(key: string): Promise<string | null>
   setMeta(key: string, value: string): Promise<void>
-  /** Nombre de fiches non archivées par type. */
-  countByType(): Promise<Partial<Record<EntityType, number>>>
-  /** Fiches non archivées d'un type, par titre. */
-  listEntities(type: EntityType): Promise<EntitySummary[]>
+  /** Toutes les fiches (archivées comprises), par titre. */
+  listCatalog(): Promise<CatalogEntry[]>
   getEntity(id: string): Promise<Entity | null>
+  /** Enregistre la fiche et recalcule ses liens sortants et son entrée de recherche. */
   saveEntity(entity: Entity): Promise<void>
+  /** Fiches qui pointent vers celle-ci (relations et mentions). */
+  backlinks(id: string): Promise<Backlink[]>
+  /** Suppression définitive (depuis les archives). */
+  deleteEntity(id: string): Promise<void>
+}
+
+export interface Backlink {
+  fromId: string
+  /** 'mention' ou la clé de la propriété de la fiche source. */
+  kind: string
 }
 
 export const META_SCHEMA_VERSION = 'schema_version'

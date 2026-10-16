@@ -4,15 +4,18 @@
   import { handleBack, isTheme, theme } from '@onepiece/core'
   import Sheet from '@onepiece/core/ui/Sheet.svelte'
   import { onMount } from 'svelte'
+  import { catalog } from './lib/catalog.svelte'
   import Drawer from './lib/components/Drawer.svelte'
-  import EntityList from './lib/components/EntityList.svelte'
+  import EntityList, { type ListMode } from './lib/components/EntityList.svelte'
   import EntityView from './lib/components/EntityView.svelte'
   import LinksPanel from './lib/components/LinksPanel.svelte'
   import NewEntityForm from './lib/components/NewEntityForm.svelte'
   import SettingsPanel from './lib/components/SettingsPanel.svelte'
   import Sidebar from './lib/components/Sidebar.svelte'
-  import { createEntity, type Entity, type EntitySummary } from './lib/model/entity'
+  import { createEntity, toCatalogEntry } from './lib/model/entity'
+  import { resolveMissing } from './lib/model/links'
   import type { EntityType } from './lib/model/types'
+  import { opened } from './lib/opened.svelte'
   import { getRepository, META_THEME } from './lib/storage/repository'
 
   // Disposition selon la largeur de la fenêtre (D-M10) :
@@ -24,10 +27,7 @@
   const computeLayout = (): Layout => (wide.matches ? 'trois' : medium.matches ? 'deux' : 'une')
   let layout = $state<Layout>(computeLayout())
 
-  let type = $state<EntityType>('personnage')
-  let counts = $state<Partial<Record<EntityType, number>>>({})
-  let items = $state<EntitySummary[]>([])
-  let entity = $state<Entity | null>(null)
+  let mode = $state<ListMode>('personnage')
   let error = $state('')
 
   let navOpen = $state(false)
@@ -36,46 +36,92 @@
   let settingsOpen = $state(false)
   let newOpen = $state(false)
 
+  /** Fiche à créer : type proposé, titre prérempli, page parente, lien rouge d'origine à réécrire. */
+  interface Draft {
+    type: EntityType
+    title: string
+    parentId: string | null
+    fromLink: string | null
+  }
+  let draft = $state<Draft>({ type: 'personnage', title: '', parentId: null, fromLink: null })
+
+  const entity = $derived(opened.entity)
+
   function fail(e: unknown) {
     error = e instanceof Error ? e.message : String(e)
     console.error('[onepiece-mj]', e)
   }
 
-  async function refresh() {
-    try {
-      const r = await getRepository()
-      counts = await r.countByType()
-      items = await r.listEntities(type)
-    } catch (e) {
-      fail(e)
-    }
-  }
-
   async function openEntity(id: string) {
     try {
-      entity = await (await getRepository()).getEntity(id)
+      await opened.open(id)
       navOpen = listOpen = false
+      error = ''
     } catch (e) {
       fail(e)
     }
   }
 
-  function selectType(t: EntityType) {
-    type = t
-    void refresh()
+  function selectMode(m: ListMode) {
+    mode = m
     navOpen = false
     if (layout === 'deux') listOpen = true
-    if (layout === 'une') entity = null
+    if (layout === 'une') void opened.close()
   }
 
-  async function create(t: EntityType, title: string) {
+  function newEntity(d: Partial<Draft> = {}) {
+    draft = {
+      type: d.type ?? (mode === 'archives' ? 'note' : mode),
+      title: d.title ?? '',
+      parentId: d.parentId ?? null,
+      fromLink: d.fromLink ?? null,
+    }
+    newOpen = true
+  }
+
+  /** Crée et enregistre une fiche, sans l'ouvrir. */
+  async function insert(type: EntityType, title: string, parentId: string | null = null) {
+    const e = createEntity(type, title)
+    e.parentId = parentId
+    await (await getRepository()).saveEntity(e)
+    catalog.upsert(toCatalogEntry(e))
+    return e
+  }
+
+  async function submitNew(type: EntityType, title: string) {
+    const d = draft
+    newOpen = false
     try {
-      const e = createEntity(t, title)
-      await (await getRepository()).saveEntity(e)
-      newOpen = false
-      type = t
-      await refresh()
+      const e = await insert(type, title, d.parentId)
+      // Lien rouge cliqué dans la fiche ouverte : il pointe désormais vers la nouvelle fiche.
+      if (d.fromLink && opened.entity) {
+        const label = d.fromLink
+        await opened.apply(src => (src.bodyMd = resolveMissing(src.bodyMd, label, e.id)))
+      }
+      if (mode !== 'archives') mode = type
       await openEntity(e.id)
+    } catch (err) {
+      fail(err)
+    }
+  }
+
+  /** Création depuis un champ relation : la fiche est créée, la fiche en cours reste ouverte. */
+  async function createForRelation(type: EntityType, title: string): Promise<string | null> {
+    try {
+      return (await insert(type, title)).id
+    } catch (e) {
+      fail(e)
+      return null
+    }
+  }
+
+  async function deleteOpened() {
+    const id = opened.entity?.id
+    if (!id) return
+    try {
+      await (await getRepository()).deleteEntity(id)
+      catalog.remove(id)
+      await opened.close()
     } catch (e) {
       fail(e)
     }
@@ -88,9 +134,14 @@
   })
 
   function onKey(e: KeyboardEvent) {
-    if (e.ctrlKey && !e.altKey && e.key.toLowerCase() === 'n') {
+    if (!e.ctrlKey || e.altKey) return
+    const k = e.key.toLowerCase()
+    if (k === 'n') {
       e.preventDefault()
-      newOpen = true
+      newEntity()
+    } else if (k === 'e' && entity && !entity.archived) {
+      e.preventDefault()
+      void opened.setEditing(!opened.editing)
     }
   }
 
@@ -98,41 +149,56 @@
     const onResize = () => (layout = computeLayout())
     wide.addEventListener('change', onResize)
     medium.addEventListener('change', onResize)
+    // App en arrière-plan ou fermée : enregistrer sans attendre.
+    const onHide = () => {
+      if (document.visibilityState === 'hidden') void opened.flush()
+    }
+    document.addEventListener('visibilitychange', onHide)
 
-    // Thème enregistré (table meta), automatique par défaut ; puis la liste du type affiché.
+    // Thème enregistré (table meta), automatique par défaut ; puis le catalogue des fiches.
     getRepository()
       .then(async r => {
         const t = await r.getMeta(META_THEME)
         theme.set(isTheme(t) ? t : 'auto')
       })
       .catch(fail)
-    void refresh()
+    catalog.load().catch(fail)
 
-    // Bouton retour Android : fermer la fenêtre ou le volet ouvert, sinon revenir à la liste
-    // (une colonne), sinon quitter. L'historique Précédent / Suivant arrive en M3.
+    // Bouton retour Android : fermer la fenêtre ou le volet ouvert, sinon quitter l'édition, sinon revenir
+    // à la liste (une colonne), sinon quitter. L'historique Précédent / Suivant arrive en M3.
     const handle = Capacitor.isNativePlatform()
       ? CapApp.addListener('backButton', () => {
           if (handleBack()) return
-          if (layout === 'une' && entity) entity = null
-          else CapApp.exitApp()
+          if (opened.editing) void opened.setEditing(false)
+          else if (layout === 'une' && opened.entity) void opened.close()
+          else void opened.flush().then(() => CapApp.exitApp())
         })
       : null
     return () => {
       wide.removeEventListener('change', onResize)
       medium.removeEventListener('change', onResize)
+      document.removeEventListener('visibilitychange', onHide)
       handle?.then(h => h.remove())
     }
   })
+
+  const addChild = () => {
+    if (entity) newEntity({ type: 'note', parentId: entity.id })
+  }
 </script>
 
 <svelte:window onkeydown={onKey} />
 
 {#snippet sidebar()}
-  <Sidebar {counts} selected={type} onSelect={selectType} onSettings={() => (settingsOpen = true)} />
+  <Sidebar selected={mode} onSelect={selectMode} onOpen={openEntity} onSettings={() => (settingsOpen = true)} />
 {/snippet}
 
 {#snippet list()}
-  <EntityList {type} {items} selectedId={entity?.id ?? null} onOpen={openEntity} onCreate={() => (newOpen = true)} />
+  <EntityList {mode} selectedId={entity?.id ?? null} onOpen={openEntity} onCreate={() => newEntity()} />
+{/snippet}
+
+{#snippet links()}
+  <LinksPanel onOpen={openEntity} onAddChild={addChild} />
 {/snippet}
 
 <div class="app {layout}">
@@ -148,7 +214,7 @@
       <div class="bar">
         {#if layout === 'une'}
           <button onclick={() => (navOpen = true)} aria-label="Menu">☰</button>
-          {#if entity}<button onclick={() => (entity = null)}>← Liste</button>{/if}
+          {#if entity}<button onclick={() => opened.close()}>← Liste</button>{/if}
         {:else}
           <button onclick={() => (listOpen = true)}>☰ Liste</button>
         {/if}
@@ -161,22 +227,39 @@
       {#if layout === 'une' && !entity}
         {@render list()}
       {:else}
-        <EntityView {entity} />
+        <EntityView
+          onOpen={openEntity}
+          onCreateFromLink={label => newEntity({ title: label, type: 'note', fromLink: label })}
+          onCreate={createForRelation}
+          onAddChild={addChild}
+          onDelete={deleteOpened}
+        />
       {/if}
     </div>
   </main>
 
   {#if layout !== 'une'}
-    <div class="col links"><LinksPanel {entity} /></div>
+    <div class="col links">{@render links()}</div>
   {/if}
 </div>
 
 <Drawer bind:open={navOpen} label="Navigation">{@render sidebar()}</Drawer>
 <Drawer bind:open={listOpen} label="Liste des fiches">{@render list()}</Drawer>
-<Drawer bind:open={linksOpen} side="right" label="Liens"><LinksPanel {entity} /></Drawer>
+<Drawer bind:open={linksOpen} side="right" label="Liens">{@render links()}</Drawer>
 
 <Sheet bind:open={settingsOpen} title="Réglages"><SettingsPanel /></Sheet>
-<Sheet bind:open={newOpen} title="Nouvelle fiche"><NewEntityForm {type} onCreate={create} /></Sheet>
+<Sheet bind:open={newOpen} title={draft.fromLink ? 'Créer la fiche du lien' : 'Nouvelle fiche'}>
+  <NewEntityForm
+    type={draft.type}
+    title={draft.title}
+    parentTitle={draft.parentId ? catalog.title(draft.parentId) : ''}
+    onCreate={submitNew}
+    onOpen={id => {
+      newOpen = false
+      void openEntity(id)
+    }}
+  />
+</Sheet>
 
 <style>
   .app {

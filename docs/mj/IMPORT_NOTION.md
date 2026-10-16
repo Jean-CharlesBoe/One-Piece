@@ -54,7 +54,7 @@ one-piece.opmj ──(appli MJ : Restaurer)──▶ base SQLite + médias
 ### Personnages
 | Notion | Cible |
 |---|---|
-| Nom | `title` ; la partie entre parenthèses devient un alias (« Osmo (Mérou) » → alias « Osmo », « Mérou ») **[Q-M7]** |
+| Nom | `title` = nom avant la parenthèse ; la forme complète et la parenthèse deviennent des alias (« Osmo (Mérou) » → titre « Osmo », alias « Osmo (Mérou) », « Mérou »). Pas de champ « Joueur » (Q-M7) |
 | Étiquettes `PJ` / `PNJ` | `props.role` |
 | Étiquettes de grade (Amiral en Chef, Amiral, Vice-Amiral, Sous Amiral, Contre Amiral, Capitaine, Schichibukaï) | `props.grade` (orthographe normalisée) |
 | Étiquette `Fiche Perso A Faire` | `props.aFaire = 'Oui'` |

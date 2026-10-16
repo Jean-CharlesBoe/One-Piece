@@ -169,3 +169,28 @@ Mise en œuvre (M0, 2026-10-12) : en 2 colonnes, la barre latérale reste à gau
 ### D-M11 · 2026-10-12 · Index de recherche hors migrations, moteur choisi à l'ouverture — *proposée*
 La table `search_index` ne fait pas partie de la migration 1. Le repository la crée à l'ouverture si elle manque, avec le premier moteur accepté : **FTS5**, sinon **FTS4**, sinon aucun (recherche `LIKE` en M3), la remplit depuis les fiches et note le moteur dans `meta.search_engine`. Réglages › À propos l'affiche.
 **Pourquoi** : constaté en M0, sql.js (moteur du repli web jeep-sqlite) n'a pas FTS5, et sa présence sur le Chromebook ne sera vérifiée qu'en M1. Une migration 1 avec FTS5 aurait empêché le repli web de s'ouvrir, et peut-être l'appareil. L'index est une donnée dérivée (déjà exclue de la sauvegarde `.opmj`) : le recréer ne perd rien. Si FTS5 n'est pas disponible sur l'appareil, rien d'autre à changer.
+
+### D-M12 · 2026-10-16 · Fiches : choix de mise en œuvre de M2 — *proposée*
+- **« Fait partie de » des lieux = relation `partieDe`**, distincte des pages enfants (`parent_id`). La hiérarchie géographique reste une propriété (filtre, rétrolien « Lieux contenus ») ; les pages enfants servent aux sous-pages libres (énigmes, textes d'un scénario). Une page enfant est créée en Note par défaut (type modifiable).
+- **Rétroliens nommés** : chaque relation déclare le titre de son inverse (« Membres », « Détenteur », « Chef de »…), affiché dans le panneau Liens de la fiche visée.
+- **Doublons à la création** : comparaison exacte à la casse et aux accents près, sur les titres et les alias ; le MJ peut ouvrir la fiche existante ou créer quand même. « Ajouter comme alias » et la détection approchée arrivent avec la vue « Doublons probables » (M2c) : avec une comparaison exacte, le nom saisi est déjà un nom de la fiche trouvée.
+- **Catalogue en mémoire** : titres, alias, types, épingles, archives et parents de toutes les fiches sont chargés au démarrage et tenus à jour après chaque enregistrement ; listes, sélecteurs, autocomplétion `[[` et doublons s'en servent sans requête.
+- **Rendu Markdown** par marked + DOMPurify, liens `[[ ]]` en extension ; liens externes ouverts hors de l'app.
+**Pourquoi** : garder une seule hiérarchie « libre » (pages enfants) sans perdre la géographie, rendre lisibles les liens inverses sans les stocker, et une app réactive sur le Chromebook avec quelques milliers de fiches au plus.
+
+### D-M13 · 2026-10-16 · Une seule campagne, état des PNJ conservé après la session — *validée*
+Réponses du MJ à Q-M2 et Q-M3 : un seul groupe de joueurs, donc une seule campagne (la table `campaigns` garde une ligne unique, créée d'office ; pas d'écran de campagnes). L'état des blocs de jeu modifié en session reste sur les fiches ; l'instantané pris au démarrage de la session (`sessions.snapshot`) permet un bouton « Remettre à l'état de début de session », par PNJ ou pour tous.
+**Pourquoi** : les blessures et les morts font partie de l'histoire ; la remise à zéro couvre les cas où un PNJ doit revenir intact (combat d'entraînement, erreur de saisie).
+
+### D-M14 · 2026-10-16 · Onglets légers, utilisables à la souris et au doigt — *validée*
+Réponse du MJ à Q-M1 (proposition validée) : un clic remplace la fiche affichée ; nouvel onglet à la demande (Ctrl + clic, clic molette, appui long → menu, bouton de la fiche) ; barre d'onglets au-dessus de la fiche (onglets ≥ 40 px, ✕ toujours visible, Ctrl+W) ; 8 onglets au plus, rouverts au démarrage ; historique Précédent / Suivant par onglet ; menu « n fiches ouvertes ▾ » en une colonne. Principe pour toute l'app : cibles d'au moins 40 px, rien d'accessible seulement au survol, appui long = clic droit.
+**Pourquoi** : le Chromebook s'utilise au doigt comme à la souris ; ouvrir un onglet à chaque clic multiplierait les onglets, surtout au doigt. Mise en œuvre avec la navigation (M3).
+
+### D-M15 · 2026-10-16 · Journal automatique et recherche dans le journal — *validée*
+Réponses du MJ à Q-M3 (suite) et Q-M5 (propositions validées) :
+- en session, chaque changement du bloc de jeu d'un PNJ ajoute une entrée automatique lisible (« Drake : Vitalité 60 → 40 »), regroupée si plusieurs changements de la même valeur ont lieu en moins de 10 s, grisée, masquable par un filtre, supprimable ; elle apparaît dans la chronologie de la fiche ;
+- la recherche globale montre, sous les fiches, un groupe « Journal » (5 entrées, « Voir tout ») ; un clic ouvre le journal de la session sur l'entrée. Seconde table plein texte pour le journal, créée comme `search_index` (D-M11).
+**Pourquoi** : garder la trace de ce qui est arrivé aux PNJ sans saisie, et retrouver ce qui n'a pas été relié par `[[ ]]` (objet, phrase, promesse).
+
+### D-M16 · 2026-10-16 · Exports : fiche en Markdown ou PDF, documents stockés — *validée*
+Réponse du MJ à Q-M4 : en plus de l'export Markdown d'une fiche, exporter une **fiche en PDF** mis en forme (prêt à imprimer) et ressortir un **document stocké** (PDF, image) par la feuille de partage ou dans les fichiers du Chromebook. Pas d'import de fichier texte en fiche. Technique du PDF de fiche à choisir à l'étape M9 (impression du système ou génération dans l'app).

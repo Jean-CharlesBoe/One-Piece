@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M0** (code fait le 2026-10-12, premier APK à produire par la CI). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)**, découpée en M2a (fait le 2026-10-16), M2b et M2c. M0 close (CI verte). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -29,16 +29,18 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 
 | # | Étape | Contenu | Bloquée par | Statut |
 |---|---|---|---|---|
-| M0 | Socle Android | Capacitor, `appId`, schéma SQLite (migration 1), repository, repli web (jeep-sqlite), CI `mj.yml`, disposition 3 colonnes | — | en cours (code fait, premier run CI à faire) |
+| M0 | Socle Android | Capacitor, `appId`, schéma SQLite (migration 1), repository, repli web (jeep-sqlite), CI `mj.yml`, disposition 3 colonnes | — | fait (test sur appareil : M1) |
 | M1 | Vérifications appareil | APK sur le Chromebook, **FTS5 disponible ?**, sélecteur de fichiers, écriture dans `media/` | Q-T3 | à faire |
-| M2 | Fiches | registre des types, lecture (propriétés, Markdown rendu), édition (formulaire + CodeMirror, `[[`), liens et rétroliens, pages enfants, archives, changement de type, alias, avertissement de doublon, fusion, vue Doublons probables | — | à faire |
-| M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique | Q-M1 | à faire |
-| M4 | Sauvegarde `.opmj` | export zip + médias, restauration, rappel | Q-M6 | à faire |
-| M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | Q-M7 | à faire |
+| M2a | Fiches (cœur) | registre des types, lecture (propriétés, Markdown rendu), édition (formulaire + CodeMirror, `[[`), liens et rétroliens, liens rouges, pages enfants, épinglés, archives, changement de type, alias, avertissement de doublon | — | fait (navigateur) |
+| M2b | Fiches (suite) | renommage qui met à jour les `[[liens]]` (avec confirmation), « Déplacer vers… », « Annuler la dernière modification » | — | à faire |
+| M2c | Un nom par chose | fusion de deux fiches, vue « Doublons probables » (détection approchée), « Ajouter comme alias » | — | à faire |
+| M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique, onglets (D-M14) | — | à faire |
+| M4 | Sauvegarde `.opmj` | export zip + médias, restauration, rappel | — | à faire |
+| M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | — | à faire |
 | M6 | Documents | import image/PDF, visionneuse | — | à faire |
 | M7 | Bloc de jeu PNJ | StatGrid, ressources, techniques, Haki, catégorie d'adversaire | — | à faire |
-| M8 | Sessions | campagnes, sessions, écran Session en cours, journal, entrées automatiques, chronologie des fiches, fin de session, entrées Haki | Q-M2, Q-M3, Q-M5 | à faire |
-| M9 | Finitions | raccourcis, thèmes, export Markdown, **1re release** | Q-M4 | à faire |
+| M8 | Sessions | campagnes, sessions, écran Session en cours, journal, entrées automatiques, chronologie des fiches, fin de session, entrées Haki | — | à faire |
+| M9 | Finitions | raccourcis, thèmes, exports (Markdown, PDF, documents, D-M16), **1re release** | — | à faire |
 
 Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour pouvoir vérifier le résultat dans l'app ; on peut l'avancer juste après M4 pour travailler sur les vraies données le plus tôt possible.
 
@@ -211,3 +213,22 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Vérifié : check, 103 tests (13 nouveaux, dont le schéma et le repository sur une vraie base sql.js), build sans wasm, `cap add android` ; navigateur à 1366 × 768 (3 colonnes 230 / 300 / 556 / 280), 1100 × 768 (volet liste) et 800 × 700 (volets ☰ et Liens), création, rechargement (fiche et thème conservés), aucune erreur de l'app dans la console. Fiche de test « Drake » laissée dans la base de dev MJ (port 5184), stockage de Vivre Card non touché.
 - **Non vérifié** : APK (Gradle ne tourne pas sur le poste) → premier run de `mj.yml` au prochain push.
 - Reste pour clore M0 : run CI vert. Ensuite M1 (vérifications sur le Chromebook) attend **Q-T3** ; M2 (fiches) n'est bloquée par aucune question et peut démarrer.
+
+### Session 11 · 2026-10-16 (M0 close, M2a — fiches)
+- M0 commitée et poussée à la demande du MJ (`df53a76`) ; premier run « One Piece (MJ) » **vert** (1 min 55 s), artefact `onepiece-mj-debug-apk`. M0 close ; le test sur le Chromebook reste pour M1 (Q-T3).
+- M2 découpée : **M2a** (cette session), M2b (renommage propagé, déplacement, annulation), M2c (fusion, doublons probables).
+- Registre complet des 11 types (cahier §4.1) avec titres des rétroliens ; `props.ts` : `normalizeProps` (valeurs normalisées, orphelines), `changeType`, `subtitle`, `displayValue` ; `links.ts` : forme `[[id|Titre]]`, liens rouges, `computeLinks`, `plainText`, `nameKey` / `sameName` (D-M8). `normalizeEntity` normalise désormais les propriétés.
+- Repository : catalogue (`listCatalog`), table `links` recalculée à chaque enregistrement (relations + mentions vers des fiches existantes), rétroliens, suppression définitive ; index de recherche avec propriétés lisibles (relations par leur titre) et texte sans balisage.
+- Interface : catalogue partagé en mémoire, fiche ouverte avec sauvegarde automatique (400 ms, immédiate en quittant l'édition, en changeant de fiche ou en arrière-plan) ; lecture (fil d'Ariane, sous-titre, alias, étiquettes, propriétés, Markdown rendu avec liens internes et liens rouges) ; édition Ctrl+E (titre avec avertissement de nom identique, type, alias, étiquettes, formulaire généré, sélecteur de relations avec « Créer… », propriétés orphelines, éditeur CodeMirror avec barre d'outils et autocomplétion `[[`) ; panneau Liens (relations, rétroliens nommés, « Mentionné dans », pages enfants) ; épinglés dans la barre latérale ; archives (liste, restaurer, suppression définitive en deux temps) ; avertissement de doublon à la création ; lien rouge cliqué → création de la fiche et réécriture du lien.
+- Dépendances : `marked`, `dompurify`, CodeMirror 6 (`@codemirror/*`, `@lezer/highlight`). Bundle MJ : 711 Ko (247 Ko compressés).
+- **D-M12** (proposée) : « Fait partie de » des lieux = relation distincte des pages enfants ; rétroliens nommés ; doublons exacts pour l'instant ; catalogue en mémoire ; marked + DOMPurify. MODELE_DONNEES §3 à jour.
+- Vérifié : check, 119 tests (16 nouveaux), build ; navigateur 1366 × 768 : faction Marine, personnage Smoker (rôle, état, grade, alias, faction par le sélecteur, prime), texte avec `[[` → lien vers Marine et lien rouge Loguetown, clic sur le lien rouge → fiche Lieu créée et lien réécrit, rétroliens « Membres » sur Marine, épingle, doublon détecté par alias, page enfant (fil d'Ariane), archivage, suppression définitive, rechargement (tout conservé), thème clair, édition à 800 px ; aucune erreur sur une page neuve. Corrigés pendant le test : prime qui perdait ses espaces à la frappe, couleur des liens du texte, police de l'autocomplétion, mention répétée dans les rétroliens, « La compléter » sur une fiche archivée.
+- Point d'attention : le stockage du navigateur intégré était vide en début de session (fiche « Drake » de M0 disparue), comme côté joueur. Fiches de test laissées dans la base de dev MJ : Marine, Smoker, Loguetown.
+- Reste : M2b, M2c ; M1 attend Q-T3.
+
+### Session 12 · 2026-10-16 (réponses du MJ aux questions de l'appli MJ)
+- Q-M2 : un seul groupe de joueurs → une seule campagne. Q-M3 : état des PNJ conservé après la session, bouton « Remettre à l'état de début de session » (D-M13).
+- Q-M6 : probablement plus de 25 Mo de médias (nombreux PDF de personnages, images de fruits) → la sauvegarde `.opmj` est indispensable. Q-M7 : pas de champ « Joueur », la parenthèse reste un alias à l'import.
+- Propositions validées : onglets légers utilisables à la souris et au doigt (Q-M1, D-M14) ; journal automatique lisible et groupe « Journal » dans la recherche (Q-M3 suite, Q-M5, D-M15) ; exports d'une fiche en Markdown ou PDF et des documents stockés (Q-M4, D-M16).
+- Plus aucune question ouverte pour l'appli MJ, sauf Q-T3 (installation sur le Chromebook, bloquante pour M1). Cahier MJ (§3, §4.5, §5.1, §5.2, §6), IMPORT_NOTION et ARCHITECTURE à jour.
+- À reprendre avec D-M14 : agrandir les cibles trop petites pour le doigt dans l'interface actuelle (liens du panneau Liens, pastilles ✕, boutons de la barre d'outils de l'éditeur).
