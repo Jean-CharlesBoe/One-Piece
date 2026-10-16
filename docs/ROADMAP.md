@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 (passage au web) : code fait, à publier sur GitHub Pages et à vérifier sur le PC et le Chromebook (écriture dans Drive). Ensuite : M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 (passage au web) : publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), à vérifier par le MJ sur le PC et le Chromebook (installation, hors ligne, écriture dans Drive). Ensuite : M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -254,4 +254,5 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - `pwa.svelte.ts` : enregistrement du service worker (production), bouton « Installer l'application », demande de stockage persistant. `backupFolder.ts` : choix d'un dossier (File System Access API, gardé dans IndexedDB), autorisation, test d'écriture et de relecture qui affiche aussi ce qu'a écrit l'autre appareil. Réglages : sections Application et Dossier de sauvegarde.
 - CI `mj.yml` : vérification et build à chaque push, **publication manuelle** sur GitHub Pages (`workflow_dispatch`). Version `0.1.0`. `.claude/launch.json` : `mj-build` (essai du build sur le port 5185).
 - Vérifié : check, 131 tests, build ; essai du build : service worker actif, 11 fichiers en cache (dont le wasm), manifeste lu, réglages affichés, fiche conservée après rechargement servi par le service worker. Non vérifiable ici : installation, hors ligne réel, stockage protégé (accordé aux apps installées), choix d'un dossier Drive (sélecteur système) ; c'est la vérification M1 sur les appareils (RELEASE.md).
-- Reste : activer GitHub Pages (source « GitHub Actions »), première publication, puis vérifications sur le PC et le Chromebook. Docs : RELEASE (section MJ réécrite), ARCHITECTURE, CLAUDE.md, D-T5.
+- Publication (accord du MJ) : GitHub Pages activé (source « GitHub Actions »), premier run de publication vert ; https://jean-charlesboe.github.io/One-Piece/ répond, service worker actif (cache `onepiece-mj-0.1.0-…`), aucune erreur.
+- Reste pour clore M1 : vérifications du MJ sur le PC et le Chromebook (RELEASE.md › Que vérifier). Docs : RELEASE (section MJ réécrite), ARCHITECTURE, CLAUDE.md, D-T5.
