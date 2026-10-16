@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). Suite conseillée : M3 (navigation, recherche, onglets). M0 close (CI verte). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). Suite conseillée : M1 (passage au web, D-M18, et vérification de l'écriture dans Drive sur les deux appareils), puis M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -29,13 +29,13 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 
 | # | Étape | Contenu | Bloquée par | Statut |
 |---|---|---|---|---|
-| M0 | Socle Android | Capacitor, `appId`, schéma SQLite (migration 1), repository, repli web (jeep-sqlite), CI `mj.yml`, disposition 3 colonnes | — | fait (test sur appareil : M1) |
-| M1 | Vérifications appareil | APK sur le Chromebook, **FTS5 disponible ?**, sélecteur de fichiers, écriture dans `media/` | Q-T3 | à faire |
+| M0 | Socle | Capacitor, `appId`, schéma SQLite (migration 1), repository, repli web, CI `mj.yml`, disposition 3 colonnes | — | fait (volet Android abandonné : D-M18) |
+| M1 | Appli web (D-M18) | retrait de Capacitor, manifeste PWA + service worker (hors ligne), stockage persistant, CI → GitHub Pages ; **sur les appareils** : installation sur le Chromebook et le PC, écriture automatique dans un dossier Google Drive | — | à faire |
 | M2a | Fiches (cœur) | registre des types, lecture (propriétés, Markdown rendu), édition (formulaire + CodeMirror, `[[`), liens et rétroliens, liens rouges, pages enfants, épinglés, archives, changement de type, alias, avertissement de doublon | — | fait (navigateur) |
 | M2b | Fiches (suite) | renommage qui met à jour les `[[liens]]` (avec confirmation), « Déplacer vers… », « Annuler la dernière modification » | — | fait (navigateur) |
 | M2c | Un nom par chose | fusion de deux fiches, vue « Doublons probables » (détection approchée), « Ajouter comme alias » | — | fait (navigateur) |
 | M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique, onglets (D-M14) | — | à faire |
-| M4 | Sauvegarde `.opmj` | export zip + médias, restauration, rappel | — | à faire |
+| M4 | Sauvegarde et relais | `.opmj` (zip + médias), sauvegarde automatique dans le dossier Drive, reprise de la version la plus récente au lancement, conflit signalé, restauration, rappel | — | à faire |
 | M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | — | à faire |
 | M6 | Documents | import image/PDF, visionneuse | — | à faire |
 | M7 | Bloc de jeu PNJ | StatGrid, ressources, techniques, Haki, catégorie d'adversaire | — | à faire |
@@ -240,3 +240,9 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - **D-M17** (proposée) : repli web sur sql.js directement (jeep-sqlite retiré de l'appli MJ) — jeep-sqlite restait figé quand le navigateur de test n'était pas affiché ; plus de version de sql.js imposée, 290 Ko de moins au build. ARCHITECTURE, RELEASE et CLAUDE.md à jour.
 - Vérifié : check, 131 tests (28 nouveaux), build sans wasm ; dans le navigateur (piloté par JavaScript, la fenêtre n'étant pas affichée) : renommage de Smoker (2 fiches mises à jour, « capitaine » laissé tel quel, ancien nom en alias), annulation pas à pas jusqu'au titre d'origine (pas de bandeau), déplacement d'« Île du Sud » sous Loguetown (Scénario 1 ne peut pas aller sous sa propre page), doublon « Skypieen » / « Skypiéens » détecté puis fusionné (mention de Smoker redirigée), « Skypien » proposé comme nom proche et ajouté en alias ; console sans erreur. Base de dev neuve (nouveau stockage) : fiches de test Marine, Smoker le Chasseur blanc, Rapport de Tashigi, Loguetown, Scénario 1, Île du Sud, Skypiéens.
 - Reste : M3 (Ctrl+K, filtres, récents, arborescences, historique, onglets D-M14, cibles tactiles) ; M1 attend le choix d'installation (Q-T3).
+
+### Session 13 (suite) · 2026-10-16 (Q-T3 : l'appli MJ passe au web)
+- Le MJ a vu sur son Chromebook la section Développeurs (Linux pas encore configuré) ; il refuse tout risque de réinitialisation (ADB, mode développeur) et la Play Console (25 $).
+- Proposition du MJ examinée : appli web + Supabase gratuit. Écartée : mise en pause après 7 jours sans activité, aucune sauvegarde sur l'offre gratuite, internet obligatoire en session, accès à sécuriser (dépôt public connu des joueurs), réécriture du stockage.
+- **D-M18** : appli MJ = appli web installable (GitHub Pages, hors ligne), base sql.js sur l'appareil, sauvegarde automatique et passage de relais par un dossier Google Drive, un appareil à la fois (préparation sur PC, jeu sur Chromebook). Q-T3 close. ROADMAP : M1 devient le passage au web, M4 la sauvegarde avec relais.
+- À faire côté MJ avant M1 : installer **Google Drive pour ordinateur** sur le PC si ce n'est pas déjà fait.

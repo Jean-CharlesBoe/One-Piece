@@ -24,7 +24,7 @@ Aucune dépendance réseau à l'exécution : polices embarquées, pas de CDN.
 
 ### Le Chromebook
 
-L'appli MJ est une **app Android** installée sur le Chromebook (Play Store désactivé ou non : installation de l'APK via le mode développeur Android/ADB ou via le Play Store en test interne — voir Q-T3). Conséquences :
+**Changement (D-M18, 2026-10-16)** : l'appli MJ n'est plus une app Android. C'est une **appli web installable** (PWA) publiée sur GitHub Pages, ouverte dans Chrome sur le Chromebook (session) et sur le PC (préparation), hors ligne grâce à un service worker. Base SQLite en WebAssembly (sql.js) dans IndexedDB, stockage persistant, sauvegarde automatique `.opmj` dans un dossier Google Drive qui sert aussi de relais entre les deux appareils. Les mentions de Capacitor, d'APK et de SQLite natif ci-dessus ne valent plus que pour Vivre Card ; ce document sera revu à l'étape M1. Conséquences pour l'interface :
 
 - Mise en page **paysage, grand écran** (≥ 1280 px), souris et clavier : raccourcis clavier, survol, clic droit facultatif. Pas de version téléphone, mais repli en 2 puis 1 colonne si la fenêtre rétrécit (D-M10).
 - Le WebView Android du Chromebook est à jour (Chrome) : pas de contrainte de compatibilité particulière.

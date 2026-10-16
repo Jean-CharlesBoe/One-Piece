@@ -7,7 +7,6 @@ Préfixes : **Q-T** transverse · **Q-R** règles du jeu · **Q-J** appli joueur
 ## Ouvertes
 
 ### Transverses
-- **Q-T3. Installation sur le Chromebook** — Le Play Store est bien présent (apps Android actives, 2026-10-16). Reste à choisir comment installer un APK hors Play Store : débogage ADB par l'environnement Linux du Chromebook, ou test interne via la Play Console. *Bloquante pour M1 (tests sur appareil).*
 - **Q-T4. Icônes** — Même démarche que Sans Nom (dessin fourni) ? *Non bloquante.*
 
 ### Règles du jeu
@@ -17,7 +16,7 @@ Préfixes : **Q-T** transverse · **Q-R** règles du jeu · **Q-J** appli joueur
 *Aucune question ouverte (icône : Q-T4).*
 
 ### Appli MJ
-*Aucune question ouverte (installation sur le Chromebook : Q-T3).*
+*Aucune question ouverte.*
 
 ## Répondues
 
@@ -58,3 +57,4 @@ Préfixes : **Q-T** transverse · **Q-R** règles du jeu · **Q-J** appli joueur
 - **Q-M3 (suite). Journal automatique** → **oui** (2026-10-16, D-M15) : une ligne lisible par changement du bloc de jeu en session, regroupée sur 10 s, grisée, masquable, supprimable, reprise dans la chronologie de la fiche.
 - **Q-M4 (suite). Export de documents** → **exporter un document stocké (PDF, image)** pour l'imprimer ou l'envoyer, et **exporter une fiche en PDF** mise en forme, en plus de l'export Markdown (2026-10-16, D-M16). Pas d'import de fichier texte en fiche.
 - **Q-M5. Recherche dans le journal** → **oui** (2026-10-16, D-M15) : groupe « Journal » sous les fiches dans Ctrl+K (5 entrées, « Voir tout »), clic = journal de la session ouvert sur l'entrée.
+- **Q-T3. Installation sur le Chromebook** → **plus d'APK pour l'appli MJ** (2026-10-16, D-M18). Le Play Store est présent, mais installer un APK téléchargé demande ADB (dont la désactivation réinitialise le Chromebook) ou le mode développeur, et la Play Console coûte 25 $ : refusés par le MJ, qui ne veut prendre aucun risque pour son Chromebook. L'appli MJ devient une appli web installable (PWA), données sur l'appareil, sauvegarde et passage de relais par un dossier Google Drive. Le MJ préparera sur son PC et jouera sur le Chromebook.

@@ -18,7 +18,7 @@ Remplace le choix initial de Flutter (fait avant l'analyse du dépôt Sans Nom).
 `apps/joueur`, `apps/mj`, `packages/core` (modèle, règles, mémos, composants communs), `tools/notion-import`.
 **Pourquoi** : une seule source pour les règles et les listes (races, classes, caracs), sans coupler les apps à l'exécution. Alternative : deux dépôts avec copie du code commun (risque de divergence).
 
-### D-T3 · 2026-10-09 · Base SQLite embarquée dans chaque app, aucune donnée dans un navigateur — *validée*
+### D-T3 · 2026-10-09 · Base SQLite embarquée dans chaque app, aucune donnée dans un navigateur — *validée* (Vivre Card) ; *remplacée par D-M18* pour l'appli MJ (2026-10-16)
 En production, les données vivent uniquement dans la base SQLite native de l'app et dans son dossier privé. Le repli navigateur ne sert qu'au développement (`npm run dev`).
 
 ### D-T4 · 2026-10-09 · Sauvegarde par fichier via la feuille de partage — *proposée*
@@ -198,3 +198,12 @@ Réponse du MJ à Q-M4 : en plus de l'export Markdown d'une fiche, exporter une 
 ### D-M17 · 2026-10-16 · Repli web de l'appli MJ : sql.js directement, sans jeep-sqlite — *proposée*
 En développement dans le navigateur, la base MJ est une base sql.js (SQLite en WebAssembly) gardée dans IndexedDB après chaque écriture, au lieu de l'implémentation web du plugin (jeep-sqlite). Le même adaptateur (`sqlJsDb.ts`) sert aux tests Vitest. Sur l'appareil, rien ne change (SQLite natif, D-T3).
 **Pourquoi** : jeep-sqlite est un composant web (Stencil) qui attend que la page s'affiche (`requestAnimationFrame`) : il restait figé quand le navigateur de test n'était pas à l'écran. Il imposait aussi de fixer sql.js à la version embarquée (1.12) et ajoutait 290 Ko au build. Même moteur SQL qu'avant : le comportement de dev ne change pas.
+
+### D-M18 · 2026-10-16 · L'appli MJ devient une appli web installable, données sur l'appareil, relais par Google Drive — *validée (direction)*, *proposée (détails)*
+Réponse du MJ à Q-T3 : pas d'APK pour l'appli MJ.
+- **Distribution** : appli web statique publiée gratuitement sur GitHub Pages, installable depuis Chrome (« Installer l'application » : icône, fenêtre à elle) sur le Chromebook et sur le PC du MJ ; fonctionne **hors ligne** (service worker). Plus de Capacitor, d'APK ni de `appId` pour l'appli MJ ; Vivre Card ne change pas.
+- **Données** : SQLite en WebAssembly (sql.js, comme le repli de dev de D-M17) gardé dans IndexedDB, avec demande de **stockage persistant** ; médias (M6) en IndexedDB aussi, plus de dossier `media/`. Même schéma, mêmes migrations, même repository.
+- **Sauvegarde et relais** : l'app écrit automatiquement la sauvegarde `.opmj` dans un **dossier Google Drive** choisi une fois (app Fichiers sur le Chromebook, Google Drive pour ordinateur sur le PC). Au lancement, si la sauvegarde du dossier est plus récente que la base locale (écrite par l'autre appareil), l'app propose de la reprendre. **Un appareil à la fois** : si les deux ont été modifiés sans passer par le dossier, l'app le signale et le MJ choisit la version gardée (pas de fusion). Si l'écriture automatique dans le dossier est impossible, repli : bouton « Sauvegarder » et rappel.
+- **Ce qui protège des pertes** : une réinitialisation du Chromebook ou un « effacer les données de navigation » ne fait perdre que les modifications faites depuis la dernière sauvegarde dans Drive.
+**Pourquoi** : installer un APK sur ChromeOS demande ADB (sa désactivation réinitialise le Chromebook) ou le mode développeur, ou la Play Console (25 $). Une base en ligne gratuite (Supabase) a été écartée après examen : projet mis en pause après 7 jours sans activité, pas de sauvegarde sur l'offre gratuite, internet obligatoire en session, connexion et droits d'accès à sécuriser avec un dépôt public connu des joueurs, réécriture du stockage en Postgres. Le web local reprend le code existant presque tel quel (sql.js tourne déjà en développement) et Drive apporte la copie hors de l'appareil.
+Remplace pour l'appli MJ : D-T1 (partie Capacitor / APK), D-T3, D-T4 (feuille de partage), l'`appId` MJ de D-T5, la CI APK de M0. À vérifier sur les appareils (M1) : installation, stockage persistant, écriture automatique dans un dossier Drive sur ChromeOS et sur Windows.

@@ -15,7 +15,7 @@ Deux usages :
 
 ## 2. Contraintes
 
-- App Android (Capacitor) sur Chromebook, **hors ligne**, base **SQLite** embarquée, médias dans le dossier privé de l'app.
+- **Appli web installable** (D-M18), utilisée sur le **Chromebook** en session et sur le **PC** du MJ pour préparer ; **hors ligne** ; base SQLite (sql.js) sur l'appareil, médias dans le stockage du navigateur ; sauvegarde automatique et passage de relais par un dossier Google Drive, un appareil à la fois.
 - Écran large paysage, **clavier et souris** (raccourcis, autocomplétion). Pas de version téléphone ; la disposition se replie si la fenêtre rétrécit (demi-écran, mode tablette en portrait), voir §3 et D-M10.
 - Un seul utilisateur (le MJ), pas de compte.
 - Aucune donnée de joueur : les PJ existent seulement comme fiches de lore (histoire, rôle), sans fiche technique (D-T0).
