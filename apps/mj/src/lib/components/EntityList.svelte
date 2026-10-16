@@ -1,13 +1,14 @@
 <script lang="ts" module>
   import type { EntityType } from '../model/types'
 
-  /** Contenu de la colonne liste : un type de fiches, ou les archives. */
-  export type ListMode = EntityType | 'archives'
+  /** Contenu de la colonne liste : un type de fiches, les archives ou les doublons probables. */
+  export type ListMode = EntityType | 'archives' | 'doublons'
 </script>
 
 <script lang="ts">
   import { catalog } from '../catalog.svelte'
   import { TYPE_DEFS } from '../model/types'
+  import DuplicatesList from './DuplicatesList.svelte'
 
   // Liste des fiches d'un type, ou des fiches archivées (cahier MJ §4.3, §4.5). Filtres et tri : M3.
   let {
@@ -15,18 +16,28 @@
     selectedId,
     onOpen,
     onCreate,
+    onMerge,
   }: {
     mode: ListMode
     selectedId: string | null
     onOpen: (id: string) => void
     onCreate: () => void
+    onMerge: (a: string, b: string) => void
   } = $props()
 
   const items = $derived(
-    mode === 'archives' ? catalog.entries.filter(e => e.archived) : catalog.active.filter(e => e.type === mode),
+    mode === 'doublons'
+      ? []
+      : mode === 'archives'
+        ? catalog.entries.filter(e => e.archived)
+        : catalog.active.filter(e => e.type === mode),
   )
-  const title = $derived(mode === 'archives' ? 'Archives' : TYPE_DEFS[mode].plural)
+  const title = $derived(mode === 'archives' ? 'Archives' : mode === 'doublons' ? '' : TYPE_DEFS[mode].plural)
 </script>
+
+{#if mode === 'doublons'}
+  <DuplicatesList {onOpen} {onMerge} />
+{:else}
 
 <section class="list" aria-labelledby="liste-titre">
   <header>
@@ -54,6 +65,7 @@
     </p>
   {/if}
 </section>
+{/if}
 
 <style>
   .list {

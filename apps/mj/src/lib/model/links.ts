@@ -43,6 +43,16 @@ export function plainText(md: string): string {
     .trim()
 }
 
+/**
+ * Renommage (cahier §4.3) : les liens vers la fiche `id` affichés sous l'ancien titre prennent le nouveau.
+ * Un lien écrit avec un autre texte (« le capitaine ») est laissé tel quel.
+ */
+export function renameLinks(md: string, id: string, oldTitle: string, newTitle: string): string {
+  return md.replace(WIKI_LINK, (all, target: string, label: string) =>
+    target.trim() === id && label.trim() === oldTitle.trim() ? wikiLink(id, newTitle) : all,
+  )
+}
+
 export interface LinkRow {
   toId: string
   /** 'mention' ou la clé de la propriété (« race », « factions »…). */

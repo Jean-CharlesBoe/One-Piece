@@ -168,7 +168,7 @@ Mise en œuvre (M0, 2026-10-12) : en 2 colonnes, la barre latérale reste à gau
 
 ### D-M11 · 2026-10-12 · Index de recherche hors migrations, moteur choisi à l'ouverture — *proposée*
 La table `search_index` ne fait pas partie de la migration 1. Le repository la crée à l'ouverture si elle manque, avec le premier moteur accepté : **FTS5**, sinon **FTS4**, sinon aucun (recherche `LIKE` en M3), la remplit depuis les fiches et note le moteur dans `meta.search_engine`. Réglages › À propos l'affiche.
-**Pourquoi** : constaté en M0, sql.js (moteur du repli web jeep-sqlite) n'a pas FTS5, et sa présence sur le Chromebook ne sera vérifiée qu'en M1. Une migration 1 avec FTS5 aurait empêché le repli web de s'ouvrir, et peut-être l'appareil. L'index est une donnée dérivée (déjà exclue de la sauvegarde `.opmj`) : le recréer ne perd rien. Si FTS5 n'est pas disponible sur l'appareil, rien d'autre à changer.
+**Pourquoi** : constaté en M0, sql.js (moteur du repli web) n'a pas FTS5, et sa présence sur le Chromebook ne sera vérifiée qu'en M1. Une migration 1 avec FTS5 aurait empêché le repli web de s'ouvrir, et peut-être l'appareil. L'index est une donnée dérivée (déjà exclue de la sauvegarde `.opmj`) : le recréer ne perd rien. Si FTS5 n'est pas disponible sur l'appareil, rien d'autre à changer.
 
 ### D-M12 · 2026-10-16 · Fiches : choix de mise en œuvre de M2 — *proposée*
 - **« Fait partie de » des lieux = relation `partieDe`**, distincte des pages enfants (`parent_id`). La hiérarchie géographique reste une propriété (filtre, rétrolien « Lieux contenus ») ; les pages enfants servent aux sous-pages libres (énigmes, textes d'un scénario). Une page enfant est créée en Note par défaut (type modifiable).
@@ -194,3 +194,7 @@ Réponses du MJ à Q-M3 (suite) et Q-M5 (propositions validées) :
 
 ### D-M16 · 2026-10-16 · Exports : fiche en Markdown ou PDF, documents stockés — *validée*
 Réponse du MJ à Q-M4 : en plus de l'export Markdown d'une fiche, exporter une **fiche en PDF** mis en forme (prêt à imprimer) et ressortir un **document stocké** (PDF, image) par la feuille de partage ou dans les fichiers du Chromebook. Pas d'import de fichier texte en fiche. Technique du PDF de fiche à choisir à l'étape M9 (impression du système ou génération dans l'app).
+
+### D-M17 · 2026-10-16 · Repli web de l'appli MJ : sql.js directement, sans jeep-sqlite — *proposée*
+En développement dans le navigateur, la base MJ est une base sql.js (SQLite en WebAssembly) gardée dans IndexedDB après chaque écriture, au lieu de l'implémentation web du plugin (jeep-sqlite). Le même adaptateur (`sqlJsDb.ts`) sert aux tests Vitest. Sur l'appareil, rien ne change (SQLite natif, D-T3).
+**Pourquoi** : jeep-sqlite est un composant web (Stencil) qui attend que la page s'affiche (`requestAnimationFrame`) : il restait figé quand le navigateur de test n'était pas à l'écran. Il imposait aussi de fixer sql.js à la version embarquée (1.12) et ajoutait 290 Ko au build. Même moteur SQL qu'avant : le comportement de dev ne change pas.

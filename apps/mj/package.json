@@ -23,12 +23,11 @@
     "@lezer/highlight": "^1.2.5",
     "@onepiece/core": "*",
     "dompurify": "^3.4.17",
-    "jeep-sqlite": "^2.8.0",
-    "marked": "^18.1.1"
+    "marked": "^18.1.1",
+    "sql.js": "^1.14.2"
   },
   "devDependencies": {
     "@capacitor/cli": "^8.5.3",
-    "@types/sql.js": "^1.4.11",
-    "sql.js": "1.12.0"
+    "@types/sql.js": "^1.4.11"
   }
 }

@@ -9,10 +9,12 @@
   import EntityList, { type ListMode } from './lib/components/EntityList.svelte'
   import EntityView from './lib/components/EntityView.svelte'
   import LinksPanel from './lib/components/LinksPanel.svelte'
+  import MergeForm from './lib/components/MergeForm.svelte'
   import NewEntityForm from './lib/components/NewEntityForm.svelte'
   import SettingsPanel from './lib/components/SettingsPanel.svelte'
   import Sidebar from './lib/components/Sidebar.svelte'
-  import { createEntity, toCatalogEntry } from './lib/model/entity'
+  import { mergeEntities } from './lib/mergeOps'
+  import { createEntity, toCatalogEntry, type CatalogEntry } from './lib/model/entity'
   import { resolveMissing } from './lib/model/links'
   import type { EntityType } from './lib/model/types'
   import { opened } from './lib/opened.svelte'
@@ -35,6 +37,9 @@
   let linksOpen = $state(false)
   let settingsOpen = $state(false)
   let newOpen = $state(false)
+  let mergeOpen = $state(false)
+  /** Fusion : première fiche (proposée comme gardée) et, depuis la vue Doublons, la seconde. */
+  let mergePair = $state<{ first: string; second: string | null }>({ first: '', second: null })
 
   /** Fiche à créer : type proposé, titre prérempli, page parente, lien rouge d'origine à réécrire. */
   interface Draft {
@@ -71,7 +76,7 @@
 
   function newEntity(d: Partial<Draft> = {}) {
     draft = {
-      type: d.type ?? (mode === 'archives' ? 'note' : mode),
+      type: d.type ?? (mode === 'archives' || mode === 'doublons' ? 'note' : mode),
       title: d.title ?? '',
       parentId: d.parentId ?? null,
       fromLink: d.fromLink ?? null,
@@ -98,7 +103,7 @@
         const label = d.fromLink
         await opened.apply(src => (src.bodyMd = resolveMissing(src.bodyMd, label, e.id)))
       }
-      if (mode !== 'archives') mode = type
+      if (mode !== 'archives' && mode !== 'doublons') mode = type
       await openEntity(e.id)
     } catch (err) {
       fail(err)
@@ -112,6 +117,42 @@
     } catch (e) {
       fail(e)
       return null
+    }
+  }
+
+  function startMerge(first: string, second: string | null = null) {
+    mergePair = { first, second }
+    mergeOpen = true
+  }
+
+  async function merge(keepId: string, otherId: string, takeOther: Set<string>) {
+    mergeOpen = false
+    try {
+      await opened.flush()
+      await mergeEntities(keepId, otherId, takeOther)
+      await opened.close()
+      await openEntity(keepId)
+    } catch (e) {
+      fail(e)
+    }
+  }
+
+  /** « Ajouter comme alias » (nom proche à la création) : l'autre nom rejoint la fiche existante, qui s'ouvre. */
+  async function addAlias(entry: CatalogEntry, alias: string) {
+    newOpen = false
+    try {
+      await opened.flush()
+      const r = await getRepository()
+      const e = await r.getEntity(entry.id)
+      if (!e) return
+      if (!e.aliases.includes(alias)) e.aliases.push(alias)
+      e.updatedAt = new Date().toISOString()
+      await r.saveEntity(e)
+      catalog.upsert(toCatalogEntry(e))
+      await opened.close()
+      await openEntity(e.id)
+    } catch (err) {
+      fail(err)
     }
   }
 
@@ -194,7 +235,13 @@
 {/snippet}
 
 {#snippet list()}
-  <EntityList {mode} selectedId={entity?.id ?? null} onOpen={openEntity} onCreate={() => newEntity()} />
+  <EntityList
+    {mode}
+    selectedId={entity?.id ?? null}
+    onOpen={openEntity}
+    onCreate={() => newEntity()}
+    onMerge={(a, b) => startMerge(a, b)}
+  />
 {/snippet}
 
 {#snippet links()}
@@ -233,6 +280,7 @@
           onCreate={createForRelation}
           onAddChild={addChild}
           onDelete={deleteOpened}
+          onMerge={id => startMerge(id)}
         />
       {/if}
     </div>
@@ -258,7 +306,11 @@
       newOpen = false
       void openEntity(id)
     }}
+    onAddAlias={addAlias}
   />
+</Sheet>
+<Sheet bind:open={mergeOpen} title="Fusionner deux fiches">
+  <MergeForm first={mergePair.first} second={mergePair.second} onMerge={merge} />
 </Sheet>
 
 <style>

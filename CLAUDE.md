@@ -54,7 +54,7 @@ Les scripts racine n'appellent jamais `npm run` imbriqué (D-T7).
 ```bash
 npm install
 npm run dev:joueur        # appli joueur dans le navigateur (repli localStorage)
-npm run dev:mj            # appli MJ dans le navigateur (repli web jeep-sqlite)
+npm run dev:mj            # appli MJ dans le navigateur (repli web sql.js, base dans IndexedDB)
 npm run check             # types (svelte-check + tsc) sur tout le monorepo
 npm test                  # Vitest sur tout le monorepo
 npm run android:joueur    # build + cap sync android de l'appli joueur

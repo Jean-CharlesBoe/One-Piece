@@ -1,43 +1,15 @@
 import initSqlJs, { type Database } from 'sql.js'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createEntity } from '../model/entity'
-import type { Db, Row } from './db'
+import type { Db } from './db'
 import { META_SCHEMA_VERSION, META_SEARCH_ENGINE } from './repository'
 import { MIGRATIONS } from './schema'
 import { createSqliteRepository, migrate } from './sqliteRepository'
+import { sqlJsDb } from './sqlJsDb'
 
 // Même SQL que sur l'appareil, exécuté par sql.js (le moteur du repli web : FTS4 sans FTS5).
+// persist() ne fait rien : la base reste en mémoire.
 const SQL = await initSqlJs()
-
-function sqlJsDb(db: Database): Db {
-  return {
-    async query(sql, params = []) {
-      const st = db.prepare(sql)
-      st.bind(params)
-      const rows: Row[] = []
-      while (st.step()) rows.push(st.getAsObject())
-      st.free()
-      return rows
-    },
-    async run(sql, params = []) {
-      db.run(sql, params)
-    },
-    async execute(sql) {
-      db.exec('BEGIN')
-      try {
-        db.exec(sql)
-        db.exec('COMMIT')
-      } catch (e) {
-        db.exec('ROLLBACK')
-        throw e
-      }
-    },
-    async pragma(sql) {
-      db.exec(sql)
-    },
-    async persist() {},
-  }
-}
 
 let raw: Database
 let db: Db
@@ -168,6 +140,20 @@ describe('base MJ', () => {
     expect((await repo.getEntity(enfant.id))?.parentId).toBeNull()
     expect(await db.query(`SELECT * FROM links`)).toEqual([])
     expect(await db.query(`SELECT * FROM search_index WHERE entity_id = ?`, [parent.id])).toEqual([])
+  })
+
+  it('paires « pas des doublons » : ordre normalisé, sans doublon, supprimées avec la fiche', async () => {
+    const repo = await createSqliteRepository(db)
+    const a = createEntity('race', 'Skypiéens')
+    const b = createEntity('note', 'Skypieen')
+    await repo.saveEntity(a)
+    await repo.saveEntity(b)
+    await repo.markNotDuplicate(b.id, a.id)
+    await repo.markNotDuplicate(a.id, b.id)
+    const [x, y] = [a.id, b.id].sort()
+    expect(await repo.listNotDuplicates()).toEqual([`${x}|${y}`])
+    await repo.deleteEntity(a.id)
+    expect(await repo.listNotDuplicates()).toEqual([])
   })
 
   it('réglages (meta)', async () => {

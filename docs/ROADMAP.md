@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)**, découpée en M2a (fait le 2026-10-16), M2b et M2c. M0 close (CI verte). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). Suite conseillée : M3 (navigation, recherche, onglets). M0 close (CI verte). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -32,8 +32,8 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | M0 | Socle Android | Capacitor, `appId`, schéma SQLite (migration 1), repository, repli web (jeep-sqlite), CI `mj.yml`, disposition 3 colonnes | — | fait (test sur appareil : M1) |
 | M1 | Vérifications appareil | APK sur le Chromebook, **FTS5 disponible ?**, sélecteur de fichiers, écriture dans `media/` | Q-T3 | à faire |
 | M2a | Fiches (cœur) | registre des types, lecture (propriétés, Markdown rendu), édition (formulaire + CodeMirror, `[[`), liens et rétroliens, liens rouges, pages enfants, épinglés, archives, changement de type, alias, avertissement de doublon | — | fait (navigateur) |
-| M2b | Fiches (suite) | renommage qui met à jour les `[[liens]]` (avec confirmation), « Déplacer vers… », « Annuler la dernière modification » | — | à faire |
-| M2c | Un nom par chose | fusion de deux fiches, vue « Doublons probables » (détection approchée), « Ajouter comme alias » | — | à faire |
+| M2b | Fiches (suite) | renommage qui met à jour les `[[liens]]` (avec confirmation), « Déplacer vers… », « Annuler la dernière modification » | — | fait (navigateur) |
+| M2c | Un nom par chose | fusion de deux fiches, vue « Doublons probables » (détection approchée), « Ajouter comme alias » | — | fait (navigateur) |
 | M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique, onglets (D-M14) | — | à faire |
 | M4 | Sauvegarde `.opmj` | export zip + médias, restauration, rappel | — | à faire |
 | M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | — | à faire |
@@ -232,3 +232,11 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Propositions validées : onglets légers utilisables à la souris et au doigt (Q-M1, D-M14) ; journal automatique lisible et groupe « Journal » dans la recherche (Q-M3 suite, Q-M5, D-M15) ; exports d'une fiche en Markdown ou PDF et des documents stockés (Q-M4, D-M16).
 - Plus aucune question ouverte pour l'appli MJ, sauf Q-T3 (installation sur le Chromebook, bloquante pour M1). Cahier MJ (§3, §4.5, §5.1, §5.2, §6), IMPORT_NOTION et ARCHITECTURE à jour.
 - À reprendre avec D-M14 : agrandir les cibles trop petites pour le doigt dans l'interface actuelle (liens du panneau Liens, pastilles ✕, boutons de la barre d'outils de l'éditeur).
+
+### Session 13 · 2026-10-16 (M2b et M2c)
+- M2a et les réponses Q-M1 à Q-M7 commitées et poussées (`b1c35ac`). Q-T3 : le Chromebook a bien le Play Store ; reste à choisir comment installer un APK hors Play Store.
+- **M2b** : renommage — à la sortie de l'édition, bandeau « Fiche renommée » avec « Mettre à jour les liens de n fiches » (seuls les liens affichés sous l'ancien titre changent, `renameLinks`) et « Garder l'ancien nom comme alias » ; « Déplacer vers… » (fenêtre de recherche, sans boucle : `model/tree.ts`) ; « ↶ Annuler » en édition (versions enregistrées pendant la session d'édition, jusqu'à 50, éditeur de texte rechargé). Actions secondaires de la fiche regroupées dans un menu « ⋯ » (page enfant, déplacer, fusionner, archiver).
+- **M2c** : `model/similar.ts` (même nom, faute ou pluriel par distance d'édition, mêmes mots, nom contenu dans l'autre pour un même type), vue « Doublons probables » dans la barre latérale (Fusionner… / Deux choses différentes, paires écartées en table `not_duplicates`) ; fusion (`model/merge.ts`, `mergeOps.ts`) : alias, étiquettes, propriétés comblées, conflits au choix, texte « Repris de … », liens entrants et pages enfants redirigés, fiche absorbée archivée avec un lien vers la fiche gardée ; « Ajouter comme alias » quand un nom proche existe à la création.
+- **D-M17** (proposée) : repli web sur sql.js directement (jeep-sqlite retiré de l'appli MJ) — jeep-sqlite restait figé quand le navigateur de test n'était pas affiché ; plus de version de sql.js imposée, 290 Ko de moins au build. ARCHITECTURE, RELEASE et CLAUDE.md à jour.
+- Vérifié : check, 131 tests (28 nouveaux), build sans wasm ; dans le navigateur (piloté par JavaScript, la fenêtre n'étant pas affichée) : renommage de Smoker (2 fiches mises à jour, « capitaine » laissé tel quel, ancien nom en alias), annulation pas à pas jusqu'au titre d'origine (pas de bandeau), déplacement d'« Île du Sud » sous Loguetown (Scénario 1 ne peut pas aller sous sa propre page), doublon « Skypieen » / « Skypiéens » détecté puis fusionné (mention de Smoker redirigée), « Skypien » proposé comme nom proche et ajouté en alias ; console sans erreur. Base de dev neuve (nouveau stockage) : fiches de test Marine, Smoker le Chasseur blanc, Rapport de Tashigi, Loguetown, Scénario 1, Île du Sud, Skypiéens.
+- Reste : M3 (Ctrl+K, filtres, récents, arborescences, historique, onglets D-M14, cibles tactiles) ; M1 attend le choix d'installation (Q-T3).

@@ -1,17 +1,20 @@
 <script lang="ts">
   import { catalog } from '../catalog.svelte'
+  import type { CatalogEntry } from '../model/entity'
   import { sameName } from '../model/links'
+  import { nearNames } from '../model/similar'
   import { ENTITY_TYPES, TYPE_DEFS, type EntityType } from '../model/types'
 
   // Contenu de la fenêtre « Nouvelle fiche » (cahier MJ §4.3) : type et titre, avec l'avertissement de
-  // doublon de D-M8 : « Existe déjà : Skypiéens (race). L'ouvrir / Créer quand même ». La comparaison est exacte
-  // (casse et accents près) : « Ajouter comme alias » viendra avec la détection approchée des doublons (M2c).
+  // doublon de D-M8 : « Existe déjà : Skypiéens (race). L'ouvrir / Créer quand même » pour un nom identique (casse
+  // et accents près), « Nom proche : … L'ouvrir / Ajouter comme alias » pour un nom ressemblant (similar.ts).
   let {
     type,
     title: initialTitle = '',
     parentTitle = '',
     onCreate,
     onOpen,
+    onAddAlias,
   }: {
     type: EntityType
     title?: string
@@ -19,6 +22,7 @@
     parentTitle?: string
     onCreate: (type: EntityType, title: string) => void
     onOpen: (id: string) => void
+    onAddAlias: (entry: CatalogEntry, alias: string) => void
   } = $props()
 
   // svelte-ignore state_referenced_locally
@@ -27,6 +31,7 @@
   let title = $state(initialTitle)
 
   const doublons = $derived(sameName(title, catalog.active))
+  const proches = $derived(doublons.length ? [] : nearNames(title, catalog.active, chosen).slice(0, 3))
 
   function submit(e: SubmitEvent) {
     e.preventDefault()
@@ -56,6 +61,18 @@
         <p>Existe déjà : <b>{d.title}</b> ({TYPE_DEFS[d.type].label.toLowerCase()})</p>
         <div class="row">
           <button type="button" onclick={() => onOpen(d.id)}>L'ouvrir</button>
+        </div>
+      {/each}
+    </div>
+  {/if}
+
+  {#if proches.length}
+    <div class="dup card" role="status">
+      {#each proches as d (d.id)}
+        <p>Nom proche : <b>{d.title}</b> ({TYPE_DEFS[d.type].label.toLowerCase()})</p>
+        <div class="row">
+          <button type="button" onclick={() => onOpen(d.id)}>L'ouvrir</button>
+          <button type="button" onclick={() => onAddAlias(d, title.trim())}>Ajouter « {title.trim()} » comme alias</button>
         </div>
       {/each}
     </div>

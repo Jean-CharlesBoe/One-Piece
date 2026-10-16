@@ -8,7 +8,7 @@
 ```bash
 npm install            # une fois
 npm run dev:joueur     # Vivre Card dans le navigateur (http://localhost:5173), stockage navigateur
-npm run dev:mj         # appli MJ dans le navigateur, SQLite web (jeep-sqlite) gardé dans IndexedDB
+npm run dev:mj         # appli MJ dans le navigateur, SQLite web (sql.js) gardé dans IndexedDB
 npm run check          # vérification des types, tout le monorepo
 npm test               # tests unitaires, tout le monorepo
 ```

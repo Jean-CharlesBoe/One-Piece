@@ -19,6 +19,9 @@ export interface MjRepository {
   backlinks(id: string): Promise<Backlink[]>
   /** Suppression définitive (depuis les archives). */
   deleteEntity(id: string): Promise<void>
+  /** Paires écartées de la vue « Doublons probables », sous la forme « idA|idB » (idA < idB). */
+  listNotDuplicates(): Promise<string[]>
+  markNotDuplicate(a: string, b: string): Promise<void>
 }
 
 export interface Backlink {
@@ -38,10 +41,13 @@ export const DB_NAME = 'onepiece-mj'
 
 let instance: Promise<MjRepository> | null = null
 
-/** SQLite natif sur le Chromebook ; jeep-sqlite (même SQL, stocké dans IndexedDB) en développement web. */
+/** SQLite natif sur le Chromebook ; sql.js (même SQL, base gardée dans IndexedDB) en développement web. */
 export function getRepository(): Promise<MjRepository> {
-  instance ??= Promise.all([import('./capacitorDb'), import('./sqliteRepository')]).then(async ([c, r]) =>
-    r.createSqliteRepository(await c.openCapacitorDb(DB_NAME, !Capacitor.isNativePlatform())),
-  )
+  instance ??= (async () => {
+    const db = Capacitor.isNativePlatform()
+      ? await (await import('./capacitorDb')).openCapacitorDb(DB_NAME)
+      : await (await import('./webDb')).openWebDb(DB_NAME)
+    return (await import('./sqliteRepository')).createSqliteRepository(db)
+  })()
   return instance
 }

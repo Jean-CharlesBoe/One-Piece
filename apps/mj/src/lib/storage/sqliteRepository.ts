@@ -198,6 +198,16 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
       await setMeta(META_LAST_CHANGE, new Date().toISOString())
       await db.persist()
     },
+    async listNotDuplicates() {
+      const r = await db.query(`SELECT a_id, b_id FROM not_duplicates`)
+      return r.map(row => `${String(row.a_id)}|${String(row.b_id)}`)
+    },
+    async markNotDuplicate(a, b) {
+      const [x, y] = a < b ? [a, b] : [b, a]
+      await db.run(`INSERT OR IGNORE INTO not_duplicates (a_id, b_id) VALUES (?, ?)`, [x, y])
+      await setMeta(META_LAST_CHANGE, new Date().toISOString())
+      await db.persist()
+    },
   }
 
 }

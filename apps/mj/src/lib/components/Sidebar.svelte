@@ -45,6 +45,12 @@
             </button>
           </li>
         {/each}
+        <li>
+          <button class="type" class:on={selected === 'doublons'} aria-current={selected === 'doublons'} onclick={() => onSelect('doublons')}>
+            <span class="icon" aria-hidden="true">🔀</span>
+            <span class="name">Doublons probables</span>
+          </button>
+        </li>
         {#if archived}
           <li>
             <button class="type" class:on={selected === 'archives'} aria-current={selected === 'archives'} onclick={() => onSelect('archives')}>

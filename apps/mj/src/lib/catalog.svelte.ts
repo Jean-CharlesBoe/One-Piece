@@ -14,7 +14,7 @@ class Catalog {
   active = $derived(this.entries.filter(e => !e.archived))
 
   async load(): Promise<void> {
-    this.entries = await (await getRepository()).listCatalog()
+    this.entries = (await (await getRepository()).listCatalog()).sort(byTitle)
   }
 
   /** Ajoute ou remplace une entrée après un enregistrement. */

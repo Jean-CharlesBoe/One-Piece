@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { onBack } from '@onepiece/core'
+  import Sheet from '@onepiece/core/ui/Sheet.svelte'
   import { catalog } from '../catalog.svelte'
   import { renderMarkdown } from '../markdown'
   import type { Entity } from '../model/entity'
@@ -6,8 +8,10 @@
   import { changeType, displayValue, ORPHANS, relationIds, removeOrphan, subtitle } from '../model/props'
   import { ENTITY_TYPES, TYPE_DEFS, type EntityType } from '../model/types'
   import { opened } from '../opened.svelte'
+  import { applyRename, renameCandidates } from '../rename'
   import ChipsInput from './ChipsInput.svelte'
   import MarkdownEditor from './MarkdownEditor.svelte'
+  import MoveForm from './MoveForm.svelte'
   import PropsForm from './PropsForm.svelte'
 
   // Fiche ouverte (cahier MJ §4.2 et §4.3) : lecture (propriétés, texte rendu, liens cliquables) ou édition
@@ -18,6 +22,7 @@
     onCreate,
     onAddChild,
     onDelete,
+    onMerge,
   }: {
     onOpen: (id: string) => void
     /** Lien rouge cliqué : créer la fiche nommée `label` puis réécrire le lien. */
@@ -26,6 +31,8 @@
     onCreate: (type: EntityType, title: string) => Promise<string | null>
     onAddChild: () => void
     onDelete: () => void
+    /** « Fusionner avec… » : choisir l'autre fiche dans la fenêtre de fusion. */
+    onMerge: (id: string) => void
   } = $props()
 
   const entity = $derived(opened.entity)
@@ -48,10 +55,76 @@
 
   const sameNames = $derived(entity && opened.editing ? sameName(entity.title, catalog.active, entity.id) : [])
   let confirmDelete = $state(false)
+  let menuOpen = $state(false)
+  let moveOpen = $state(false)
   $effect(() => {
     void entity?.id
     confirmDelete = false
+    menuOpen = false
   })
+
+  // Menu « ⋯ » : se ferme par Échap, clic à côté ou bouton retour Android.
+  $effect(() => {
+    if (!menuOpen) return
+    const close = (e: Event) => {
+      if (e instanceof KeyboardEvent && e.key !== 'Escape') return
+      if (e.type === 'pointerdown' && (e.target as HTMLElement).closest('.menu')) return
+      menuOpen = false
+    }
+    window.addEventListener('pointerdown', close)
+    window.addEventListener('keydown', close)
+    const off = onBack(() => (menuOpen = false))
+    return () => {
+      window.removeEventListener('pointerdown', close)
+      window.removeEventListener('keydown', close)
+      off()
+    }
+  })
+
+  // Renommage : combien de fiches citent l'ancien titre (proposé après l'édition, cahier §4.3).
+  let renameCount = $state<number | null>(null)
+  let renameBusy = $state(false)
+  let renameDone = $state(0)
+  $effect(() => {
+    const r = opened.renamed
+    renameCount = null
+    renameDone = 0
+    if (!r) return
+    renameCandidates(r)
+      .then(list => {
+        if (opened.renamed === r) renameCount = list.length
+      })
+      .catch(e => console.error('[onepiece-mj] renommage', e))
+  })
+
+  async function updateLinks() {
+    const r = opened.renamed
+    if (!r) return
+    renameBusy = true
+    try {
+      const list = await renameCandidates(r)
+      await applyRename(list)
+      renameDone = list.length
+      renameCount = 0
+    } catch (e) {
+      opened.error = 'Liens non mis à jour : ' + (e instanceof Error ? e.message : String(e))
+    } finally {
+      renameBusy = false
+    }
+  }
+
+  function keepOldName() {
+    const r = opened.renamed
+    if (!r) return
+    void opened.apply(e => {
+      if (!e.aliases.includes(r.oldTitle)) e.aliases.push(r.oldTitle)
+    })
+  }
+
+  function move(target: string | null) {
+    moveOpen = false
+    void opened.apply(e => (e.parentId = target))
+  }
 
   function changed() {
     opened.changed()
@@ -75,6 +148,12 @@
   const SAVE_LABEL = { enregistre: 'Enregistré', 'en-attente': 'Enregistrement…', erreur: 'Non enregistré' }
 </script>
 
+{#if entity}
+  <Sheet bind:open={moveOpen} title="Déplacer « {entity.title} » sous…">
+    <MoveForm id={entity.id} parentId={entity.parentId} onMove={move} />
+  </Sheet>
+{/if}
+
 <article class="view">
   {#if entity && def}
     {#if ancestors.length}
@@ -90,6 +169,11 @@
       <div class="actions">
         {#if opened.editing}
           <span class="save" class:err={opened.save === 'erreur'}>{SAVE_LABEL[opened.save]}</span>
+          <button
+            disabled={!opened.history.length}
+            onclick={() => opened.undo()}
+            title="Revenir à la version enregistrée avant la dernière modification">↶ Annuler</button
+          >
           <button class="primary" onclick={() => opened.setEditing(false)} title="Terminer (Ctrl+E)">✓ Terminer</button>
         {:else}
           <button
@@ -100,12 +184,26 @@
             onclick={() => opened.apply(e => (e.pinned = !e.pinned))}>📌</button
           >
           {#if !entity.archived}
-            <button onclick={onAddChild} title="Nouvelle page rattachée à celle-ci">+ Page enfant</button>
             <button onclick={() => opened.setEditing(true)} title="Modifier (Ctrl+E)">✎ Modifier</button>
-            <button
-              onclick={() => opened.apply(e => (e.archived = true))}
-              title="Retirer des listes et de la recherche (réversible)">Archiver</button
-            >
+            <div class="menu">
+              <button aria-haspopup="menu" aria-expanded={menuOpen} aria-label="Autres actions" onclick={() => (menuOpen = !menuOpen)}
+                >⋯</button
+              >
+              {#if menuOpen}
+                <div class="menu-list" role="menu">
+                  <button role="menuitem" onclick={() => ((menuOpen = false), onAddChild())}>+ Page enfant</button>
+                  <button role="menuitem" onclick={() => ((menuOpen = false), (moveOpen = true))}>Déplacer vers…</button>
+                  <button role="menuitem" onclick={() => ((menuOpen = false), onMerge(entity.id))}>Fusionner avec…</button>
+                  <button
+                    role="menuitem"
+                    onclick={() => {
+                      menuOpen = false
+                      void opened.apply(e => (e.archived = true))
+                    }}>Archiver</button
+                  >
+                </div>
+              {/if}
+            </div>
           {/if}
         {/if}
       </div>
@@ -124,6 +222,27 @@
           {/if}
         </div>
         {#if confirmDelete}<p class="warn">Les liens vers cette fiche deviendront des liens rouges. Impossible à annuler.</p>{/if}
+      </div>
+    {/if}
+
+    {#if opened.renamed?.id === entity.id && !opened.editing}
+      <div class="renamed card" role="status">
+        <p>Fiche renommée : « {opened.renamed.oldTitle} » → « {opened.renamed.newTitle} ».</p>
+        <div class="row">
+          {#if renameCount}
+            <button disabled={renameBusy} onclick={updateLinks}>
+              Mettre à jour les liens de {renameCount} fiche{renameCount > 1 ? 's' : ''}
+            </button>
+          {:else if renameDone}
+            <span class="muted">Liens mis à jour dans {renameDone} fiche{renameDone > 1 ? 's' : ''}.</span>
+          {:else if renameCount === 0}
+            <span class="muted">Aucun lien à mettre à jour.</span>
+          {/if}
+          {#if !entity.aliases.includes(opened.renamed.oldTitle)}
+            <button onclick={keepOldName}>Garder « {opened.renamed.oldTitle} » comme alias</button>
+          {/if}
+          <button onclick={() => (opened.renamed = null)}>Fermer</button>
+        </div>
       </div>
     {/if}
 
@@ -191,7 +310,7 @@
           </section>
         {/if}
 
-        {#key entity.id}
+        {#key `${entity.id}-${opened.revision}`}
           <MarkdownEditor
             value={entity.bodyMd}
             selfId={entity.id}
@@ -444,12 +563,38 @@
     padding: 0 8px;
     font-size: 0.85rem;
   }
-  .archived {
+  .archived,
+  .renamed {
     margin: 10px 0;
     border-color: var(--reve);
   }
-  .archived p {
+  .archived p,
+  .renamed p {
     margin: 0 0 8px;
+  }
+  .menu {
+    position: relative;
+  }
+  .menu-list {
+    position: absolute;
+    right: 0;
+    top: calc(100% + 4px);
+    z-index: 5;
+    display: grid;
+    min-width: 200px;
+    padding: 4px;
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: 0 6px 18px rgb(0 0 0 / 0.18);
+  }
+  .menu-list button {
+    border: none;
+    background: none;
+    text-align: left;
+  }
+  .menu-list button:hover {
+    background: var(--bg);
   }
   .row {
     display: flex;
