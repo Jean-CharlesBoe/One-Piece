@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). Suite conseillée : M1 (passage au web, D-M18, et vérification de l'écriture dans Drive sur les deux appareils), puis M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 (passage au web) : code fait, à publier sur GitHub Pages et à vérifier sur le PC et le Chromebook (écriture dans Drive). Ensuite : M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -30,7 +30,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | # | Étape | Contenu | Bloquée par | Statut |
 |---|---|---|---|---|
 | M0 | Socle | Capacitor, `appId`, schéma SQLite (migration 1), repository, repli web, CI `mj.yml`, disposition 3 colonnes | — | fait (volet Android abandonné : D-M18) |
-| M1 | Appli web (D-M18) | retrait de Capacitor, manifeste PWA + service worker (hors ligne), stockage persistant, CI → GitHub Pages ; **sur les appareils** : installation sur le Chromebook et le PC, écriture automatique dans un dossier Google Drive | — | à faire |
+| M1 | Appli web (D-M18) | retrait de Capacitor, manifeste PWA + service worker (hors ligne), stockage persistant, CI → GitHub Pages ; **sur les appareils** : installation sur le Chromebook et le PC, écriture automatique dans un dossier Google Drive | — | en cours (code fait, vérification sur appareils) |
 | M2a | Fiches (cœur) | registre des types, lecture (propriétés, Markdown rendu), édition (formulaire + CodeMirror, `[[`), liens et rétroliens, liens rouges, pages enfants, épinglés, archives, changement de type, alias, avertissement de doublon | — | fait (navigateur) |
 | M2b | Fiches (suite) | renommage qui met à jour les `[[liens]]` (avec confirmation), « Déplacer vers… », « Annuler la dernière modification » | — | fait (navigateur) |
 | M2c | Un nom par chose | fusion de deux fiches, vue « Doublons probables » (détection approchée), « Ajouter comme alias » | — | fait (navigateur) |
@@ -246,3 +246,12 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Proposition du MJ examinée : appli web + Supabase gratuit. Écartée : mise en pause après 7 jours sans activité, aucune sauvegarde sur l'offre gratuite, internet obligatoire en session, accès à sécuriser (dépôt public connu des joueurs), réécriture du stockage.
 - **D-M18** : appli MJ = appli web installable (GitHub Pages, hors ligne), base sql.js sur l'appareil, sauvegarde automatique et passage de relais par un dossier Google Drive, un appareil à la fois (préparation sur PC, jeu sur Chromebook). Q-T3 close. ROADMAP : M1 devient le passage au web, M4 la sauvegarde avec relais.
 - À faire côté MJ avant M1 : installer **Google Drive pour ordinateur** sur le PC si ce n'est pas déjà fait.
+
+### Session 14 · 2026-10-16 (M1 — l'appli MJ passe au web)
+- D-M18 commitée (`b11b119`).
+- Retirés de l'appli MJ : Capacitor, plugins, projet `apps/mj/android`, `capacitor.config.ts`, scripts `android:mj`, texte des Releases APK. La base est toujours sql.js (`webDb.ts`, base IndexedDB `onepiece-mj`), le moteur wasm est désormais une ressource du build.
+- Appli installable : `public/manifest.webmanifest`, icônes provisoires (rose des vents dorée, 192, 512 et « maskable » ; rendues avec resvg depuis `icons/icon.svg`, en attendant Q-T4), service worker généré au build (`sw.template.js` + plugin dans `vite.config.ts` : cache de tous les fichiers, nom de cache par build, pages « réseau d'abord »).
+- `pwa.svelte.ts` : enregistrement du service worker (production), bouton « Installer l'application », demande de stockage persistant. `backupFolder.ts` : choix d'un dossier (File System Access API, gardé dans IndexedDB), autorisation, test d'écriture et de relecture qui affiche aussi ce qu'a écrit l'autre appareil. Réglages : sections Application et Dossier de sauvegarde.
+- CI `mj.yml` : vérification et build à chaque push, **publication manuelle** sur GitHub Pages (`workflow_dispatch`). Version `0.1.0`. `.claude/launch.json` : `mj-build` (essai du build sur le port 5185).
+- Vérifié : check, 131 tests, build ; essai du build : service worker actif, 11 fichiers en cache (dont le wasm), manifeste lu, réglages affichés, fiche conservée après rechargement servi par le service worker. Non vérifiable ici : installation, hors ligne réel, stockage protégé (accordé aux apps installées), choix d'un dossier Drive (sélecteur système) ; c'est la vérification M1 sur les appareils (RELEASE.md).
+- Reste : activer GitHub Pages (source « GitHub Actions »), première publication, puis vérifications sur le PC et le Chromebook. Docs : RELEASE (section MJ réécrite), ARCHITECTURE, CLAUDE.md, D-T5.

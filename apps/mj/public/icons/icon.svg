@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Icône provisoire de l'appli MJ « One Piece » (en attendant le dessin, Q-T4). -->
+  <rect width="512" height="512" rx="96" fill="#15161a"/>
+  <circle cx="256" cy="256" r="176" fill="none" stroke="#e0a840" stroke-width="24"/>
+  <path d="M256 104 L282 222 L400 256 L282 290 L256 408 L230 290 L112 256 L230 222 Z" fill="#e0a840"/>
+  <circle cx="256" cy="256" r="26" fill="#15161a"/>
+</svg>

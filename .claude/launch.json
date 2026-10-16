@@ -12,6 +12,12 @@
       "runtimeExecutable": "node",
       "runtimeArgs": ["node_modules/vite/bin/vite.js", "apps/mj", "--port", "5184", "--strictPort"],
       "port": 5184
+    },
+    {
+      "name": "mj-build",
+      "runtimeExecutable": "node",
+      "runtimeArgs": ["node_modules/vite/bin/vite.js", "preview", "apps/mj", "--port", "5185", "--strictPort"],
+      "port": 5185
     }
   ]
 }

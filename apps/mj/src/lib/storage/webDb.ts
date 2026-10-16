@@ -1,13 +1,15 @@
 import initSqlJs from 'sql.js'
+// Moteur SQLite de sql.js : ressource du build (servie avec l'app, mise en cache pour le hors ligne).
+import wasmUrl from 'sql.js/dist/sql-wasm-browser.wasm?url'
 import type { Db } from './db'
 import { sqlJsDb } from './sqlJsDb'
 
 /**
- * Repli web de développement (`npm run dev:mj`, D-T3) : SQLite en WebAssembly (sql.js), même SQL que sur
- * l'appareil, base gardée dans IndexedDB après chaque écriture. Le fichier sql-wasm.wasm est servi par le
- * serveur de dev (vite.config.ts) : il n'entre jamais dans le build ni dans l'APK.
+ * Base de l'appli MJ (D-M18) : SQLite en WebAssembly (sql.js), gardée dans IndexedDB après chaque écriture.
+ * Le stockage est demandé « persistant » au démarrage (storage.ts) pour que le navigateur ne le libère pas.
+ * En développement, la base vit dans le stockage de localhost:5184, séparé de celui de l'app publiée.
  */
-const IDB = 'onepiece-mj-dev'
+const IDB = 'onepiece-mj'
 const STORE = 'bases'
 
 function idb(): Promise<IDBDatabase> {
@@ -39,7 +41,7 @@ async function store(name: string, data: Uint8Array): Promise<void> {
 }
 
 export async function openWebDb(name: string): Promise<Db> {
-  const SQL = await initSqlJs({ locateFile: file => `/assets/${file}` })
+  const SQL = await initSqlJs({ locateFile: () => wasmUrl })
   const db = new SQL.Database(await load(name))
   return sqlJsDb(db, data => store(name, data))
 }

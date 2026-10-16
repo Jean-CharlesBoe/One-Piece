@@ -26,7 +26,7 @@ Reprise de D5/D8 de Sans Nom, adaptée (zip avec médias pour le MJ). Voir [ARCH
 
 ### D-T5 · 2026-10-09 · Noms et identifiants Android — *validée* (identifiant de Vivre Card **définitif** depuis la release v0.1.0 du 2026-10-12)
 - Appli joueur : **« Vivre Card »**. Appli MJ : **« One Piece »**.
-- `appId` : `fr.onepiecejdr.joueur` et `fr.onepiecejdr.mj`, définitifs après la première release. Une seule clé de signature pour les deux apps, sauvegardée hors GitHub.
+- `appId` : `fr.onepiecejdr.joueur`, définitif depuis la release v0.1.0. (`fr.onepiecejdr.mj` abandonné : l'appli MJ est une appli web, D-M18.) Une seule clé de signature pour les deux apps, sauvegardée hors GitHub.
 
 ### D-T6 · 2026-10-09 · Dépôt GitHub public — *validée*
 Comme Sans Nom : les joueurs téléchargent l'APK depuis les Releases sans compte. Le contenu du monde (export Notion, sauvegardes `.opmj`) n'est **jamais** versionné : dossiers ignorés par git.

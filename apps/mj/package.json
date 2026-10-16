@@ -1,7 +1,7 @@
 {
   "name": "@onepiece/mj",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -10,10 +10,6 @@
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
   "dependencies": {
-    "@capacitor-community/sqlite": "^8.1.1",
-    "@capacitor/android": "^8.5.3",
-    "@capacitor/app": "^8.1.2",
-    "@capacitor/core": "^8.5.3",
     "@codemirror/autocomplete": "^6.20.3",
     "@codemirror/commands": "^6.11.1",
     "@codemirror/lang-markdown": "^6.5.2",
@@ -27,7 +23,6 @@
     "sql.js": "^1.14.2"
   },
   "devDependencies": {
-    "@capacitor/cli": "^8.5.3",
     "@types/sql.js": "^1.4.11"
   }
 }

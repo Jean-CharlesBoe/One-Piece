@@ -52,7 +52,7 @@ one-piece-jdr/
     notion-import/              script Node de migration unique (voir docs/mj/IMPORT_NOTION.md)
   .github/workflows/
     joueur.yml                  CI + APK de l'appli joueur (tags joueur-vX.Y.Z)
-    mj.yml                      CI + APK de l'appli MJ (tags mj-vX.Y.Z)
+    mj.yml                      CI + publication GitHub Pages de l'appli MJ (à la demande)
   docs/
 ```
 
@@ -94,7 +94,7 @@ L'import Notion produit **un fichier `.opmj`** que l'appli MJ restaure : un seul
 
 Repris de Sans Nom (D6 de Sans Nom) :
 - GitHub Actions : `check`, `test`, APK debug en artefact sur chaque push ; APK **signé** + Release sur tag.
-- Un workflow par app, déclenché par son préfixe de tag (`joueur-v1.2.0`, `mj-v0.3.0`) et par les chemins modifiés (`apps/joueur/**`, `packages/core/**`…).
+- Un workflow par app, déclenché par les chemins modifiés (`apps/joueur/**`, `packages/core/**`…). Vivre Card : tag `joueur-vX.Y.Z` → APK signé. Appli MJ : publication manuelle sur GitHub Pages (D-M18).
 - **Une seule clé de signature** peut signer les deux apps (les `appId` diffèrent). La sauvegarder hors de GitHub.
 - Noms affichés : **Vivre Card** (joueur) et **One Piece** (MJ). `appId` (définitifs après la 1re release, D-T5) : `fr.onepiecejdr.joueur` et `fr.onepiecejdr.mj`.
 - Dépôt **public** (D-T6) : `.gitignore` exclut `tools/notion-import/input/`, `*.opmj`, `rapport-import.md` et tout export Notion.

@@ -1,6 +1,5 @@
-// Accès SQL minimal sur lequel repose le repository. Deux implémentations, même SQL :
-// SQLite natif sur le Chromebook, jeep-sqlite (sql.js) dans le navigateur en développement (capacitorDb.ts),
-// et sql.js directement dans les tests.
+// Accès SQL minimal sur lequel repose le repository : sql.js (SQLite en WebAssembly) dans l'appli web
+// (webDb.ts, D-M18) et dans les tests (sqlJsDb.ts).
 
 export type Row = Record<string, unknown>
 export type Param = string | number | null

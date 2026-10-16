@@ -1,7 +1,5 @@
 <script lang="ts">
-  import { App as CapApp } from '@capacitor/app'
-  import { Capacitor } from '@capacitor/core'
-  import { handleBack, isTheme, theme } from '@onepiece/core'
+  import { isTheme, theme } from '@onepiece/core'
   import Sheet from '@onepiece/core/ui/Sheet.svelte'
   import { onMount } from 'svelte'
   import { catalog } from './lib/catalog.svelte'
@@ -205,21 +203,10 @@
       .catch(fail)
     catalog.load().catch(fail)
 
-    // Bouton retour Android : fermer la fenêtre ou le volet ouvert, sinon quitter l'édition, sinon revenir
-    // à la liste (une colonne), sinon quitter. L'historique Précédent / Suivant arrive en M3.
-    const handle = Capacitor.isNativePlatform()
-      ? CapApp.addListener('backButton', () => {
-          if (handleBack()) return
-          if (opened.editing) void opened.setEditing(false)
-          else if (layout === 'une' && opened.entity) void opened.close()
-          else void opened.flush().then(() => CapApp.exitApp())
-        })
-      : null
     return () => {
       wide.removeEventListener('change', onResize)
       medium.removeEventListener('change', onResize)
       document.removeEventListener('visibilitychange', onHide)
-      handle?.then(h => h.remove())
     }
   })
 

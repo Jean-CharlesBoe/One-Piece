@@ -5,9 +5,9 @@ Deux applications Android **indépendantes** pour le JDR One Piece maison de Jea
 | App | Pour qui | Appareil | Rôle |
 |---|---|---|---|
 | **Vivre Card** — appli joueur (`apps/joueur`) | les joueurs | téléphones Android | fiche de personnage, calquée sur l'app Sans Nom |
-| **One Piece** — appli MJ (`apps/mj`) | le MJ seul | Chromebook (app Android) | base de connaissances du JDR + journal de session |
+| **One Piece** — appli MJ (`apps/mj`) | le MJ seul | Chromebook et PC (appli web installable, D-M18) | base de connaissances du JDR + journal de session |
 
-Chaque app a **sa propre base SQLite embarquée**. Aucun serveur, aucune synchro, aucun échange de données entre les deux apps. Le MJ ne voit pas les fiches des joueurs.
+Chaque app a **sa propre base SQLite** (native sur le téléphone pour Vivre Card ; sql.js dans le navigateur pour l'appli MJ, avec sauvegarde dans un dossier Google Drive). Aucun serveur, aucun échange de données entre les deux apps. Le MJ ne voit pas les fiches des joueurs.
 
 Langue du projet : **français** (UI, docs, messages de commit). Identifiants de code en anglais, termes du jeu sans équivalent clair en français (`reve`, `haki`, `fruit`).
 
@@ -59,6 +59,6 @@ npm run check             # types (svelte-check + tsc) sur tout le monorepo
 npm test                  # Vitest sur tout le monorepo
 npm run android:joueur    # build + cap sync android de l'appli joueur
 npm run android:joueur:open  # ouvre apps/joueur/android dans Android Studio
-npm run android:mj        # build + cap sync android de l'appli MJ
+gh workflow run mj.yml --ref main  # publie l'appli MJ (web) sur GitHub Pages
 npm run notion:import -- <export.zip> <sortie.opmj>   # migration Notion unique
 ```

@@ -1,4 +1,3 @@
-import { Capacitor } from '@capacitor/core'
 import type { CatalogEntry, Entity } from '../model/entity'
 import type { SearchEngine } from './schema'
 
@@ -41,12 +40,10 @@ export const DB_NAME = 'onepiece-mj'
 
 let instance: Promise<MjRepository> | null = null
 
-/** SQLite natif sur le Chromebook ; sql.js (même SQL, base gardée dans IndexedDB) en développement web. */
+/** Base SQLite de l'appareil (sql.js, gardée dans IndexedDB, D-M18). */
 export function getRepository(): Promise<MjRepository> {
   instance ??= (async () => {
-    const db = Capacitor.isNativePlatform()
-      ? await (await import('./capacitorDb')).openCapacitorDb(DB_NAME)
-      : await (await import('./webDb')).openWebDb(DB_NAME)
+    const db = await (await import('./webDb')).openWebDb(DB_NAME)
     return (await import('./sqliteRepository')).createSqliteRepository(db)
   })()
   return instance

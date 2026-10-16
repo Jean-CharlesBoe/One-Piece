@@ -95,28 +95,36 @@ Le workflow [.github/workflows/joueur.yml](../.github/workflows/joueur.yml) :
 
 Le `versionCode` Android est calculé à partir du tag (`X*10000 + Y*100 + Z`) : chaque tag doit être **supérieur** au précédent.
 
-## Appli MJ « One Piece » (Chromebook)
+## Appli MJ « One Piece » (appli web, D-M18)
 
-Même chaîne que Vivre Card, avec ses propres noms :
+L'appli MJ n'est pas une app Android : c'est une appli web installable, publiée sur GitHub Pages (https://jean-charlesboe.github.io/One-Piece/). Elle s'ouvre dans Chrome sur le Chromebook et sur le PC, s'installe comme une app (icône, fenêtre à elle) et fonctionne hors ligne.
 
-| | Vivre Card | One Piece (MJ) |
-|---|---|---|
-| Workflow | `joueur.yml` | [.github/workflows/mj.yml](../.github/workflows/mj.yml) |
-| Préparer Android en local | `npm run android:joueur` | `npm run android:mj` puis `npm run android:mj:open` |
-| Artefact de debug | `vivrecard-debug-apk` | `onepiece-mj-debug-apk` |
-| Tag de release | `joueur-vX.Y.Z` | `mj-vX.Y.Z` (= version de `apps/mj/package.json`) |
-| APK publié | `VivreCard-vX.Y.Z.apk` | `OnePiece-vX.Y.Z.apk` |
-| Texte de la Release | `.github/release-notes-joueur.md` | `.github/release-notes-mj.md` |
+```bash
+npm run dev:mj                      # développement (http://localhost:5184 avec .claude/launch.json)
+npx vite build apps/mj              # build de production dans apps/mj/dist
+npx vite preview apps/mj            # essai du build (service worker compris)
+```
 
-Même clé de signature (empreinte ci-dessus), même clé de debug versionnée (`apps/mj/android/debug.keystore`, D-T8). L'`appId` `fr.onepiecejdr.mj` devient définitif à la première release `mj-v…` (D-T5).
+### Publier une version
+Le workflow [.github/workflows/mj.yml](../.github/workflows/mj.yml) vérifie, teste et construit à chaque push. **La publication est manuelle** : onglet **Actions** › « One Piece (MJ) » › **Run workflow** (branche `main`), ou :
+```bash
+gh workflow run mj.yml --ref main
+```
+Mettre d'abord à jour la version dans `apps/mj/package.json` (affichée dans Réglages › À propos). Prérequis, une seule fois : GitHub › Settings › Pages › Source : **GitHub Actions**.
 
-Installation sur le Chromebook : à préciser à l'étape M1 (Q-T3 : apps Android activées, installation d'un APK hors Play Store).
+Après une publication, l'app installée se met à jour d'elle-même : la nouvelle version est téléchargée au premier lancement en ligne et prend effet au lancement suivant.
 
-### Que vérifier sur le Chromebook (M1)
-- L'app s'ouvre en plein écran paysage avec les 3 colonnes ; réduire la fenêtre (demi-écran) → 2 puis 1 colonne.
-- Créer une fiche, **fermer complètement l'app**, la rouvrir : la fiche est toujours là → SQLite fonctionne.
-- Roue dentée ⚙ → « À propos » : noter le moteur de recherche affiché (**FTS5** attendu ; FTS4 ou « aucun index » à signaler, D-M11).
-- Thème Clair / Sombre / Automatique, conservé après redémarrage.
+### Installer sur le Chromebook et sur le PC
+1. Ouvrir https://jean-charlesboe.github.io/One-Piece/ dans Chrome.
+2. Roue dentée ⚙ › Application › **Installer l'application** (ou menu ⋮ de Chrome › « Installer One Piece… »).
+3. Roue dentée ⚙ › Dossier de sauvegarde › **Choisir le dossier…** : un dossier dans **Google Drive** (sur le PC, Google Drive pour ordinateur doit être installé), le même sur les deux appareils.
+
+### Que vérifier (M1)
+- L'app installée s'ouvre dans sa propre fenêtre ; elle s'ouvre aussi **sans réseau** (mode avion) une fois lancée une première fois.
+- Créer une fiche, fermer l'app, la rouvrir : la fiche est toujours là.
+- Réglages › Application : « Stockage protégé : oui » (sinon « Demander la protection »).
+- Réglages › Dossier de sauvegarde : **Tester l'écriture** sur le PC, puis sur le Chromebook : le Chromebook doit afficher « Contenu précédent : … PC Windows … » (le fichier écrit par le PC est bien arrivé par Drive), et inversement.
+- Réduire la fenêtre (demi-écran) : 3 → 2 → 1 colonne.
 
 ## Installer sur le téléphone d'un joueur
 
