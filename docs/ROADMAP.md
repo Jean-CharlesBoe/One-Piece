@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 publiée (v0.2.0). M4 (sauvegarde et relais par Drive) faite dans le navigateur, à publier (v0.3.0) et à vérifier sur le PC et le Chromebook. Ensuite : M5 (import Notion). Ensuite : M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 publiée (v0.2.0). M4 (sauvegarde et relais par Drive) publiée (v0.3.0), à vérifier par le MJ sur le PC et le Chromebook. Ensuite : M5 (import Notion). Ensuite : M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -276,4 +276,5 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Interface : section « Sauvegarde » des réglages (remplace le test d'écriture de M1), état en bas de la barre latérale, bandeau d'action au-dessus de la fiche.
 - **D-M19** (proposée) : règles de détail. Cahier §6, MODELE_DONNEES §5, RELEASE (que vérifier pour M4).
 - Vérifié : check, 154 tests (12 nouveaux) ; navigateur, avec un dossier de test dans le stockage privé du navigateur (OPFS, même interface que le dossier Drive) : première sauvegarde et copie du jour, sauvegarde 5 s après une modification, version « Chromebook » simulée → « reprendre », modification locale pendant ce temps → rien d'écrasé, « conflit », garder celle du dossier (copie « avant-restauration » ; la fiche du Chromebook apparaît), garder celle de l'appareil (copie « remplacee-Chromebook »), restauration d'un fichier avec confirmation (devient la référence). Corrigés pendant le test : nom de la copie de sécurité (heure locale, appareil), copie de la version remplacée qui manquait quand le MJ garde la sienne.
+- Version 0.3.0 publiée avec l'accord du MJ (`931cf48`, cache `onepiece-mj-0.3.0-…` en ligne). Le dossier choisi au test de M1 est réutilisé (même clé de stockage).
 - Non vérifiable ici : le vrai dossier Google Drive et le passage PC ↔ Chromebook (RELEASE.md › Que vérifier (M4)).
