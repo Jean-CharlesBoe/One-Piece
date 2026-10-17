@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 (navigation et recherche) faite dans le navigateur. Suite conseillée : M4 (sauvegarde `.opmj` et relais par Drive), avant d'y mettre de vraies données. Ensuite : M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 (navigation et recherche) faite et publiée (v0.2.0). Suite conseillée : M4 (sauvegarde `.opmj` et relais par Drive), avant d'y mettre de vraies données. Ensuite : M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -34,7 +34,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | M2a | Fiches (cœur) | registre des types, lecture (propriétés, Markdown rendu), édition (formulaire + CodeMirror, `[[`), liens et rétroliens, liens rouges, pages enfants, épinglés, archives, changement de type, alias, avertissement de doublon | — | fait (navigateur) |
 | M2b | Fiches (suite) | renommage qui met à jour les `[[liens]]` (avec confirmation), « Déplacer vers… », « Annuler la dernière modification » | — | fait (navigateur) |
 | M2c | Un nom par chose | fusion de deux fiches, vue « Doublons probables » (détection approchée), « Ajouter comme alias » | — | fait (navigateur) |
-| M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique, onglets (D-M14) | — | fait (navigateur, à publier) |
+| M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique, onglets (D-M14) | — | fait (publiée en v0.2.0) |
 | M4 | Sauvegarde et relais | `.opmj` (zip + médias), sauvegarde automatique dans le dossier Drive, reprise de la version la plus récente au lancement, conflit signalé, restauration, rappel | — | à faire |
 | M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | — | à faire |
 | M6 | Documents | import image/PDF, visionneuse | — | à faire |
@@ -266,4 +266,4 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - **Cibles tactiles** agrandies (≥ 40 px : lignes, liens du panneau, barre d'outils, en-tête ; ✕ des pastilles à 36 px).
 - Vérifié : check, 142 tests (11 nouveaux), build ; navigateur (piloté par JavaScript) : recherche (préfixe, accents, propriétés, extrait, Entrée), filtres PNJ puis faction, tri, récentes, onglets (remplacement, Ctrl + clic, Alt + ← / →, menu contextuel, rechargement, fermeture), arbres des lieux et des scénarios, une colonne ; console sans erreur.
 - Points d'attention : Ctrl+N et Ctrl+W sont réservés par Chrome dans un onglet de navigateur ; dans l'app installée, Ctrl+N reste à confirmer par le MJ (sinon bouton « + Nouvelle »). Ctrl+W n'est pas utilisé.
-- Reste : publier la version 0.2.0 (avec l'accord du MJ) ; ensuite M4.
+- Version 0.2.0 publiée avec l'accord du MJ (`a7d58e3`, run de publication vert, cache `onepiece-mj-0.2.0-…` en ligne). Suite : M4.
