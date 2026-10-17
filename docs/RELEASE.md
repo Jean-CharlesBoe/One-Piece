@@ -119,6 +119,13 @@ Après une publication, l'app installée se met à jour d'elle-même : la nouvel
 2. Roue dentée ⚙ › Application › **Installer l'application** (ou menu ⋮ de Chrome › « Installer One Piece… »).
 3. Roue dentée ⚙ › Dossier de sauvegarde › **Choisir le dossier…** : un dossier dans **Google Drive** (sur le PC, Google Drive pour ordinateur doit être installé), le même sur les deux appareils.
 
+### Que vérifier (M4 : sauvegarde et relais)
+- Réglages › Sauvegarde : choisir le dossier Google Drive sur le PC ; l'état passe à « ✓ Sauvegardé à … » ; dans Drive, `onepiece-mj.opmj` et `historique/`.
+- Modifier une fiche : « Sauvegarde en cours… » puis « ✓ Sauvegardé » quelques secondes après.
+- Sur le Chromebook (base vide), choisir **le même dossier** : bandeau « Version plus récente dans le dossier… » › Reprendre : les fiches du PC apparaissent.
+- Modifier sur le Chromebook, fermer l'app, rouvrir celle du PC : bandeau « Version plus récente… (Chromebook) » › Reprendre.
+- Modifier sur les deux sans passer par l'autre : bandeau « Les deux appareils ont modifié la base » ; quel que soit le choix, l'autre version se retrouve dans `historique/`.
+
 ### Que vérifier (M1)
 - L'app installée s'ouvre dans sa propre fenêtre ; elle s'ouvre aussi **sans réseau** (mode avion) une fois lancée une première fois.
 - Créer une fiche, fermer l'app, la rouvrir : la fiche est toujours là.

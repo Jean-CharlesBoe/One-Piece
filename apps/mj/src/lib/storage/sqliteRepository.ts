@@ -1,3 +1,4 @@
+import { RAW_TABLES, TABLE_COLUMNS, type BackupData, type RawRow } from '../backup/format'
 import { toCatalogEntry, type CatalogEntry, type Entity } from '../model/entity'
 import { computeLinks, plainText } from '../model/links'
 import { normalizeEntity } from '../model/normalize'
@@ -102,8 +103,11 @@ function parse(row: Row): Entity {
   return entity
 }
 
-/** Ouvre la base (clés étrangères, migrations, index de recherche) et renvoie le repository. */
-export async function createSqliteRepository(db: Db): Promise<MjRepository> {
+/**
+ * Ouvre la base (clés étrangères, migrations, index de recherche) et renvoie le repository.
+ * `onChange` est appelé après chaque modification des données (sauvegarde automatique, D-M18).
+ */
+export async function createSqliteRepository(db: Db, onChange: () => void = () => {}): Promise<MjRepository> {
   await db.pragma(`PRAGMA foreign_keys = ON`)
   await migrate(db)
   const engine = await ensureSearchIndex(db)
@@ -114,6 +118,51 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
       key,
       value,
     ])
+  }
+
+  /** Note la date de la modification, l'enregistre et prévient (sauvegarde automatique). */
+  async function touch() {
+    await setMeta(META_LAST_CHANGE, new Date().toISOString())
+    await db.persist()
+    onChange()
+  }
+
+  async function upsertEntity(e: Entity) {
+    await db.run(
+      `INSERT INTO entities (id, type, title, aliases, parent_id, sort_order, props, body_md, tags, cover_asset,
+                             pinned, archived, notion_id, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+         ON CONFLICT(id) DO UPDATE SET
+           type = excluded.type, title = excluded.title, aliases = excluded.aliases,
+           parent_id = excluded.parent_id, sort_order = excluded.sort_order, props = excluded.props,
+           body_md = excluded.body_md, tags = excluded.tags, cover_asset = excluded.cover_asset,
+           pinned = excluded.pinned, archived = excluded.archived, notion_id = excluded.notion_id,
+           updated_at = excluded.updated_at`,
+      [
+        e.id,
+        e.type,
+        e.title,
+        JSON.stringify(e.aliases),
+        e.parentId,
+        e.sortOrder,
+        JSON.stringify(e.props),
+        e.bodyMd,
+        JSON.stringify(e.tags),
+        e.coverAsset,
+        e.pinned ? 1 : 0,
+        e.archived ? 1 : 0,
+        e.notionId,
+        e.createdAt,
+        e.updatedAt,
+      ],
+    )
+  }
+
+  async function insertRow(table: string, cols: readonly string[], row: RawRow) {
+    await db.run(
+      `INSERT INTO ${table} (${cols.join(', ')}) VALUES (${cols.map(() => '?').join(', ')})`,
+      cols.map(c => row[c] ?? null),
+    )
   }
 
   /** Table links dérivée de la fiche : relations et mentions vers des fiches existantes. */
@@ -150,38 +199,10 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
       return r.length ? parse(r[0]) : null
     },
     async saveEntity(e) {
-      await db.run(
-        `INSERT INTO entities (id, type, title, aliases, parent_id, sort_order, props, body_md, tags, cover_asset,
-                               pinned, archived, notion_id, created_at, updated_at)
-           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-           ON CONFLICT(id) DO UPDATE SET
-             type = excluded.type, title = excluded.title, aliases = excluded.aliases,
-             parent_id = excluded.parent_id, sort_order = excluded.sort_order, props = excluded.props,
-             body_md = excluded.body_md, tags = excluded.tags, cover_asset = excluded.cover_asset,
-             pinned = excluded.pinned, archived = excluded.archived, notion_id = excluded.notion_id,
-             updated_at = excluded.updated_at`,
-        [
-          e.id,
-          e.type,
-          e.title,
-          JSON.stringify(e.aliases),
-          e.parentId,
-          e.sortOrder,
-          JSON.stringify(e.props),
-          e.bodyMd,
-          JSON.stringify(e.tags),
-          e.coverAsset,
-          e.pinned ? 1 : 0,
-          e.archived ? 1 : 0,
-          e.notionId,
-          e.createdAt,
-          e.updatedAt,
-        ],
-      )
+      await upsertEntity(e)
       await writeLinks(e)
       await indexEntity(db, engine, e)
-      await setMeta(META_LAST_CHANGE, new Date().toISOString())
-      await db.persist()
+      await touch()
     },
     async search(query, limit = 60): Promise<SearchHit[]> {
       const match = ftsQuery(query)
@@ -230,8 +251,7 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
       await db.run(`DELETE FROM links WHERE from_kind = 'entity' AND from_id = ?`, [id])
       if (engine !== 'aucun') await db.run(`DELETE FROM search_index WHERE entity_id = ?`, [id])
       await db.run(`DELETE FROM entities WHERE id = ?`, [id])
-      await setMeta(META_LAST_CHANGE, new Date().toISOString())
-      await db.persist()
+      await touch()
     },
     async listNotDuplicates() {
       const r = await db.query(`SELECT a_id, b_id FROM not_duplicates`)
@@ -240,7 +260,59 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
     async markNotDuplicate(a, b) {
       const [x, y] = a < b ? [a, b] : [b, a]
       await db.run(`INSERT OR IGNORE INTO not_duplicates (a_id, b_id) VALUES (?, ?)`, [x, y])
-      await setMeta(META_LAST_CHANGE, new Date().toISOString())
+      await touch()
+    },
+    async exportData(): Promise<BackupData> {
+      const entities = (await db.query(`SELECT * FROM entities ORDER BY created_at`)).map(parse)
+      const data = { entities } as BackupData
+      for (const t of RAW_TABLES) {
+        const cols = TABLE_COLUMNS[t]
+        data[t] = (await db.query(`SELECT ${cols.join(', ')} FROM ${t}`)) as RawRow[]
+      }
+      return data
+    },
+    async importData(input) {
+      // Références vers des lignes absentes de la sauvegarde : retirées plutôt que refuser toute la restauration.
+      const entityIds = new Set(input.entities.map(e => e.id))
+      const assetIds = new Set(input.assets.map(a => String(a.id)))
+      const campaignIds = new Set(input.campaigns.map(c => String(c.id)))
+      const sessions = input.sessions.filter(s => campaignIds.has(String(s.campaign_id)))
+      const sessionIds = new Set(sessions.map(s => String(s.id)))
+      const data: BackupData = {
+        entities: input.entities.map(e => ({
+          ...e,
+          parentId: e.parentId && entityIds.has(e.parentId) ? e.parentId : null,
+          coverAsset: e.coverAsset && assetIds.has(e.coverAsset) ? e.coverAsset : null,
+        })),
+        assets: input.assets,
+        campaigns: input.campaigns,
+        sessions: sessions.map(s => ({ ...s, scenario_id: entityIds.has(String(s.scenario_id)) ? s.scenario_id : null })),
+        journal_entries: input.journal_entries.filter(j => sessionIds.has(String(j.session_id))),
+        not_duplicates: input.not_duplicates.filter(n => entityIds.has(String(n.a_id)) && entityIds.has(String(n.b_id))),
+      }
+      await db.run('BEGIN')
+      try {
+        // Les fiches peuvent citer une page parente insérée après elles : contrôle à la fin de la transaction.
+        await db.pragma('PRAGMA defer_foreign_keys = ON')
+        await db.run(`DELETE FROM links`)
+        if (engine !== 'aucun') await db.run(`DELETE FROM search_index`)
+        for (const t of ['not_duplicates', 'journal_entries', 'sessions', 'campaigns', 'entities', 'assets']) {
+          await db.run(`DELETE FROM ${t}`)
+        }
+        for (const a of data.assets) await insertRow('assets', TABLE_COLUMNS.assets, a)
+        for (const e of data.entities) await upsertEntity(e)
+        for (const t of ['campaigns', 'sessions', 'journal_entries', 'not_duplicates'] as const) {
+          for (const row of data[t]) await insertRow(t, TABLE_COLUMNS[t], row)
+        }
+        for (const e of data.entities) {
+          await writeLinks(e)
+          await indexEntity(db, engine, e)
+        }
+        await db.run('COMMIT')
+      } catch (e) {
+        await db.run('ROLLBACK')
+        throw e
+      }
       await db.persist()
     },
   }

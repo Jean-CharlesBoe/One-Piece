@@ -2,7 +2,9 @@
   import { isTheme, theme } from '@onepiece/core'
   import Sheet from '@onepiece/core/ui/Sheet.svelte'
   import { onMount } from 'svelte'
+  import { backup } from './lib/backup/sync.svelte'
   import { catalog } from './lib/catalog.svelte'
+  import BackupBanner from './lib/components/BackupBanner.svelte'
   import ContextMenu from './lib/components/ContextMenu.svelte'
   import Drawer from './lib/components/Drawer.svelte'
   import EntityList, { type ListMode } from './lib/components/EntityList.svelte'
@@ -285,6 +287,8 @@
       .then(show)
       .catch(fail)
     recents.load().catch(fail)
+    // Sauvegarde automatique et relais entre appareils (M4, D-M18).
+    backup.start().catch(fail)
 
     return () => {
       wide.removeEventListener('change', onResize)
@@ -346,6 +350,7 @@
         {#if layout === 'une' && entity && !listView}<button onclick={() => (linksOpen = true)}>Liens</button>{/if}
       </div>
     {/if}
+    <BackupBanner onSettings={() => (settingsOpen = true)} />
     {#if !(layout === 'une' && listView)}
       <TabBar
         compact={layout === 'une'}

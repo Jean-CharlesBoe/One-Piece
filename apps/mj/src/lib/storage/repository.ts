@@ -1,3 +1,4 @@
+import type { BackupData } from '../backup/format'
 import type { CatalogEntry, Entity } from '../model/entity'
 import type { SearchHit } from '../model/search'
 import type { SearchEngine } from './schema'
@@ -24,6 +25,10 @@ export interface MjRepository {
   /** Paires écartées de la vue « Doublons probables », sous la forme « idA|idB » (idA < idB). */
   listNotDuplicates(): Promise<string[]>
   markNotDuplicate(a: string, b: string): Promise<void>
+  /** Toutes les données à sauvegarder (sans les tables dérivées ni les réglages de l'appareil). */
+  exportData(): Promise<BackupData>
+  /** Remplace toutes les données par celles d'une sauvegarde (déjà normalisée), en une seule transaction. */
+  importData(data: BackupData): Promise<void>
 }
 
 export interface Backlink {
@@ -34,12 +39,18 @@ export interface Backlink {
 
 export const META_SCHEMA_VERSION = 'schema_version'
 export const META_SEARCH_ENGINE = 'search_engine'
+/** Date de la dernière sauvegarde écrite dans le dossier, ou reprise depuis lui. */
 export const META_LAST_BACKUP = 'last_backup_at'
+/** Identifiant de cette dernière sauvegarde (relais entre appareils). */
+export const META_BACKUP_ID = 'last_backup_id'
 export const META_LAST_CHANGE = 'last_change_at'
 /** Réglage : thème 'auto' | 'clair' | 'sombre'. */
 export const META_THEME = 'theme'
 
 export const DB_NAME = 'onepiece-mj'
+
+/** Prévient à chaque modification des données (`change`) : déclenche la sauvegarde automatique. */
+export const dataChanged = new EventTarget()
 
 let instance: Promise<MjRepository> | null = null
 
@@ -47,7 +58,9 @@ let instance: Promise<MjRepository> | null = null
 export function getRepository(): Promise<MjRepository> {
   instance ??= (async () => {
     const db = await (await import('./webDb')).openWebDb(DB_NAME)
-    return (await import('./sqliteRepository')).createSqliteRepository(db)
+    return (await import('./sqliteRepository')).createSqliteRepository(db, () =>
+      dataChanged.dispatchEvent(new Event('change')),
+    )
   })()
   return instance
 }

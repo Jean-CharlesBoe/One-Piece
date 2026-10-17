@@ -132,9 +132,11 @@ Toute entrée de journal qui mentionne une fiche (lien `[[ ]]` ou entrée automa
 
 ## 6. Sauvegarde et import
 
-- **Sauvegarder** : archive `.opmj` (base complète + médias) envoyée par la feuille de partage ou enregistrée dans les fichiers du Chromebook. Date mémorisée ; rappel rouge si modifications et ≥ 7 jours (comme Sans Nom).
-- **Restaurer** : remplace toute la base après confirmation ; refuse un fichier d'une version plus récente.
-- **Import Notion** : une seule fois, via un fichier `.opmj` produit par le script (voir [IMPORT_NOTION.md](IMPORT_NOTION.md)) ; écran d'accueil vide = bouton « Restaurer une sauvegarde ou un import Notion ».
+- **Sauvegarde automatique** (D-M18, D-M19) : la base est écrite dans un **dossier Google Drive** choisi une fois (`onepiece-mj.opmj`), 5 s après la dernière modification et quand l'app passe en arrière-plan ; une copie par jour dans `historique/` (10 gardées). État toujours visible en bas de la barre latérale ; bandeau si une action est nécessaire (dossier à choisir ou à réautoriser, version à reprendre, conflit, erreur).
+- **Relais entre appareils** (préparation sur le PC, jeu sur le Chromebook, un appareil à la fois) : au lancement et au retour dans l'app, si le dossier contient une sauvegarde écrite par l'autre appareil, la sauvegarde automatique se met en pause et l'app propose de la **reprendre** ; si les deux appareils ont modifié la base, le MJ choisit la version gardée. Aucune version n'est perdue : la base remplacée est copiée dans `historique/` (« avant-restauration-… » ou « remplacee-… »).
+- **Sauvegarder maintenant**, **Télécharger une copie** (navigateur sans accès aux dossiers : rappel rouge si modifications et ≥ 7 jours).
+- **Restaurer un fichier** : remplace toute la base après confirmation (nombre de fiches, date, appareil) ; la base actuelle est copiée dans `historique/` ; le fichier restauré devient la référence (réécrit dans le dossier) ; refuse un fichier d'une version plus récente.
+- **Import Notion** : une seule fois, via un fichier `.opmj` produit par le script (voir [IMPORT_NOTION.md](IMPORT_NOTION.md)), restauré par « Restaurer un fichier… ».
 - **Exports** (Q-M4, D-M16) : une fiche en Markdown (copier / partager) ou en **PDF** mis en forme, prêt à imprimer ; un **document stocké** (PDF, image) ressorti tel quel par la feuille de partage ou dans les fichiers du Chromebook, pour l'imprimer ou l'envoyer.
 - Volume des médias (Q-M6) : probablement plus de 25 Mo (nombreux PDF de personnages, images de fruits) : le backup Android automatique ne couvre pas tout, la sauvegarde `.opmj` est indispensable.
 

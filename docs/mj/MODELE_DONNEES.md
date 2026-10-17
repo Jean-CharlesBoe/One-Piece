@@ -192,8 +192,8 @@ interface GameBlock {
 
 Archive zip :
 ```
-manifest.json   { format: "onepiece-mj-sauvegarde", version: 1, schemaVersion, exportedAt, appVersion, counts }
-data.json       { entities: [], assets: [], campaigns: [], sessions: [], journal_entries: [], not_duplicates: [], meta: {...} }
-media/<id>.<ext>
+manifest.json   { format: "onepiece-mj-sauvegarde", version: 1, id, schemaVersion, exportedAt, lastChangeAt, appVersion, device, counts }
+data.json       { entities: [], assets: [], campaigns: [], sessions: [], journal_entries: [], not_duplicates: [] }
+media/<id>.<ext>   (à partir de M6)
 ```
-`data.json` contient aussi `not_duplicates`. `links` et `search_index` ne sont pas exportés : reconstruits à la restauration. Chaque enregistrement passe par sa fonction `normalize*` à la restauration.
+Code : `apps/mj/src/lib/backup/format.ts`. `entities` au format du modèle (relu par `normalizeEntity`) ; les autres tables en lignes SQL limitées aux colonnes connues (`TABLE_COLUMNS`) en attendant leurs modèles. `links` et `search_index` ne sont pas exportés : reconstruits à la restauration. La table `meta` non plus : ce sont des réglages propres à chaque appareil (thème, onglets, récentes, identifiant de la dernière sauvegarde). `id` (unique par sauvegarde) et `device` servent au relais entre appareils (D-M19). La restauration se fait en une transaction : en cas d'erreur, la base reste inchangée ; une référence vers une ligne absente (page parente, campagne…) est retirée.

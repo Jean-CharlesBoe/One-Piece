@@ -207,3 +207,12 @@ Réponse du MJ à Q-T3 : pas d'APK pour l'appli MJ.
 - **Ce qui protège des pertes** : une réinitialisation du Chromebook ou un « effacer les données de navigation » ne fait perdre que les modifications faites depuis la dernière sauvegarde dans Drive.
 **Pourquoi** : installer un APK sur ChromeOS demande ADB (sa désactivation réinitialise le Chromebook) ou le mode développeur, ou la Play Console (25 $). Une base en ligne gratuite (Supabase) a été écartée après examen : projet mis en pause après 7 jours sans activité, pas de sauvegarde sur l'offre gratuite, internet obligatoire en session, connexion et droits d'accès à sécuriser avec un dépôt public connu des joueurs, réécriture du stockage en Postgres. Le web local reprend le code existant presque tel quel (sql.js tourne déjà en développement) et Drive apporte la copie hors de l'appareil.
 Remplace pour l'appli MJ : D-T1 (partie Capacitor / APK), D-T3, D-T4 (feuille de partage), l'`appId` MJ de D-T5, la CI APK de M0. À vérifier sur les appareils (M1) : installation, stockage persistant, écriture automatique dans un dossier Drive sur ChromeOS et sur Windows.
+
+### D-M19 · 2026-10-17 · Sauvegarde automatique et relais : règles de détail — *proposée*
+Mise en œuvre de D-M18 (M4) :
+- Fichier `onepiece-mj.opmj` dans le dossier choisi, écrit **5 s** après la dernière modification et quand l'app passe en arrière-plan ; une copie par jour dans `historique/` (**10** gardées).
+- Chaque sauvegarde porte un identifiant ; chaque appareil retient celui de la dernière sauvegarde qu'il a écrite ou reprise (table `meta`). **Avant chaque écriture**, l'app relit le dossier : s'il contient une autre sauvegarde, elle n'écrit pas et propose de la reprendre (rien modifié ici) ou de choisir (modifié des deux côtés). Vérification aussi au lancement et au retour dans l'app.
+- **Rien n'est jamais perdu** : avant de remplacer la base de cet appareil, elle est copiée dans `historique/avant-restauration-<appareil>-<date>.opmj` ; quand le MJ garde sa version contre celle du dossier, celle du dossier est copiée dans `historique/remplacee-<appareil>-<date>.opmj`. Ces copies ne sont jamais supprimées automatiquement.
+- Une restauration de fichier (sauvegarde ou import Notion) devient la référence : réécrite dans le dossier aussitôt.
+- Réglages de l'appareil (thème, onglets, récentes) hors de la sauvegarde.
+**Pourquoi** : préparer sur le PC et jouer sur le Chromebook sans serveur, avec la garantie qu'aucune version n'écrase l'autre sans l'accord du MJ.

@@ -179,6 +179,63 @@ describe('base MJ', () => {
     expect(await repo.search('"OR* (')).toEqual([])
   })
 
+  it('export puis import dans une autre base : identique, liens et recherche reconstruits', async () => {
+    const repo = await createSqliteRepository(db)
+    const marine = createEntity('faction', 'Marine')
+    const smoker = createEntity('personnage', 'Smoker')
+    smoker.props = { factions: [marine.id] }
+    smoker.bodyMd = 'Cigares.'
+    const enfant = createEntity('note', 'QG')
+    enfant.parentId = marine.id
+    // La page enfant est enregistrée avant sa page parente dans l'export (ordre de création).
+    enfant.createdAt = '2000-01-01T00:00:00.000Z'
+    await repo.saveEntity(marine)
+    await repo.saveEntity(smoker)
+    await repo.saveEntity(enfant)
+    await repo.markNotDuplicate(marine.id, smoker.id)
+    const data = await repo.exportData()
+    expect(data.entities.map(e => e.title)).toEqual(['QG', 'Marine', 'Smoker'])
+
+    const other = await createSqliteRepository(sqlJsDb(new SQL.Database()))
+    await other.saveEntity(createEntity('note', 'À remplacer'))
+    await other.importData(data)
+    expect((await other.listCatalog()).map(e => e.title).sort()).toEqual(['Marine', 'QG', 'Smoker'])
+    expect(await other.getEntity(smoker.id)).toEqual(smoker)
+    expect(await other.backlinks(marine.id)).toEqual([{ fromId: smoker.id, kind: 'factions' }])
+    expect((await other.search('cigare')).map(h => h.id)).toEqual([smoker.id])
+    expect(await other.listNotDuplicates()).toHaveLength(1)
+    expect(await other.exportData()).toEqual(data)
+  })
+
+  it('import : références manquantes retirées ; erreur → base inchangée', async () => {
+    const repo = await createSqliteRepository(db)
+    const garde = createEntity('note', 'Gardée')
+    await repo.saveEntity(garde)
+    const orpheline = createEntity('note', 'Orpheline')
+    orpheline.parentId = 'absente'
+    await repo.importData({ ...(await repo.exportData()), entities: [orpheline], not_duplicates: [{ a_id: 'x', b_id: 'y' }] })
+    expect((await repo.getEntity(orpheline.id))?.parentId).toBeNull()
+    expect(await repo.listNotDuplicates()).toEqual([])
+
+    const avant = await repo.exportData()
+    const casse = createEntity('note', 'Cassée')
+    ;(casse as unknown as { type: null }).type = null
+    await expect(repo.importData({ ...avant, entities: [casse] })).rejects.toThrow()
+    expect(await repo.exportData()).toEqual(avant)
+  })
+
+  it('signal de modification après chaque écriture', async () => {
+    let n = 0
+    const repo = await createSqliteRepository(db, () => n++)
+    const e = createEntity('note', 'Une')
+    const f = createEntity('note', 'Autre')
+    await repo.saveEntity(e)
+    await repo.saveEntity(f)
+    await repo.markNotDuplicate(e.id, f.id)
+    await repo.deleteEntity(e.id)
+    expect(n).toBe(4)
+  })
+
   it('réglages (meta)', async () => {
     const repo = await createSqliteRepository(db)
     expect(await repo.getMeta('theme')).toBeNull()

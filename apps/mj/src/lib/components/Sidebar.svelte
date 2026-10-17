@@ -1,6 +1,7 @@
 <script lang="ts">
   import { catalog } from '../catalog.svelte'
   import { recents } from '../recents.svelte'
+  import BackupStatus from './BackupStatus.svelte'
   import { ENTITY_TYPES, TYPE_DEFS } from '../model/types'
   import type { ListMode } from './EntityList.svelte'
 
@@ -124,7 +125,10 @@
     </section>
   </div>
 
-  <footer class="label">Version {__APP_VERSION__}</footer>
+  <footer>
+    <button class="backup" onclick={onSettings} title="Sauvegarde : réglages"><BackupStatus compact /></button>
+    <span class="label">Version {__APP_VERSION__}</span>
+  </footer>
 </nav>
 
 <style>
@@ -225,6 +229,15 @@
     font-size: 0.9rem;
   }
   footer {
+    display: grid;
+    gap: 2px;
     padding-left: 6px;
+  }
+  .backup {
+    min-height: 32px;
+    padding: 0;
+    border: none;
+    background: none;
+    text-align: left;
   }
 </style>
