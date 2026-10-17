@@ -68,7 +68,7 @@
     font-size: 0.9rem;
   }
   .chip button {
-    min-height: 24px;
+    min-height: 36px;
     padding: 0 6px;
     border: none;
     background: none;

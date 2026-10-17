@@ -117,7 +117,7 @@ export function displayValue(def: FieldDef, v: unknown, titleOf: (id: string) =>
 }
 
 /** Sous-titre de la fiche : les champs marqués `inSubtitle` (ex. « PNJ · En vie · Marine »). */
-export function subtitle(e: Entity, titleOf: (id: string) => string): string {
+export function subtitle(e: Pick<Entity, 'type' | 'props'>, titleOf: (id: string) => string): string {
   return TYPE_DEFS[e.type].fields
     .filter(f => f.inSubtitle)
     .map(f => displayValue(f, e.props[f.key], titleOf))

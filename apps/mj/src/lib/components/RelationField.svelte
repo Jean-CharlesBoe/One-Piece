@@ -141,7 +141,7 @@
     color: var(--danger);
   }
   .chip button {
-    min-height: 24px;
+    min-height: 36px;
     padding: 0 6px;
     border: none;
     background: none;
@@ -174,7 +174,7 @@
   }
   li button {
     width: 100%;
-    min-height: 34px;
+    min-height: 40px;
     border: none;
     background: none;
     text-align: left;

@@ -1,4 +1,5 @@
 import type { CatalogEntry, Entity } from '../model/entity'
+import type { SearchHit } from '../model/search'
 import type { SearchEngine } from './schema'
 
 /**
@@ -16,6 +17,8 @@ export interface MjRepository {
   saveEntity(entity: Entity): Promise<void>
   /** Fiches qui pointent vers celle-ci (relations et mentions). */
   backlinks(id: string): Promise<Backlink[]>
+  /** Recherche plein texte (titres, alias, propriétés, texte) dans les fiches non archivées. */
+  search(query: string, limit?: number): Promise<SearchHit[]>
   /** Suppression définitive (depuis les archives). */
   deleteEntity(id: string): Promise<void>
   /** Paires écartées de la vue « Doublons probables », sous la forme « idA|idB » (idA < idB). */

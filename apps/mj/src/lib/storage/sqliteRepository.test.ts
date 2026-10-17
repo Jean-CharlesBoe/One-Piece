@@ -156,6 +156,29 @@ describe('base MJ', () => {
     expect(await repo.listNotDuplicates()).toEqual([])
   })
 
+  it('recherche : préfixes, accents, propriétés, extrait surligné, archives exclues', async () => {
+    const repo = await createSqliteRepository(db)
+    const marine = createEntity('faction', 'Marine')
+    await repo.saveEntity(marine)
+    const smoker = createEntity('personnage', 'Smoker')
+    smoker.aliases = ['Chasseur blanc']
+    smoker.props = { factions: [marine.id] }
+    smoker.bodyMd = 'Il fume deux **cigares** en permanence.'
+    await repo.saveEntity(smoker)
+    const vieux = createEntity('note', 'Cigares oubliés')
+    vieux.archived = true
+    await repo.saveEntity(vieux)
+
+    expect((await repo.search('smo')).map(h => h.id)).toEqual([smoker.id])
+    expect((await repo.search('chasseur')).map(h => h.id)).toEqual([smoker.id])
+    expect((await repo.search('marine')).map(h => h.id).sort()).toEqual([marine.id, smoker.id].sort())
+    const [hit] = await repo.search('CIGARE')
+    expect(hit.id).toBe(smoker.id)
+    expect(hit.snippet).toContain('<mark>cigares</mark>')
+    expect(await repo.search('  ')).toEqual([])
+    expect(await repo.search('"OR* (')).toEqual([])
+  })
+
   it('réglages (meta)', async () => {
     const repo = await createSqliteRepository(db)
     expect(await repo.getMeta('theme')).toBeNull()

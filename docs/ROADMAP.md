@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 (passage au web) : publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), à vérifier par le MJ sur le PC et le Chromebook (installation, hors ligne, écriture dans Drive). Ensuite : M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 (navigation et recherche) faite dans le navigateur. Suite conseillée : M4 (sauvegarde `.opmj` et relais par Drive), avant d'y mettre de vraies données. Ensuite : M3 (navigation, recherche, onglets). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -30,11 +30,11 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | # | Étape | Contenu | Bloquée par | Statut |
 |---|---|---|---|---|
 | M0 | Socle | Capacitor, `appId`, schéma SQLite (migration 1), repository, repli web, CI `mj.yml`, disposition 3 colonnes | — | fait (volet Android abandonné : D-M18) |
-| M1 | Appli web (D-M18) | retrait de Capacitor, manifeste PWA + service worker (hors ligne), stockage persistant, CI → GitHub Pages ; **sur les appareils** : installation sur le Chromebook et le PC, écriture automatique dans un dossier Google Drive | — | en cours (code fait, vérification sur appareils) |
+| M1 | Appli web (D-M18) | retrait de Capacitor, manifeste PWA + service worker (hors ligne), stockage persistant, CI → GitHub Pages ; **sur les appareils** : installation sur le Chromebook et le PC, écriture automatique dans un dossier Google Drive | — | fait (vérifié sur le PC et le Chromebook) |
 | M2a | Fiches (cœur) | registre des types, lecture (propriétés, Markdown rendu), édition (formulaire + CodeMirror, `[[`), liens et rétroliens, liens rouges, pages enfants, épinglés, archives, changement de type, alias, avertissement de doublon | — | fait (navigateur) |
 | M2b | Fiches (suite) | renommage qui met à jour les `[[liens]]` (avec confirmation), « Déplacer vers… », « Annuler la dernière modification » | — | fait (navigateur) |
 | M2c | Un nom par chose | fusion de deux fiches, vue « Doublons probables » (détection approchée), « Ajouter comme alias » | — | fait (navigateur) |
-| M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique, onglets (D-M14) | — | à faire |
+| M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique, onglets (D-M14) | — | fait (navigateur, à publier) |
 | M4 | Sauvegarde et relais | `.opmj` (zip + médias), sauvegarde automatique dans le dossier Drive, reprise de la version la plus récente au lancement, conflit signalé, restauration, rappel | — | à faire |
 | M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | — | à faire |
 | M6 | Documents | import image/PDF, visionneuse | — | à faire |
@@ -256,3 +256,14 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Vérifié : check, 131 tests, build ; essai du build : service worker actif, 11 fichiers en cache (dont le wasm), manifeste lu, réglages affichés, fiche conservée après rechargement servi par le service worker. Non vérifiable ici : installation, hors ligne réel, stockage protégé (accordé aux apps installées), choix d'un dossier Drive (sélecteur système) ; c'est la vérification M1 sur les appareils (RELEASE.md).
 - Publication (accord du MJ) : GitHub Pages activé (source « GitHub Actions »), premier run de publication vert ; https://jean-charlesboe.github.io/One-Piece/ répond, service worker actif (cache `onepiece-mj-0.1.0-…`), aucune erreur.
 - Reste pour clore M1 : vérifications du MJ sur le PC et le Chromebook (RELEASE.md › Que vérifier). Docs : RELEASE (section MJ réécrite), ARCHITECTURE, CLAUDE.md, D-T5.
+
+### Session 15 · 2026-10-17 (M1 close, M3 — navigation et recherche)
+- M1 vérifiée par le MJ sur le PC et le Chromebook (installation, hors ligne, écriture dans Drive) : close.
+- **Recherche globale** (Ctrl+K, « / », bouton de la barre latérale) : palette centrée, recherche plein texte sur titres, alias, propriétés lisibles et texte (FTS4 de sql.js, préfixes, sans accents), résultats groupés par type, classement nom exact › début de nom › nom contenu › le reste, extrait du texte surligné (`model/search.ts`, `repository.search`) ; sans recherche, les fiches récentes. Clavier ↑ ↓ Entrée, Ctrl + Entrée = nouvel onglet.
+- **Listes** : filtre par nom, filtres sur les propriétés « filterable » (rôle, état, faction…) avec le nombre de fiches par valeur, tri par titre ou modification, sous-titre sous chaque fiche ; vue **Arbre** des lieux (par « Fait partie de ») et des scénarios (pages enfants). Le catalogue en mémoire porte désormais les propriétés.
+- **Récentes** : 20 dernières fiches ouvertes (meta `recents`), 6 dans la barre latérale.
+- **Onglets** (D-M14, `model/navigation.ts` testé, `tabs.svelte.ts`) : un clic remplace la fiche de l'onglet ; nouvel onglet par Ctrl + clic, clic molette, menu contextuel (clic droit ou appui long) ; 8 onglets au plus ; historique par onglet (‹ ›, Alt + ← / →, boutons de la souris) ; onglets rouverts au démarrage (meta `onglets`) ; en une colonne, liste déroulante et « ← Liste » qui garde les onglets ouverts ; fiche supprimée retirée des onglets.
+- **Cibles tactiles** agrandies (≥ 40 px : lignes, liens du panneau, barre d'outils, en-tête ; ✕ des pastilles à 36 px).
+- Vérifié : check, 142 tests (11 nouveaux), build ; navigateur (piloté par JavaScript) : recherche (préfixe, accents, propriétés, extrait, Entrée), filtres PNJ puis faction, tri, récentes, onglets (remplacement, Ctrl + clic, Alt + ← / →, menu contextuel, rechargement, fermeture), arbres des lieux et des scénarios, une colonne ; console sans erreur.
+- Points d'attention : Ctrl+N et Ctrl+W sont réservés par Chrome dans un onglet de navigateur ; dans l'app installée, Ctrl+N reste à confirmer par le MJ (sinon bouton « + Nouvelle »). Ctrl+W n'est pas utilisé.
+- Reste : publier la version 0.2.0 (avec l'accord du MJ) ; ensuite M4.

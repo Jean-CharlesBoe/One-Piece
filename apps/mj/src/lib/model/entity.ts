@@ -23,8 +23,9 @@ export interface Entity {
 }
 
 /**
- * Entrée du catalogue : de quoi lister, nommer et relier une fiche sans la relire en entier
- * (listes, barre latérale, titres des liens, autocomplétion `[[`, doublons, archives, pages enfants).
+ * Entrée du catalogue : de quoi lister, nommer, filtrer et relier une fiche sans la relire en entier
+ * (listes et leurs filtres, barre latérale, titres des liens, autocomplétion `[[`, doublons, archives, arbres).
+ * Les propriétés y sont (petites) ; le texte de la fiche non.
  */
 export interface CatalogEntry {
   id: string
@@ -32,14 +33,15 @@ export interface CatalogEntry {
   title: string
   aliases: string[]
   parentId: string | null
+  props: Record<string, unknown>
   pinned: boolean
   archived: boolean
   updatedAt: string
 }
 
 export function toCatalogEntry(e: Entity): CatalogEntry {
-  const { id, type, title, aliases, parentId, pinned, archived, updatedAt } = e
-  return { id, type, title, aliases: [...aliases], parentId, pinned, archived, updatedAt }
+  const { id, type, title, aliases, parentId, props, pinned, archived, updatedAt } = e
+  return { id, type, title, aliases: [...aliases], parentId, props: structuredClone(props), pinned, archived, updatedAt }
 }
 
 export function createEntity(type: EntityType, title: string): Entity {

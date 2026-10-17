@@ -6,7 +6,7 @@ import { sqlJsDb } from './sqlJsDb'
 
 /**
  * Base de l'appli MJ (D-M18) : SQLite en WebAssembly (sql.js), gardée dans IndexedDB après chaque écriture.
- * Le stockage est demandé « persistant » au démarrage (storage.ts) pour que le navigateur ne le libère pas.
+ * Le stockage est demandé « persistant » au démarrage (pwa.svelte.ts) pour que le navigateur ne le libère pas.
  * En développement, la base vit dans le stockage de localhost:5184, séparé de celui de l'app publiée.
  */
 const IDB = 'onepiece-mj'

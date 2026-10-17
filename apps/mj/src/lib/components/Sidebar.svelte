@@ -1,20 +1,23 @@
 <script lang="ts">
   import { catalog } from '../catalog.svelte'
+  import { recents } from '../recents.svelte'
   import { ENTITY_TYPES, TYPE_DEFS } from '../model/types'
   import type { ListMode } from './EntityList.svelte'
 
-  // Barre latérale (cahier MJ §3) : recherche, types de fiches, archives, épinglés, sessions, réglages.
-  // Recherche (M3) et sessions (M8) sont encore des emplacements vides.
+  // Barre latérale (cahier MJ §3) : recherche (ouvre la palette, Ctrl+K), types de fiches, doublons, archives,
+  // épinglés, récentes, sessions (M8), réglages.
   let {
     selected,
     onSelect,
     onOpen,
     onSettings,
+    onSearch,
   }: {
     selected: ListMode
     onSelect: (mode: ListMode) => void
-    onOpen: (id: string) => void
+    onOpen: (id: string, newTab?: boolean) => void
     onSettings: () => void
+    onSearch: () => void
   } = $props()
 
   const counts = $derived(
@@ -22,6 +25,12 @@
   )
   const archived = $derived(catalog.entries.filter(e => e.archived).length)
   const pinned = $derived(catalog.active.filter(e => e.pinned))
+  const recent = $derived(
+    recents.ids
+      .flatMap(id => catalog.byId.get(id) ?? [])
+      .filter(e => !e.archived && !e.pinned)
+      .slice(0, 6),
+  )
 </script>
 
 <nav class="sidebar" aria-label="Navigation">
@@ -30,7 +39,9 @@
     <button class="gear" onclick={onSettings} aria-label="Réglages">⚙</button>
   </header>
 
-  <input class="search" type="search" placeholder="Rechercher (bientôt)" disabled aria-label="Rechercher" />
+  <button class="search" onclick={onSearch} title="Recherche globale (Ctrl+K ou /)">
+    <span aria-hidden="true">⌕</span> Rechercher… <kbd>Ctrl K</kbd>
+  </button>
 
   <div class="scroll">
     <section aria-labelledby="types-titre">
@@ -69,7 +80,12 @@
         <ul>
           {#each pinned as e (e.id)}
             <li>
-              <button class="type" onclick={() => onOpen(e.id)}>
+              <button
+                class="type"
+                data-open-id={e.id}
+                onclick={ev => onOpen(e.id, ev.ctrlKey || ev.metaKey)}
+                onauxclick={ev => ev.button === 1 && onOpen(e.id, true)}
+              >
                 <span class="icon" aria-hidden="true">{TYPE_DEFS[e.type].icon}</span>
                 <span class="name">{e.title}</span>
               </button>
@@ -80,6 +96,27 @@
         <p class="empty">Aucune fiche épinglée (📌 sur une fiche).</p>
       {/if}
     </section>
+
+    {#if recent.length}
+      <section aria-labelledby="recents-titre">
+        <h2 class="label" id="recents-titre">Récentes</h2>
+        <ul>
+          {#each recent as e (e.id)}
+            <li>
+              <button
+                class="type"
+                data-open-id={e.id}
+                onclick={ev => onOpen(e.id, ev.ctrlKey || ev.metaKey)}
+                onauxclick={ev => ev.button === 1 && onOpen(e.id, true)}
+              >
+                <span class="icon" aria-hidden="true">{TYPE_DEFS[e.type].icon}</span>
+                <span class="name">{e.title}</span>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      </section>
+    {/if}
 
     <section aria-labelledby="sessions-titre">
       <h2 class="label" id="sessions-titre">Sessions</h2>
@@ -117,7 +154,21 @@
     padding: 0 10px;
   }
   .search {
-    min-height: 38px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 10px;
+    color: var(--muted);
+    text-align: left;
+  }
+  .search kbd {
+    margin-left: auto;
+    font: inherit;
+    font-size: 0.75rem;
+    padding: 1px 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
   }
   .scroll {
     flex: 1;
@@ -140,7 +191,7 @@
     align-items: center;
     gap: 8px;
     width: 100%;
-    min-height: 36px;
+    min-height: 40px;
     padding: 0 8px;
     border: none;
     background: none;

@@ -24,7 +24,7 @@
     onDelete,
     onMerge,
   }: {
-    onOpen: (id: string) => void
+    onOpen: (id: string, newTab?: boolean) => void
     /** Lien rouge cliqué : créer la fiche nommée `label` puis réécrire le lien. */
     onCreateFromLink: (label: string) => void
     /** Création depuis un champ relation : renvoie l'identifiant de la fiche créée. */
@@ -134,8 +134,43 @@
     const a = (ev.target as HTMLElement).closest('a.wl') as HTMLAnchorElement | null
     if (!a) return
     ev.preventDefault()
-    if (a.dataset.id) onOpen(a.dataset.id)
+    if (a.dataset.id) onOpen(a.dataset.id, ev.ctrlKey || ev.metaKey)
     else if (a.dataset.create) onCreateFromLink(a.dataset.create)
+  }
+
+  /** Clic molette sur un lien interne : nouvel onglet. */
+  function onBodyAux(ev: MouseEvent) {
+    const a = (ev.target as HTMLElement).closest('a.wl') as HTMLAnchorElement | null
+    if (ev.button !== 1 || !a?.dataset.id) return
+    ev.preventDefault()
+    onOpen(a.dataset.id, true)
+  }
+
+  /** Lien vers une fiche dans l'interface : clic (Ctrl = nouvel onglet), clic molette, menu contextuel. */
+  function linkTo(node: HTMLElement, id: string) {
+    let current = id
+    node.dataset.openId = current
+    const click = (e: MouseEvent) => {
+      e.preventDefault()
+      onOpen(current, e.ctrlKey || e.metaKey)
+    }
+    const aux = (e: MouseEvent) => {
+      if (e.button !== 1) return
+      e.preventDefault()
+      onOpen(current, true)
+    }
+    node.addEventListener('click', click)
+    node.addEventListener('auxclick', aux)
+    return {
+      update(next: string) {
+        current = next
+        node.dataset.openId = next
+      },
+      destroy() {
+        node.removeEventListener('click', click)
+        node.removeEventListener('auxclick', aux)
+      },
+    }
   }
 
   function setType(t: EntityType) {
@@ -159,7 +194,7 @@
     {#if ancestors.length}
       <nav class="crumbs" aria-label="Pages parentes">
         {#each ancestors as a (a.id)}
-          <a href="#{a.id}" onclick={e => (e.preventDefault(), onOpen(a.id))}>{a.title}</a> ›
+          <a href="#{a.id}" use:linkTo={a.id}>{a.title}</a> ›
         {/each}
       </nav>
     {/if}
@@ -256,7 +291,7 @@
         {#if sameNames.length}
           <p class="warn" role="status">
             Même nom que :
-            {#each sameNames as s, i (s.id)}{i ? ', ' : ''}<a href="#{s.id}" onclick={e => (e.preventDefault(), onOpen(s.id))}
+            {#each sameNames as s, i (s.id)}{i ? ', ' : ''}<a href="#{s.id}" use:linkTo={s.id}
                 >{s.title}</a
               > ({TYPE_DEFS[s.type].label}){/each}. Un nom de référence par chose : envisager un alias.
           </p>
@@ -340,7 +375,7 @@
                 <td>
                   {#if f.field.kind === 'relation'}
                     {#each relationIds(entity.props[f.key]) as id, i (id)}
-                      {i ? ', ' : ''}{#if catalog.byId.has(id)}<a href="#{id}" class="wl" onclick={e => (e.preventDefault(), onOpen(id))}
+                      {i ? ', ' : ''}{#if catalog.byId.has(id)}<a href="#{id}" class="wl" use:linkTo={id}
                           >{catalog.title(id)}</a
                         >{:else}<span class="gone">fiche supprimée</span>{/if}
                     {/each}
@@ -364,7 +399,7 @@
 
       {#if entity.bodyMd.trim()}
         <!-- eslint-disable-next-line svelte/no-at-html-tags -- HTML nettoyé par DOMPurify (markdown.ts) -->
-        <div class="md" role="presentation" onclick={onBodyClick}>{@html html}</div>
+        <div class="md" role="presentation" onclick={onBodyClick} onauxclick={onBodyAux}>{@html html}</div>
       {:else if !entity.archived && !def.fields.some(f => entity.props[f.key] !== undefined)}
         <p class="empty-body">Fiche vide. <button class="link" onclick={() => opened.setEditing(true)}>La compléter</button> (Ctrl+E).</p>
       {/if}
@@ -408,7 +443,7 @@
     gap: 6px;
   }
   .actions button {
-    min-height: 34px;
+    min-height: 40px;
     padding: 0 10px;
   }
   .icon {
@@ -559,7 +594,7 @@
     margin: 4px 0;
   }
   .small {
-    min-height: 28px;
+    min-height: 36px;
     padding: 0 8px;
     font-size: 0.85rem;
   }

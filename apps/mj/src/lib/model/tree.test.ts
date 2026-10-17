@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { renameLinks } from './links'
-import { canMoveUnder, descendants } from './tree'
+import { buildTree, canMoveUnder, descendants } from './tree'
 
 const nodes = [
   { id: 'scenario', parentId: null },
@@ -33,5 +33,22 @@ describe('renommage', () => {
     expect(renameLinks(md, 's1', 'Smoker', 'Smoker le Chasseur blanc')).toBe(
       '[[s1|Smoker le Chasseur blanc]], [[s1|le capitaine]], [[s2|Smoker]] et [[s1|Smoker le Chasseur blanc]].',
     )
+  })
+})
+
+describe('arbre', () => {
+  it('racines, enfants sur plusieurs niveaux, boucle coupée', () => {
+    const lieux = [
+      { id: 'eb', parent: null },
+      { id: 'ile', parent: 'eb' },
+      { id: 'ville', parent: 'ile' },
+      { id: 'a', parent: 'b' },
+      { id: 'b', parent: 'a' },
+    ]
+    const children = (id: string) => lieux.filter(l => l.parent === id)
+    const show = (t: ReturnType<typeof buildTree<(typeof lieux)[number]>>): unknown =>
+      t.map(i => (i.children.length ? { [i.node.id]: show(i.children) } : i.node.id))
+    expect(show(buildTree([lieux[0]], children))).toEqual([{ eb: [{ ile: ['ville'] }] }])
+    expect(show(buildTree([lieux[3]], children))).toEqual([{ a: ['b'] }])
   })
 })

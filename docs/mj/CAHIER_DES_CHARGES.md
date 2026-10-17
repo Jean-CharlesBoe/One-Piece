@@ -145,9 +145,13 @@ Toute entrée de journal qui mentionne une fiche (lien `[[ ]]` ou entrée automa
 | Ctrl+K ou / | recherche globale |
 | Ctrl+N | nouvelle fiche |
 | Ctrl+E | éditer / quitter l'édition |
-| Alt+← / Alt+→ | précédent / suivant |
+| Alt+← / Alt+→ (ou boutons latéraux de la souris) | précédent / suivant dans l'onglet |
+| Ctrl + clic, clic molette, appui long › « Ouvrir dans un nouvel onglet » | ouvrir une fiche dans un nouvel onglet |
+| Ctrl + Entrée (recherche) | ouvrir le résultat dans un nouvel onglet |
 | Ctrl+J | aller à la saisie du journal (en session) |
-| Échap | fermer la fenêtre / la recherche |
+| Échap | fermer la fenêtre / la recherche / le menu |
+
+Pas de raccourci pour fermer un onglet : Ctrl+W ferme la fenêtre de Chrome (non interceptable) ; un onglet se ferme par son ✕ ou d'un clic molette.
 
 ## 8. Hors périmètre
 

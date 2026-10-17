@@ -162,7 +162,7 @@
     gap: 4px;
   }
   .toolbar button {
-    min-height: 32px;
+    min-height: 40px;
     padding: 0 10px;
     font-size: 0.9rem;
   }

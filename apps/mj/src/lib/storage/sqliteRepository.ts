@@ -2,6 +2,7 @@ import { toCatalogEntry, type CatalogEntry, type Entity } from '../model/entity'
 import { computeLinks, plainText } from '../model/links'
 import { normalizeEntity } from '../model/normalize'
 import { displayValue, relationIds } from '../model/props'
+import { ftsQuery, MARK_END, MARK_START, searchWords, snippetHtml, type SearchHit } from '../model/search'
 import { TYPE_DEFS } from '../model/types'
 import type { Db, Row } from './db'
 import {
@@ -139,7 +140,7 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
     },
     async listCatalog(): Promise<CatalogEntry[]> {
       const r = await db.query(
-        `SELECT id, type, title, aliases, parent_id, pinned, archived, updated_at FROM entities
+        `SELECT id, type, title, aliases, parent_id, props, pinned, archived, updated_at FROM entities
           ORDER BY title COLLATE NOCASE`,
       )
       return r.map(row => toCatalogEntry(parse(row)))
@@ -181,6 +182,40 @@ export async function createSqliteRepository(db: Db): Promise<MjRepository> {
       await indexEntity(db, engine, e)
       await setMeta(META_LAST_CHANGE, new Date().toISOString())
       await db.persist()
+    },
+    async search(query, limit = 60): Promise<SearchHit[]> {
+      const match = ftsQuery(query)
+      if (!match) return []
+      if (engine === 'aucun') {
+        // Sans index plein texte : titre ou texte qui contient chaque mot (sans tenir compte des accents).
+        const words = searchWords(query)
+        const r = await db.query(`SELECT id, title, aliases, body_md FROM entities WHERE archived = 0`)
+        return r
+          .filter(row => {
+            const text = plainText(`${String(row.title)} ${String(row.aliases)} ${String(row.body_md)}`)
+              .normalize('NFD')
+              .replace(/\p{M}/gu, '')
+              .toLowerCase()
+            return words.every(w => text.includes(w))
+          })
+          .slice(0, limit)
+          .map(row => ({ id: String(row.id), snippet: '' }))
+      }
+      // Extrait du texte de la fiche (colonne 4, body_text) autour des mots trouvés ; un mot trouvé seulement dans
+      // le titre, un alias ou une propriété se voit déjà dans la ligne du résultat (pas d'extrait).
+      // FTS4 : snippet(table, début, fin, ellipse, colonne, mots) ; FTS5 : snippet(table, colonne, début, fin, ellipse, mots).
+      const snippet =
+        engine === 'fts5'
+          ? `snippet(search_index, 4, char(1), char(2), '…', 12)`
+          : `snippet(search_index, char(1), char(2), '…', 4, 12)`
+      const r = await db.query(
+        `SELECT entity_id, ${snippet} AS snip FROM search_index WHERE search_index MATCH ? LIMIT ?`,
+        [match, limit],
+      )
+      return r.map(row => {
+        const snip = String(row.snip ?? '')
+        return { id: String(row.entity_id), snippet: snip.includes(MARK_START) || snip.includes(MARK_END) ? snippetHtml(snip) : '' }
+      })
     },
     async backlinks(id): Promise<Backlink[]> {
       const r = await db.query(
