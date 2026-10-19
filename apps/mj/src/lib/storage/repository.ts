@@ -1,4 +1,5 @@
 import type { BackupData } from '../backup/format'
+import type { Asset } from '../model/asset'
 import type { CatalogEntry, Entity } from '../model/entity'
 import type { SearchHit } from '../model/search'
 import type { SearchEngine } from './schema'
@@ -25,6 +26,9 @@ export interface MjRepository {
   /** Paires écartées de la vue « Doublons probables », sous la forme « idA|idB » (idA < idB). */
   listNotDuplicates(): Promise<string[]>
   markNotDuplicate(a: string, b: string): Promise<void>
+  /** Médias (images, PDF) : la description ; le fichier est dans storage/media.ts. */
+  listAssets(): Promise<Asset[]>
+  saveAsset(asset: Asset): Promise<void>
   /** Toutes les données à sauvegarder (sans les tables dérivées ni les réglages de l'appareil). */
   exportData(): Promise<BackupData>
   /** Remplace toutes les données par celles d'une sauvegarde (déjà normalisée), en une seule transaction. */

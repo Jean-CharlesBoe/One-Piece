@@ -7,6 +7,7 @@
 
 <script lang="ts">
   import { catalog } from '../catalog.svelte'
+  import { ACCEPTED } from '../model/asset'
   import type { CatalogEntry } from '../model/entity'
   import { nameKey } from '../model/links'
   import { relationIds, subtitle } from '../model/props'
@@ -23,13 +24,18 @@
     onOpen,
     onCreate,
     onMerge,
+    onImport,
   }: {
     mode: ListMode
     selectedId: string | null
     onOpen: (id: string) => void
     onCreate: () => void
     onMerge: (a: string, b: string) => void
+    /** Documents : importer des fichiers (une fiche Document par fichier). */
+    onImport: (files: File[]) => void
   } = $props()
+
+  let fileInput: HTMLInputElement | undefined = $state()
 
   type Sort = 'titre' | 'modif'
   let text = $state('')
@@ -123,7 +129,23 @@
   <section class="list" aria-labelledby="liste-titre">
     <header>
       <h2 id="liste-titre">{title} <span class="count">{items.length}{items.length !== base.length ? ` / ${base.length}` : ''}</span></h2>
-      {#if mode !== 'archives'}
+      {#if mode === 'document'}
+        <button class="primary" onclick={() => fileInput?.click()} title="Importer des images ou des PDF (ou les glisser sur l'app)"
+          >+ Importer…</button
+        >
+        <input
+          bind:this={fileInput}
+          type="file"
+          multiple
+          accept={Object.keys(ACCEPTED).join(',')}
+          hidden
+          onchange={e => {
+            const files = [...(e.currentTarget.files ?? [])]
+            e.currentTarget.value = ''
+            if (files.length) onImport(files)
+          }}
+        />
+      {:else if mode !== 'archives'}
         <button class="primary" onclick={onCreate} title="Nouvelle fiche (Ctrl+N)">+ Nouvelle</button>
       {/if}
     </header>

@@ -28,9 +28,15 @@ export function markdownToHtml(md: string, exists: (id: string) => boolean): str
   const marked = new Marked({ gfm: true, breaks: true, extensions: [wikiLink] })
   marked.use({
     renderer: {
-      // Médias (M6) : `asset:<id>` n'est pas encore résolu.
+      // Médias (M6) : `asset:<id>` → image ou lien marqués `data-asset`, résolus par la vue de la fiche (fichier
+      // de l'appareil) ; un clic ouvre la visionneuse.
       image({ href, text }) {
-        return href.startsWith('asset:') ? `<span class="asset">[image : ${esc(text || 'sans légende')}]</span>` : false
+        return href.startsWith('asset:')
+          ? `<img class="asset" data-asset="${esc(href.slice(6))}" alt="${esc(text)}" title="${esc(text || 'Image')}">`
+          : false
+      },
+      link({ href, text }) {
+        return href.startsWith('asset:') ? `<a href="#" class="asset-link" data-asset="${esc(href.slice(6))}">📎 ${esc(text || 'fichier')}</a>` : false
       },
     },
   })

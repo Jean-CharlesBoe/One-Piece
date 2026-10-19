@@ -93,7 +93,7 @@ Les modifications de ressources ou de bonus pendant une session créent automati
 - Vue **arborescence** pour les Lieux et les Scénarios.
 
 ### 4.6 Documents
-Import d'images (JPG, PNG, WebP) et de PDF depuis le sélecteur de fichiers. Chaque import crée une fiche **Document** (et peut être rattaché à des fiches). Visionneuse plein écran (zoom, défilement des pages PDF). Pas de remise aux joueurs, pas de caché/révélé (D-M6).
+Import d'images (JPG, PNG, WebP, GIF) et de PDF : bouton **« + Importer… »** de la liste Documents (plusieurs fichiers à la fois) ou fichiers **glissés sur l'app**. Chaque import crée une fiche **Document** (titre = nom du fichier), rattachable à des fiches. La fiche montre l'image ou le PDF (lecteur du navigateur : pages, zoom, impression), **« Plein écran »** (visionneuse : image ajustée ou zoomée, Ctrl + molette) et **« Télécharger »** (le fichier tel quel, D-M16). En édition : « Remplacer… » / « Retirer ». Dans le texte d'une fiche : bouton **🖼 Image** de la barre d'outils, ou image glissée ou collée → importée et insérée ; clic sur une image = visionneuse. Pas de remise aux joueurs, pas de caché/révélé (D-M6).
 
 ### 4.7 Un nom de référence par chose
 Réponse directe à l'éparpillement de Notion :

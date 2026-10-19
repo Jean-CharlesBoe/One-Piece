@@ -1,5 +1,6 @@
 import initSqlJs, { type Database } from 'sql.js'
 import { beforeEach, describe, expect, it } from 'vitest'
+import { createAsset } from '../model/asset'
 import { createEntity } from '../model/entity'
 import type { Db } from './db'
 import { META_SCHEMA_VERSION, META_SEARCH_ENGINE } from './repository'
@@ -234,6 +235,20 @@ describe('base MJ', () => {
     await repo.markNotDuplicate(e.id, f.id)
     await repo.deleteEntity(e.id)
     expect(n).toBe(4)
+  })
+
+  it('médias : enregistrés, remplacés, sauvegardés avec la base, signal de modification', async () => {
+    let n = 0
+    const repo = await createSqliteRepository(db, () => n++)
+    const a = createAsset({ name: 'carte.png', size: 12 }, 'image/png', { width: 2, height: 3 })
+    await repo.saveAsset(a)
+    await repo.saveAsset({ ...a, originalName: 'carte-2.png' })
+    expect(await repo.listAssets()).toEqual([{ ...a, originalName: 'carte-2.png' }])
+    expect(n).toBe(2)
+    const data = await repo.exportData()
+    const other = await createSqliteRepository(sqlJsDb(new SQL.Database()))
+    await other.importData(data)
+    expect(await other.listAssets()).toEqual(await repo.listAssets())
   })
 
   it('réglages (meta)', async () => {

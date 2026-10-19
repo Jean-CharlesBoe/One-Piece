@@ -1,6 +1,6 @@
 # Migration Notion → appli MJ (unique)
 
-> Statut : **script fait** (M5, 2026-10-19, D-M22), essayé sur l'export réel du MJ ; import définitif après M6 (médias). Après une migration réussie et vérifiée, Notion n'est plus utilisé.
+> Statut : **script fait** (M5, 2026-10-19, D-M22), essayé sur l'export réel du MJ ; M6 faite (l'app garde les médias) : **import définitif possible** à partir de la version 0.4.0. Après une migration réussie et vérifiée, Notion n'est plus utilisé.
 
 ## 1. Principe
 
@@ -112,7 +112,7 @@ Comptes par type ; avertissements groupés (étiquettes non reconnues, valeurs m
 - Ce que l'export réel a montré (2026-10-19) : la page d'accueil liste les notes de session sous des titres « Session N date » ; « Textes Importants » n'est qu'un sommaire (pas de fiche) ; la base Lieux ne contient qu'un lieu ; les bases « Objets et infos » sont vides (absentes de l'export) ; les relations sont aussi en tête de chaque page (les CSV ne servent pas).
 - Étiquettes des personnages : PJ / PNJ → rôle ; grades → grade (le premier) ; mer → mer d'origine ; **nom d'un lieu (ou d'un alias) → Origine** ; le reste → faction du même nom, rapprochée d'un groupe existant par une comparaison souple (articles, « équipage », pluriels, ponctuation ignorés ; signalé dans le rapport), sinon créée.
 - Noms de personnages : parenthèse (Q-M7), virgule ou tiret (« Shanks, le démon rouge » → « Shanks »), surnom entre guillemets ; les autres noms longs (nom suivi du métier, sans séparateur) restent tels quels, à renommer dans l'app (l'ancien nom peut rester en alias).
-- Fiches de personnage en PDF : fiche Document rattachée au personnage (`rattacheA`). Images du texte : `![image](asset:<id>)`. Médias rangés dans `media/` du `.opmj` (stockés sans recompression) ; **l'app ne les garde qu'à partir de M6**.
+- Fiches de personnage en PDF : fiche Document rattachée au personnage (`rattacheA`). Images du texte : `![image](asset:<id>)`. Médias rangés dans `media/` du `.opmj` (stockés sans recompression) ; l'app les garde depuis M6 (0.4.0) et les copie dans `medias/` du dossier Drive.
 
 ## 7. Après la migration
 

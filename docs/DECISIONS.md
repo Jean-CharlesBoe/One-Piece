@@ -241,3 +241,12 @@ Réponses du MJ en découvrant son export (2026-10-19) :
 - les bases « Objets et infos » et « Objets et infos perso » sont vides : rien à reprendre.
 Choix de mise en œuvre (proposés) : configuration propre au monde dans `tools/notion-import/input/import.json` (privé, D-T6) et synonymes communs dans `synonymes.json` (versionné) ; script lancé par Vite pour réutiliser le code de l'appli MJ ; fiches de personnage en PDF = fiches Document rattachées ; **import définitif après M6** (sinon les médias, que l'app ne sait pas encore garder, seraient perdus à la première sauvegarde automatique). Détection des doublons de l'app : deux noms qui ne diffèrent que par un nombre (« Année 1500 » / « Année 1504 ») ne sont plus proposés, et `’` = `'`.
 **Pourquoi** : retrouver Notion dans l'app sans rien perdre, sans mettre le contenu du monde dans le dépôt public.
+
+### D-M23 · 2026-10-19 · Médias : stockés hors de la base, copiés une fois dans medias/ du dossier Drive — *proposée*
+Mise en œuvre de M6 :
+- **Appareil** : la table `assets` décrit chaque fichier ; le fichier `<id>.<ext>` est dans IndexedDB (`onepiece-mj-medias`), pas dans la base sql.js (réécrite en entier à chaque modification).
+- **Dossier Drive** : `onepiece-mj.opmj` ne contient que la base (quelques centaines de Ko) ; chaque fichier est écrit **une fois** dans `medias/` avant la sauvegarde qui le cite, et n'y est jamais supprimé automatiquement (un média ne change jamais : remplacer le fichier d'un document en crée un nouveau). À chaque vérification (lancement, retour dans l'app, avant d'écrire), l'app reprend de `medias/` les fichiers qui lui manquent (Drive peut synchroniser la base avant les fichiers).
+- **Fichier téléchargé ou restauré** (« Télécharger une copie », import Notion) : complet, fichiers dans `media/` ; à la restauration, ils sont rangés sur l'appareil puis copiés dans `medias/`.
+- **Affichage** : images et PDF depuis l'appareil (adresses `blob:`) ; PDF dans le lecteur intégré du navigateur (pages, zoom, impression) plutôt qu'une bibliothèque PDF (~1 Mo de plus) ; fichier absent de l'appareil = message, pas d'erreur.
+- Fichiers acceptés : JPG, PNG, WebP, GIF, PDF ; gardés tels quels (pas de réduction : cartes et fiches doivent rester lisibles).
+**Pourquoi** : la sauvegarde automatique a lieu 5 s après chaque modification ; avec tous les fichiers dedans (17 Mo dès l'import Notion, plus ensuite), chaque modification renverrait tout vers Drive et chaque copie quotidienne de `historique/` pèserait autant.

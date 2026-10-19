@@ -8,6 +8,8 @@
   import { tags } from '@lezer/highlight'
   import { onMount } from 'svelte'
   import { catalog } from '../catalog.svelte'
+  import { media } from '../media.svelte'
+  import { ACCEPTED, isImage, titleFromFileName } from '../model/asset'
   import { nameKey, wikiLink } from '../model/links'
   import { TYPE_DEFS } from '../model/types'
 
@@ -91,6 +93,24 @@
           EditorView.updateListener.of(u => {
             if (u.docChanged) onChange(u.state.doc.toString())
           }),
+          // Images ou PDF glissés ou collés dans le texte : importés, puis insérés à l'endroit du dépôt.
+          EditorView.domEventHandlers({
+            drop(e, v) {
+              const files = [...(e.dataTransfer?.files ?? [])]
+              if (!files.length) return false
+              e.preventDefault()
+              const pos = v.posAtCoords({ x: e.clientX, y: e.clientY }) ?? v.state.selection.main.head
+              void insertFiles(files, pos)
+              return true
+            },
+            paste(e) {
+              const files = [...(e.clipboardData?.files ?? [])]
+              if (!files.length) return false
+              e.preventDefault()
+              void insertFiles(files)
+              return true
+            },
+          }),
         ],
       }),
     })
@@ -128,6 +148,30 @@
     startCompletion(view)
   }
 
+  let fileInput: HTMLInputElement
+  let fileError = $state('')
+
+  /** Importe les fichiers (médias) et insère `![légende](asset:<id>)` (image) ou un lien vers le fichier (PDF). */
+  async function insertFiles(files: File[], at = view.state.selection.main.head) {
+    fileError = ''
+    const parts: string[] = []
+    for (const f of files) {
+      try {
+        const a = await media.importFile(f)
+        const caption = titleFromFileName(f.name).replace(/[[\]]/g, '')
+        parts.push(isImage(a) ? `![${caption}](asset:${a.id})` : `[${caption}](asset:${a.id})`)
+      } catch (e) {
+        fileError = e instanceof Error ? e.message : String(e)
+      }
+    }
+    if (!parts.length) return
+    const line = view.state.doc.lineAt(at)
+    const before = at > line.from ? '\n\n' : ''
+    const insert = `${before}${parts.join('\n\n')}\n`
+    view.dispatch({ changes: { from: at, insert }, selection: { anchor: at + insert.length } })
+    view.focus()
+  }
+
   function insertTable() {
     const { from } = view.state.selection.main
     const line = view.state.doc.lineAt(from)
@@ -147,7 +191,21 @@
     <button type="button" title="Citation" onclick={() => prefix('> ')}>❝</button>
     <button type="button" title="Tableau" onclick={insertTable}>Tableau</button>
     <button type="button" title="Lien vers une fiche ([[)" onclick={insertLink}>[[ Lien</button>
+    <button type="button" title="Image ou PDF (aussi : glisser ou coller dans le texte)" onclick={() => fileInput.click()}>🖼 Image</button>
   </div>
+  <input
+    bind:this={fileInput}
+    type="file"
+    multiple
+    accept={Object.keys(ACCEPTED).join(',')}
+    hidden
+    onchange={e => {
+      const files = [...(e.currentTarget.files ?? [])]
+      e.currentTarget.value = ''
+      if (files.length) void insertFiles(files)
+    }}
+  />
+  {#if fileError}<p class="err" role="alert">{fileError}</p>{/if}
   <div bind:this={host}></div>
 </div>
 
@@ -165,5 +223,9 @@
     min-height: 40px;
     padding: 0 10px;
     font-size: 0.9rem;
+  }
+  .err {
+    margin: 0;
+    color: var(--danger);
   }
 </style>

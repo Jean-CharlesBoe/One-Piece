@@ -18,8 +18,10 @@ describe('rendu Markdown', () => {
     expect(html).toContain('<table>')
   })
 
-  it('titre de lien échappé, images de médias en attente', () => {
+  it('titre de lien échappé, médias marqués pour la vue de la fiche', () => {
     expect(markdownToHtml('[[a1|<b>x</b>]]', exists)).toContain('&lt;b&gt;x&lt;/b&gt;')
-    expect(markdownToHtml('![Carte](asset:42)', exists)).toContain('[image : Carte]')
+    expect(markdownToHtml('![Carte](asset:42)', exists)).toContain('<img class="asset" data-asset="42" alt="Carte"')
+    expect(markdownToHtml('[Fiche](asset:43)', exists)).toContain('<a href="#" class="asset-link" data-asset="43">📎 Fiche</a>')
+    expect(markdownToHtml('[Site](https://a.b)', exists)).toContain('<a href="https://a.b">Site</a>')
   })
 })

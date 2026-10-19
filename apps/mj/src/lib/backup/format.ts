@@ -7,7 +7,8 @@ import { MIGRATIONS } from '../storage/schema'
 // Sauvegarde .opmj de l'appli MJ (MODELE_DONNEES §5, D-M18) : archive zip
 //   manifest.json  { format, version, id, schemaVersion, exportedAt, lastChangeAt, appVersion, device, counts }
 //   data.json      { entities, assets, campaigns, sessions, journal_entries, not_duplicates }
-//   media/<id>.<ext>  (à partir de M6)
+//   media/<id>.<ext>  fichiers des médias (M6) : dans un fichier téléchargé ou importé ; la sauvegarde du dossier
+//                     Drive les range à part, dans medias/ (D-M23)
 // Les tables dérivées (links, search_index) ne sont pas sauvegardées : reconstruites à la restauration.
 // Tout ce qui est relu passe par normalizeEntity ou par la liste des colonnes connues ci-dessous.
 
@@ -163,6 +164,8 @@ function normalizeRows(table: RawTable, raw: unknown): RawRow[] {
 export interface ReadBackup {
   manifest: BackupManifest
   data: BackupData
+  /** Fichiers des médias contenus dans le fichier (`media/<file_name>`), par nom ; vide pour la sauvegarde du dossier. */
+  media: Record<string, Uint8Array>
   warnings: string[]
 }
 
@@ -186,5 +189,10 @@ export function readBackup(bytes: Uint8Array): ReadBackup {
   }
   const data: BackupData = { ...emptyBackupData(), entities }
   for (const t of RAW_TABLES) data[t] = normalizeRows(t, raw[t])
-  return { manifest, data, warnings }
+  const media: Record<string, Uint8Array> = {}
+  for (const [name, bytes] of Object.entries(files)) {
+    const m = /^media\/([^/]+)$/.exec(name)
+    if (m) media[m[1]] = bytes
+  }
+  return { manifest, data, media, warnings }
 }

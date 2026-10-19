@@ -1,12 +1,17 @@
 import { getRepository, dataChanged, META_BACKUP_ID, META_LAST_BACKUP, META_LAST_CHANGE } from '../storage/repository'
+import { missingFiles } from '../model/asset'
+import { getMedia, mediaNames, putMedia } from '../storage/media'
 import {
   chooseFolder,
   deviceName,
+  folderMediaNames,
   folderPermission,
   folderSupported,
   readFolderBackup,
+  readFolderMedia,
   savedFolder,
   writeFolderBackup,
+  writeFolderMedia,
   writeSafetyCopy,
   type DirHandle,
 } from './folder'
@@ -125,6 +130,8 @@ class Backup {
         this.other = decision === 'reprendre' || decision === 'conflit' ? folder : null
         if (decision === 'ecrire') await this.#write(dir)
         else this.status = decision
+        // Médias écrits par l'autre appareil après la base (Drive ne les synchronise pas forcément dans l'ordre).
+        if (decision !== 'reprendre' && decision !== 'conflit') await this.#pullMedia(dir)
       } catch (e) {
         this.#fail(e)
       }
@@ -190,7 +197,7 @@ class Backup {
 
   /** Télécharge une sauvegarde (navigateur sans dossier, ou à la demande). */
   async download(): Promise<void> {
-    const { bytes } = await this.#pack()
+    const { bytes } = await this.#pack(true)
     const url = URL.createObjectURL(new Blob([bytes as Uint8Array<ArrayBuffer>], { type: 'application/zip' }))
     const a = document.createElement('a')
     a.href = url
@@ -214,7 +221,11 @@ class Backup {
     this.#timer = setTimeout(() => void this.flush(), DELAY)
   }
 
-  async #pack(): Promise<{ manifest: BackupManifest; bytes: Uint8Array }> {
+  /**
+   * La base en fichier .opmj. `withMedia` : avec les fichiers des médias (fichier téléchargé, autonome) ;
+   * sans, pour le dossier, où ils sont rangés à part dans medias/ (D-M23).
+   */
+  async #pack(withMedia = false): Promise<{ manifest: BackupManifest; bytes: Uint8Array }> {
     const r = await getRepository()
     const data = await r.exportData()
     const manifest = makeManifest(data, {
@@ -222,13 +233,21 @@ class Backup {
       appVersion: __APP_VERSION__,
       device: deviceName(),
     })
-    return { manifest, bytes: packBackup(manifest, data) }
+    const files: Record<string, Uint8Array> = {}
+    if (withMedia) {
+      for (const a of await r.listAssets()) {
+        const b = await getMedia(a.fileName)
+        if (b) files[a.fileName] = new Uint8Array(await b.arrayBuffer())
+      }
+    }
+    return { manifest, bytes: packBackup(manifest, data, files) }
   }
 
-  /** Écrit la base dans le dossier et retient l'identifiant de cette sauvegarde. */
+  /** Écrit la base dans le dossier (médias manquants d'abord) et retient l'identifiant de cette sauvegarde. */
   async #write(dir: Dir): Promise<void> {
     this.status = 'ecriture'
     try {
+      await this.#pushMedia(dir)
       const { manifest, bytes } = await this.#pack()
       await writeFolderBackup(dir, bytes)
       await this.#remember(manifest.id)
@@ -236,6 +255,27 @@ class Backup {
       this.status = 'a-jour'
     } catch (e) {
       this.#fail(e)
+    }
+  }
+
+  /** Copie dans medias/ du dossier les fichiers de l'appareil qui n'y sont pas encore. */
+  async #pushMedia(dir: Dir): Promise<void> {
+    const assets = await (await getRepository()).listAssets()
+    if (!assets.length) return
+    const there = await folderMediaNames(dir)
+    for (const a of missingFiles(assets, there)) {
+      const b = await getMedia(a.fileName)
+      if (b) await writeFolderMedia(dir, a.fileName, b)
+    }
+  }
+
+  /** Reprend du dossier les fichiers des médias absents de l'appareil (écrits par l'autre appareil). */
+  async #pullMedia(dir: Dir): Promise<void> {
+    const assets = await (await getRepository()).listAssets()
+    if (!assets.length) return
+    for (const a of missingFiles(assets, await mediaNames())) {
+      const bytes = await readFolderMedia(dir, a.fileName)
+      if (bytes) await putMedia(a.fileName, new Blob([bytes as Uint8Array<ArrayBuffer>], { type: a.mime }))
     }
   }
 
@@ -248,7 +288,14 @@ class Backup {
       else await this.download()
     }
     await r.importData(backup.data)
+    // Fichiers des médias : ceux du fichier restauré, puis ceux du dossier.
+    const mimes = new Map(backup.data.assets.map(a => [String(a.file_name), String(a.mime ?? '')]))
+    for (const [name, bytes] of Object.entries(backup.media)) {
+      await putMedia(name, new Blob([bytes as Uint8Array<ArrayBuffer>], { type: mimes.get(name) ?? '' }))
+    }
+    if (dir) await this.#pullMedia(dir)
     if (writeBack && dir) {
+      await this.#pushMedia(dir)
       const { manifest, bytes } = await this.#pack()
       await writeFolderBackup(dir, bytes)
       await this.#remember(manifest.id)

@@ -9,6 +9,8 @@
   import { ENTITY_TYPES, TYPE_DEFS, type EntityType } from '../model/types'
   import { opened } from '../opened.svelte'
   import { applyRename, renameCandidates } from '../rename'
+  import { media } from '../media.svelte'
+  import AssetView from './AssetView.svelte'
   import ChipsInput from './ChipsInput.svelte'
   import MarkdownEditor from './MarkdownEditor.svelte'
   import MoveForm from './MoveForm.svelte'
@@ -131,6 +133,13 @@
   }
 
   function onBodyClick(ev: MouseEvent) {
+    // Image ou fichier du texte : visionneuse.
+    const asset = (ev.target as HTMLElement).closest<HTMLElement>('[data-asset]')
+    if (asset?.dataset.asset) {
+      ev.preventDefault()
+      if (media.byId.has(asset.dataset.asset)) media.viewing = asset.dataset.asset
+      return
+    }
     const a = (ev.target as HTMLElement).closest('a.wl') as HTMLAnchorElement | null
     if (!a) return
     ev.preventDefault()
@@ -144,6 +153,28 @@
     if (ev.button !== 1 || !a?.dataset.id) return
     ev.preventDefault()
     onOpen(a.dataset.id)
+  }
+
+  /** Images du texte (`asset:<id>`, markdown.ts) : adresse du fichier sur l'appareil, ou mention « absente ». */
+  function assetImages(node: HTMLElement, _key: string) {
+    const run = () => {
+      for (const s of node.querySelectorAll('.asset-absent')) s.remove()
+      for (const img of node.querySelectorAll<HTMLImageElement>('img[data-asset]')) {
+        const id = img.dataset.asset!
+        void media.url(id).then(u => {
+          img.hidden = !u
+          if (u) img.src = u
+          else {
+            const note = document.createElement('span')
+            note.className = 'asset-absent'
+            note.textContent = `[image absente de cet appareil : ${img.alt || 'sans légende'}]`
+            img.after(note)
+          }
+        })
+      }
+    }
+    run()
+    return { update: run }
   }
 
   /** Lien vers une fiche dans l'interface : clic ou clic molette. */
@@ -379,6 +410,8 @@
                     {/each}
                   {:else if f.field.kind === 'longtext'}
                     <span class="pre">{entity.props[f.key]}</span>
+                  {:else if f.field.kind === 'asset'}
+                    {media.byId.get(String(entity.props[f.key]))?.originalName ?? 'fichier introuvable'}
                   {:else}
                     {displayValue(f, entity.props[f.key], id => catalog.title(id))}
                   {/if}
@@ -389,6 +422,10 @@
         </table>
       {/if}
 
+      {#each def.fields.filter(f => f.field.kind === 'asset' && typeof entity.props[f.key] === 'string') as f (f.key)}
+        <AssetView id={String(entity.props[f.key])} />
+      {/each}
+
       {#if orphans.length}
         <p class="muted small-text">
           Propriétés orphelines : {orphans.map(([k]) => k).join(', ')} (visibles et supprimables en édition).
@@ -397,7 +434,7 @@
 
       {#if entity.bodyMd.trim()}
         <!-- eslint-disable-next-line svelte/no-at-html-tags -- HTML nettoyé par DOMPurify (markdown.ts) -->
-        <div class="md" role="presentation" onclick={onBodyClick} onauxclick={onBodyAux}>{@html html}</div>
+        <div class="md" role="presentation" onclick={onBodyClick} onauxclick={onBodyAux} use:assetImages={`${html}|${media.version}`}>{@html html}</div>
       {:else if !entity.archived && !def.fields.some(f => entity.props[f.key] !== undefined)}
         <p class="empty-body">Fiche vide. <button class="link" onclick={() => opened.setEditing(true)}>La compléter</button> (Ctrl+E).</p>
       {/if}
@@ -542,9 +579,17 @@
   .md :global(img) {
     max-width: 100%;
   }
-  .md :global(.asset) {
+  .md :global(img.asset) {
+    max-height: 60dvh;
+    cursor: zoom-in;
+    border-radius: 6px;
+  }
+  .md :global(.asset-absent) {
     color: var(--muted);
     font-style: italic;
+  }
+  .md :global(a.asset-link) {
+    color: var(--accent);
   }
   .dates {
     margin-top: 28px;

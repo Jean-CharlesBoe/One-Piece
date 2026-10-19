@@ -17,7 +17,7 @@ Identique à Sans Nom (D-T1), pour réutiliser une chaîne déjà éprouvée (AP
 | Tests | **Vitest** | règles, normalisation, formats de sauvegarde, import Notion |
 | Éditeur Markdown (MJ) | **CodeMirror 6** | voir D-M3 |
 | Rendu Markdown (MJ) | **markdown-it** + plugin maison `[[lien]]` | sortie assainie (DOMPurify) |
-| Archive de sauvegarde (MJ) | **fflate** (zip) | base + médias dans un seul fichier |
+| Archive de sauvegarde (MJ) | **fflate** (zip) | base (+ médias dans un fichier téléchargé, D-M23) |
 | Recherche (MJ) | **SQLite FTS5** | à vérifier sur appareil à l'étape M1 ; repli FTS4 / `LIKE` |
 
 Aucune dépendance réseau à l'exécution : polices embarquées, pas de CDN.
@@ -68,7 +68,7 @@ Repris tel quel de Sans Nom : table `characters (id, nom, updated_at, data JSON)
 ### Appli MJ
 Modèle **relationnel** (fiches, liens, sessions, journal, médias) + index plein texte, car la recherche globale et les liens entre fiches sont le cœur de l'app. Détails : [mj/MODELE_DONNEES.md](mj/MODELE_DONNEES.md).
 
-Médias (images, PDF) : fichiers dans `Directory.Data/media/<id>.<ext>`, référencés par la table `assets`. Jamais de blob en base.
+Médias (images, PDF, D-M23) : fichiers `<id>.<ext>` dans IndexedDB (`onepiece-mj-medias`, `storage/media.ts`), référencés par la table `assets` ; copiés une fois chacun dans `medias/` du dossier Drive. Jamais de blob en base.
 
 ### Développement dans le navigateur
 - Joueur : repli `localStorage` comme Sans Nom.

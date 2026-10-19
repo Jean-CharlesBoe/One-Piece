@@ -1,4 +1,5 @@
 import { RAW_TABLES, TABLE_COLUMNS, type BackupData, type RawRow } from '../backup/format'
+import { assetRow, normalizeAsset } from '../model/asset'
 import { toCatalogEntry, type CatalogEntry, type Entity } from '../model/entity'
 import { computeLinks, plainText } from '../model/links'
 import { normalizeEntity } from '../model/normalize'
@@ -260,6 +261,19 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
     async markNotDuplicate(a, b) {
       const [x, y] = a < b ? [a, b] : [b, a]
       await db.run(`INSERT OR IGNORE INTO not_duplicates (a_id, b_id) VALUES (?, ?)`, [x, y])
+      await touch()
+    },
+    async listAssets() {
+      return (await db.query(`SELECT * FROM assets ORDER BY created_at`)).flatMap(r => normalizeAsset(r) ?? [])
+    },
+    async saveAsset(a) {
+      const row = assetRow(a)
+      const cols = TABLE_COLUMNS.assets
+      await db.run(
+        `INSERT INTO assets (${cols.join(', ')}) VALUES (${cols.map(() => '?').join(', ')})
+           ON CONFLICT(id) DO UPDATE SET ${cols.filter(c => c !== 'id').map(c => `${c} = excluded.${c}`).join(', ')}`,
+        cols.map(c => row[c] ?? null),
+      )
       await touch()
     },
     async exportData(): Promise<BackupData> {

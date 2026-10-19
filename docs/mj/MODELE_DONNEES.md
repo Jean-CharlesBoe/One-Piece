@@ -7,7 +7,7 @@
 - Une table générique **`entities`** pour toutes les fiches ; les champs propres à chaque type sont dans `props` (JSON), **décrits et validés par le registre des types** (§3) côté code.
 - Les **relations** (propriétés « → ») et les **mentions** `[[ ]]` du texte sont matérialisées dans **`links`** pour les rétroliens et la chronologie. `links` est **dérivée** : recalculée à chaque enregistrement d'une fiche ou d'une entrée de journal (source de vérité = `props` + `body_md`).
 - Identifiants : UUID v4 en texte. Dates : ISO 8601 UTC en texte.
-- Médias : fichiers dans `Directory.Data/media/`, jamais en base.
+- Médias (D-M23) : la table `assets` décrit chaque fichier ; le fichier lui-même est rangé à part sous le nom `<id>.<ext>` : sur l'appareil dans IndexedDB (`onepiece-mj-medias`), dans le dossier Drive dans `medias/`, dans un fichier `.opmj` téléchargé dans `media/`. Jamais en base.
 
 ## 2. Schéma SQLite (migration 1)
 
@@ -186,7 +186,7 @@ interface GameBlock {
 - Forme stockée : `[[<id>|<titre affiché>]]` — robuste aux renommages ; le titre affiché est mis à jour au renommage (§4.3 du cahier).
 - Forme tapée : `[[Drake` → autocomplétion → insère la forme stockée.
 - Lien vers une fiche inexistante (import, saisie) : `[[?|Nom]]` → lien rouge ; clic = créer la fiche et réécrire le lien.
-- Images : `![légende](asset:<id>)`, résolues vers le fichier du dossier `media/`.
+- Images : `![légende](asset:<id>)`, affichées depuis le fichier de l'appareil (clic = visionneuse) ; fichier joint (PDF) : `[légende](asset:<id>)`.
 
 ## 5. Sauvegarde `.opmj`
 
@@ -194,6 +194,7 @@ Archive zip :
 ```
 manifest.json   { format: "onepiece-mj-sauvegarde", version: 1, id, schemaVersion, exportedAt, lastChangeAt, appVersion, device, counts }
 data.json       { entities: [], assets: [], campaigns: [], sessions: [], journal_entries: [], not_duplicates: [] }
-media/<id>.<ext>   (à partir de M6)
+media/<id>.<ext>   fichiers des médias : seulement dans un fichier téléchargé ou importé (D-M23)
 ```
+La sauvegarde du dossier Drive (`onepiece-mj.opmj`) ne contient que la base ; les fichiers sont dans `medias/` à côté, écrits une fois chacun, jamais supprimés automatiquement. Au lancement et à chaque vérification, l'app reprend du dossier les fichiers qui lui manquent (écrits par l'autre appareil).
 Code : `apps/mj/src/lib/backup/format.ts`. `entities` au format du modèle (relu par `normalizeEntity`) ; les autres tables en lignes SQL limitées aux colonnes connues (`TABLE_COLUMNS`) en attendant leurs modèles. `links` et `search_index` ne sont pas exportés : reconstruits à la restauration. La table `meta` non plus : ce sont des réglages propres à chaque appareil (thème, onglets, récentes, identifiant de la dernière sauvegarde). `id` (unique par sauvegarde) et `device` servent au relais entre appareils (D-M19). La restauration se fait en une transaction : en cas d'erreur, la base reste inchangée ; une référence vers une ligne absente (page parente, campagne…) est retirée.

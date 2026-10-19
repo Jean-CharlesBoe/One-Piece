@@ -1,6 +1,7 @@
 <script lang="ts">
   import type { Entity } from '../model/entity'
   import { TYPE_DEFS, type EntityType, type FieldDef } from '../model/types'
+  import AssetField from './AssetField.svelte'
   import ChipsInput from './ChipsInput.svelte'
   import RelationField from './RelationField.svelte'
 
@@ -41,7 +42,7 @@
       {@const f = def.field}
       {@const v = entity.props[def.key]}
       {@const fid = `${uid}-${def.key}`}
-      <div class="field" class:wide={f.kind === 'longtext' || f.kind === 'relation' || f.kind === 'multiselect'}>
+      <div class="field" class:wide={f.kind === 'longtext' || f.kind === 'relation' || f.kind === 'multiselect' || f.kind === 'asset'}>
         {#if f.kind === 'relation'}
           <RelationField {def} value={v} selfId={entity.id} onChange={x => set(def.key, x)} {onCreate} />
         {:else if f.kind === 'multiselect'}
@@ -68,7 +69,7 @@
           {:else if f.kind === 'gameBlock'}
             <p id={fid} class="later">{v ? 'Bloc de jeu présent.' : 'Aucun.'} Son édition arrive à l'étape M7.</p>
           {:else if f.kind === 'asset'}
-            <p id={fid} class="later">Import de fichiers : étape M6.</p>
+            <AssetField id={fid} label={def.label} value={v} onChange={x => set(def.key, x)} />
           {/if}
         {/if}
       </div>

@@ -105,6 +105,29 @@ export async function writeFolderBackup(dir: FileSystemDirectoryHandle, bytes: U
   for (const old of historyToPrune(names, HISTORY_KEEP)) await hist.removeEntry(old)
 }
 
+// Médias (D-M23) : un fichier par média dans medias/, écrit une fois (un média ne change jamais), jamais supprimé
+// automatiquement. La sauvegarde onepiece-mj.opmj reste légère : seulement la base.
+const MEDIA_DIR = 'medias'
+
+async function mediaDir(dir: FileSystemDirectoryHandle): Promise<FileSystemDirectoryHandle> {
+  return dir.getDirectoryHandle(MEDIA_DIR, { create: true })
+}
+
+/** Noms des fichiers de medias/. */
+export async function folderMediaNames(dir: FileSystemDirectoryHandle): Promise<Set<string>> {
+  const names = new Set<string>()
+  for await (const name of ((await mediaDir(dir)) as unknown as { keys(): AsyncIterable<string> }).keys()) names.add(name)
+  return names
+}
+
+export async function readFolderMedia(dir: FileSystemDirectoryHandle, name: string): Promise<Uint8Array | null> {
+  return readFile(await mediaDir(dir), name)
+}
+
+export async function writeFolderMedia(dir: FileSystemDirectoryHandle, name: string, data: Blob | Uint8Array): Promise<void> {
+  await writeFile(await mediaDir(dir), name, data instanceof Blob ? new Uint8Array(await data.arrayBuffer()) : data)
+}
+
 /**
  * Copie de sécurité dans historique/, jamais supprimée automatiquement, avant qu'une version soit remplacée :
  * la base de cet appareil avant une restauration (« avant-restauration-PC-Windows-2026-10-17-13h00.opmj »),

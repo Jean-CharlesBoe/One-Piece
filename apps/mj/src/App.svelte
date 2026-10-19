@@ -15,7 +15,10 @@
   import SettingsPanel from './lib/components/SettingsPanel.svelte'
   import Sidebar from './lib/components/Sidebar.svelte'
   import TabBar from './lib/components/TabBar.svelte'
+  import MediaViewer from './lib/components/MediaViewer.svelte'
+  import { media } from './lib/media.svelte'
   import { mergeEntities } from './lib/mergeOps'
+  import { titleFromFileName } from './lib/model/asset'
   import { createEntity, toCatalogEntry, type CatalogEntry } from './lib/model/entity'
   import { resolveMissing } from './lib/model/links'
   import type { EntityType } from './lib/model/types'
@@ -158,6 +161,47 @@
     }
   }
 
+  /** Import d'images ou de PDF (cahier §4.6) : une fiche Document par fichier, la dernière est ouverte. */
+  async function importFiles(files: File[]) {
+    const errors: string[] = []
+    let last: string | null = null
+    for (const f of files) {
+      try {
+        const asset = await media.importFile(f)
+        const e = createEntity('document', titleFromFileName(f.name))
+        e.props = { fichier: asset.id }
+        await (await getRepository()).saveEntity(e)
+        catalog.upsert(toCatalogEntry(e))
+        last = e.id
+      } catch (err) {
+        errors.push(err instanceof Error ? err.message : String(err))
+      }
+    }
+    if (last) {
+      if (mode !== 'archives' && mode !== 'doublons') mode = 'document'
+      await openEntity(last)
+    }
+    // Après l'ouverture (qui efface le message d'erreur précédent).
+    error = errors.join(' ')
+  }
+
+  // Fichiers glissés sur l'app (hors éditeur de texte, qui les insère lui-même dans le texte).
+  let dragging = $state(false)
+  const hasFiles = (e: DragEvent) => !!e.dataTransfer?.types.includes('Files')
+  const inEditor = (e: DragEvent) => !!(e.target as HTMLElement | null)?.closest?.('.cm-editor')
+  function onDragOver(e: DragEvent) {
+    if (!hasFiles(e) || inEditor(e)) return
+    e.preventDefault()
+    dragging = true
+  }
+  function onDrop(e: DragEvent) {
+    dragging = false
+    if (!hasFiles(e) || inEditor(e)) return
+    e.preventDefault()
+    const files = [...(e.dataTransfer?.files ?? [])]
+    if (files.length) void importFiles(files)
+  }
+
   /** Création depuis un champ relation : la fiche est créée, la fiche en cours reste ouverte. */
   async function createForRelation(type: EntityType, title: string): Promise<string | null> {
     try {
@@ -286,6 +330,7 @@
       .then(show)
       .catch(fail)
     recents.load().catch(fail)
+    media.load().catch(fail)
     // Sauvegarde automatique et relais entre appareils (M4, D-M18).
     backup.start().catch(fail)
 
@@ -301,7 +346,7 @@
   }
 </script>
 
-<svelte:window onkeydown={onKey} />
+<svelte:window onkeydown={onKey} ondragover={onDragOver} ondragleave={e => { if (!e.relatedTarget) dragging = false }} ondrop={onDrop} />
 
 {#snippet sidebar()}
   <Sidebar
@@ -320,6 +365,7 @@
     onOpen={openEntity}
     onCreate={() => newEntity()}
     onMerge={(a, b) => startMerge(a, b)}
+    onImport={importFiles}
   />
 {/snippet}
 
@@ -402,8 +448,23 @@
 <Sheet bind:open={mergeOpen} title="Fusionner deux fiches">
   <MergeForm first={mergePair.first} second={mergePair.second} onMerge={merge} />
 </Sheet>
+<MediaViewer />
+{#if dragging}<div class="drop" aria-hidden="true">Déposer pour importer (une fiche Document par fichier)</div>{/if}
 
 <style>
+  .drop {
+    position: fixed;
+    inset: 12px;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    border: 3px dashed var(--accent);
+    border-radius: 16px;
+    background: color-mix(in srgb, var(--bg) 80%, transparent);
+    font-size: 1.2rem;
+    font-weight: 600;
+    pointer-events: none;
+  }
   .app {
     display: grid;
     height: 100dvh;
