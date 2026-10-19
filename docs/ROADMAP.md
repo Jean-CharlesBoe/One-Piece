@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 publiée (v0.2.0). M4 (sauvegarde et relais par Drive) publiée (v0.3.0), à vérifier par le MJ sur le PC et le Chromebook. Onglets façon navigateur (D-M20) faits, version 0.3.1 à publier. Ensuite : M5 (import Notion). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 publiée (v0.2.0). M4 (sauvegarde et relais par Drive) publiée (v0.3.0), à vérifier par le MJ sur le PC et le Chromebook. Onglets façon navigateur (D-M20) publiés (v0.3.1). Ensuite : M5 (import Notion). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -285,4 +285,5 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Vérifié : check, 156 tests (2 nouveaux) ; navigateur (piloté par JavaScript) à 1366 × 768 : 2 onglets à 200 px côte à côte, 8 onglets sans défilement (début des titres lisible), glisser de Franky en 4e position (ordre gardé après rechargement), Ctrl+1, Ctrl+9, Ctrl+Tab, Ctrl+Maj+Tab, « + » puis Entrée → nouvel onglet, clic molette, thème clair ; 1100 px (3 onglets à 155 px) ; une colonne (800 px) : liste déroulante inchangée ; console sans erreur de l'app.
 - **Non vérifié** : glisser au doigt sur le Chromebook, raccourcis Ctrl+Tab / Ctrl+chiffre dans l'app installée.
 - Fiches de test ajoutées à la base de dev MJ : 8 personnages (équipage de Luffy).
-- Reste : publication de la 0.3.1 (à la demande du MJ) ; vérification de M4 sur les appareils ; ensuite M5 (import Notion).
+- Version 0.3.1 publiée avec l'accord du MJ (`2f3c2c6`, run de publication vert, cache `onepiece-mj-0.3.1-…` en ligne).
+- Reste : vérification de M4 sur les appareils ; ensuite M5 (import Notion).
