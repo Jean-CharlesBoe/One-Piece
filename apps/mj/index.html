@@ -3,6 +3,27 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script>
+      // Page d'une ancienne version dont les fichiers ont disparu (nouvelle version publiée) : on recharge une
+      // fois, le service worker sert alors la page à jour. Pas plus d'une fois par minute (pas de boucle).
+      addEventListener(
+        'error',
+        e => {
+          const t = e.target
+          const url = (t && (t.src || t.href)) || ''
+          if (!/\/assets\//.test(url)) return
+          try {
+            const last = Number(sessionStorage.getItem('onepiece-mj-reload') || 0)
+            if (Date.now() - last < 60000) return
+            sessionStorage.setItem('onepiece-mj-reload', String(Date.now()))
+          } catch {
+            return
+          }
+          location.reload()
+        },
+        true,
+      )
+    </script>
     <meta name="color-scheme" content="light dark" />
     <meta name="theme-color" content="#15161a" />
     <link rel="manifest" href="./manifest.webmanifest" />

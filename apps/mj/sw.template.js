@@ -6,11 +6,14 @@
 const CACHE = __CACHE__
 const FILES = __FILES__
 
+// GitHub Pages sert les fichiers avec « Cache-Control: max-age=600 » : sans `cache: 'reload'` / `'no-cache'`, le
+// navigateur peut rendre l'ancienne page (10 min) qui demande les fichiers de la version précédente, effacés du
+// serveur et de l'ancien cache → page blanche (constaté au passage à 0.3.1).
 self.addEventListener('install', event => {
   event.waitUntil(
     caches
       .open(CACHE)
-      .then(cache => cache.addAll(FILES))
+      .then(cache => cache.addAll(FILES.map(f => new Request(f, { cache: 'reload' }))))
       .then(() => self.skipWaiting()),
   )
 })
@@ -29,7 +32,7 @@ self.addEventListener('fetch', event => {
   if (req.method !== 'GET' || new URL(req.url).origin !== self.location.origin) return
   if (req.mode === 'navigate') {
     event.respondWith(
-      Promise.race([fetch(req), new Promise((_, reject) => setTimeout(reject, 4000))]).catch(() =>
+      Promise.race([fetch(req.url, { cache: 'no-cache', credentials: 'same-origin' }), new Promise((_, reject) => setTimeout(reject, 4000))]).catch(() =>
         caches.match('./', { ignoreSearch: true }),
       ),
     )
