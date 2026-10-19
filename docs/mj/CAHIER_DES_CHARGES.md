@@ -77,7 +77,7 @@ Deux usages :
 - Alias : une fiche peut avoir plusieurs noms (« Drake », « Capitaine Drake ») utilisés par la recherche et l'autocomplétion.
 
 ### 4.4 Bloc de jeu des PNJ (fiches qui évoluent en session)
-Facultatif sur un Personnage (bouton « Ajouter un bloc de jeu ») :
+Facultatif sur un **PNJ** (bouton « 🎲 Ajouter un bloc de jeu » ; pas sur un PJ, D-M24). Comme Vivre Card : en lecture, « mode jeu » (losanges Vitalité / Endurance cliquables, bonus temporaires) ; le reste en édition (Ctrl+E). Rien n'est prérempli. Contenu :
 - 8 caracs + avantages (composant `StatGrid` partagé), bonus temporaires ;
 - Vitalité, Endurance (losanges partagés), ressources supplémentaires libres ;
 - catégorie d'adversaire (Ennemi mineur … Empereur) avec l'XP correspondante affichée (lecture seule) ;

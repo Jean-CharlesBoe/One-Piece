@@ -17,12 +17,18 @@
     filter = $bindable<SkillFilter>('toutes'),
     unit = 'End.',
     color = '--endurance',
+    noun = 'compétence',
+    emptyHint = 'Touche le crayon pour en ajouter.',
   }: {
     owner: { competences: Skill[] }
     editing: boolean
     filter?: SkillFilter
     unit?: string
     color?: string
+    /** Nom des éléments (féminin) : « compétence » (Vivre Card), « technique » (PNJ de l'appli MJ). */
+    noun?: string
+    /** Conseil affiché sous une liste vide, hors édition. */
+    emptyHint?: string
   } = $props()
 
   let expanded = $state<Record<string, boolean>>({})
@@ -75,7 +81,7 @@
 
 <div class="head">
   <span class="count">
-    <span class="label">{shown.length} compétence{shown.length > 1 ? 's' : ''}</span>
+    <span class="label">{shown.length} {noun}{shown.length > 1 ? 's' : ''}</span>
     <InfoButton memo={MEMO_COMPETENCES} />
   </span>
   {#if !editing && shown.length > 1}
@@ -111,7 +117,7 @@
             oninput={e => updateSkill(skill, { titre: e.currentTarget.value })}
             maxlength="120"
             placeholder="Titre"
-            aria-label="Titre de la compétence {i + 1}"
+            aria-label="Titre de la {noun} {i + 1}"
             autocomplete="off"
           />
           <input
@@ -120,7 +126,7 @@
             onchange={e => commitCost(skill, e.currentTarget)}
             inputmode="numeric"
             placeholder="Coût"
-            aria-label="Coût en Endurance de la compétence {i + 1}"
+            aria-label="Coût en Endurance de la {noun} {i + 1}"
             autocomplete="off"
           />
         </div>
@@ -128,7 +134,7 @@
           class="origin-input"
           value={skill.origine}
           onchange={e => updateSkill(skill, { origine: e.currentTarget.value as SkillOrigin })}
-          aria-label="Origine de la compétence {i + 1}"
+          aria-label="Origine de la {noun} {i + 1}"
         >
           <option value="">Origine : non précisée</option>
           {#each SKILL_ORIGINS as [k, l] (k)}
@@ -140,11 +146,11 @@
           oninput={e => updateSkill(skill, { description: e.currentTarget.value })}
           maxlength="20000"
           placeholder="Description"
-          aria-label="Description de la compétence {i + 1}"
+          aria-label="Description de la {noun} {i + 1}"
         ></textarea>
         <div class="actions">
-          <button class="small" onclick={() => moveItem(owner.competences, i, -1)} disabled={i === 0} aria-label="Monter {skill.titre || 'la compétence'}">↑</button>
-          <button class="small" onclick={() => moveItem(owner.competences, i, 1)} disabled={i === owner.competences.length - 1} aria-label="Descendre {skill.titre || 'la compétence'}">↓</button>
+          <button class="small" onclick={() => moveItem(owner.competences, i, -1)} disabled={i === 0} aria-label="Monter {skill.titre || `la ${noun}`}">↑</button>
+          <button class="small" onclick={() => moveItem(owner.competences, i, 1)} disabled={i === owner.competences.length - 1} aria-label="Descendre {skill.titre || `la ${noun}`}">↓</button>
           <span class="spacer"></span>
           <button class="small danger" onclick={() => remove(skill.id)}>
             {confirmDelete === skill.id ? 'Confirmer' : 'Supprimer'}
@@ -177,12 +183,12 @@
 
 {#if owner.competences.length === 0}
   <p class="empty">
-    Aucune compétence.{#if !editing} Touche le crayon pour en ajouter.{/if}
+    Aucune {noun}.{#if !editing && emptyHint} {emptyHint}{/if}
   </p>
 {/if}
 
 {#if editing}
-  <button class="primary add" onclick={add}>+ Ajouter une compétence</button>
+  <button class="primary add" onclick={add}>+ Ajouter une {noun}</button>
 {/if}
 
 <style>

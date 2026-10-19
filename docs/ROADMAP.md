@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 publiée (v0.2.0). M4 (sauvegarde et relais par Drive) publiée (v0.3.0), à vérifier par le MJ sur le PC et le Chromebook. Onglets façon navigateur (D-M20) publiés (v0.3.1) ; correctif de mise à jour publié (v0.3.2) ; un onglet par fiche (D-M21) publié (v0.3.3). M5 (import Notion) : script fait et essayé sur l'export réel (251 fiches, 30 médias). M6 (documents et médias, D-M23) faite dans le navigateur, version 0.4.0 publiée ; ensuite import Notion définitif chez le MJ, puis M7. M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M7 (bloc de jeu des PNJ)** : faite dans le navigateur, version 0.5.0 à publier ; ensuite M8. Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.4.0) ; M0 à M6 closes (import Notion définitif fait et vérifié par le MJ le 2026-10-19). Ensuite : M8 (sessions et journal), M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -36,9 +36,9 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | M2c | Un nom par chose | fusion de deux fiches, vue « Doublons probables » (détection approchée), « Ajouter comme alias » | — | fait (navigateur) |
 | M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique, onglets (D-M14) | — | fait (publiée en v0.2.0) |
 | M4 | Sauvegarde et relais | `.opmj` (zip + médias), sauvegarde automatique dans le dossier Drive, reprise de la version la plus récente au lancement, conflit signalé, restauration, rappel | — | fait (navigateur ; vérification sur appareils à faire) |
-| M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | — | script fait (D-M22) ; import définitif à faire avec la 0.4.0 |
-| M6 | Documents | import image/PDF, visionneuse | — | fait (navigateur, D-M23) ; à vérifier sur les appareils |
-| M7 | Bloc de jeu PNJ | StatGrid, ressources, techniques, Haki, catégorie d'adversaire | — | à faire |
+| M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | — | fait (import définitif vérifié par le MJ) |
+| M6 | Documents | import image/PDF, visionneuse | — | fait (vérifié par le MJ) |
+| M7 | Bloc de jeu PNJ | StatGrid, ressources, techniques, Haki, catégorie d'adversaire | — | fait (navigateur, D-M24) |
 | M8 | Sessions | campagnes, sessions, écran Session en cours, journal, entrées automatiques, chronologie des fiches, fin de session, entrées Haki ; **transformer en sessions les notes importées de Notion (étiquette `session`, D-M22)** | — | à faire |
 | M9 | Finitions | raccourcis, thèmes, exports (Markdown, PDF, documents, D-M16), **1re release** | — | à faire |
 
@@ -321,3 +321,14 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Corrigés pendant le test : image trop grande en mode « ajusté » dans la visionneuse, message d'erreur d'import effacé à l'ouverture de la fiche.
 - Suite : publier 0.4.0 (accord du MJ), puis import Notion définitif : `npm run notion:import` (déjà fait : `tools/notion-import/input/one-piece.opmj`) → Réglages › Sauvegarde › « Restaurer un fichier… » sur le PC, vérification, puis reprise sur le Chromebook.
 - Version 0.4.0 publiée avec l'accord du MJ (`15da4b1`, run de publication vert, cache `onepiece-mj-0.4.0-…` en ligne).
+
+### Session 18 (fin) · 2026-10-19 (import Notion définitif)
+- Le MJ a restauré l'import Notion dans l'app 0.4.0 et vérifié le résultat : « tout fonctionne correctement ». M5 et M6 closes ; Notion n'est plus à modifier (l'export reste archivé hors dépôt).
+- Suite : M7 (bloc de jeu des PNJ).
+
+### Session 19 · 2026-10-19 (M7 — bloc de jeu des PNJ)
+- Réponses du MJ (D-M24) : comme Vivre Card (mode jeu en lecture, le reste en édition), rien de prérempli, PNJ seulement.
+- `model/gameBlock.ts` : `GameBlock` (caracs, bonus temporaires, Vitalité, Endurance, ressources supplémentaires, catégorie d'adversaire, techniques, Haki), `createGameBlock`, `normalizeGameBlock` (branché sur la propriété `jeu`), XP de la catégorie lue dans `XP_PAR_ADVERSAIRE` (packages/core, source unique).
+- `GameBlockView.svelte` avec les composants de Vivre Card (StatGrid, TempBonuses, ResourceDiamond, SkillList) ; fiche : « 🎲 Ajouter un bloc de jeu » (ouvre l'édition), « Retirer le bloc de jeu » en deux temps ; le bloc n'apparaît plus dans le tableau des propriétés ni dans le formulaire. `SkillList` (core) : options `noun` (« technique ») et `emptyHint`, sans changement pour Vivre Card.
+- Vérifié : check, 178 tests (4 nouveaux), builds des deux applis ; navigateur (import Notion restauré dans la base de dev) : bloc ajouté sur un PNJ, caracs et avantage, catégorie (10 XP affichés), Vitalité 45 et Endurance 30, technique, Haki de l'armement ; en lecture : −12 Vitalité par le losange (maximum non modifiable) ; gardé après rechargement ; pas de bouton sur un PJ ; retrait en deux temps. Console sans erreur.
+- Suite : publier 0.5.0 (accord du MJ) ; M8 (sessions, journal, notes de session importées à transformer).

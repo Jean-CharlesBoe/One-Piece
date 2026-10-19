@@ -166,20 +166,19 @@ personnage: [
 ],
 ```
 
-Bloc de jeu (`props.jeu`), réutilise les types de `packages/core` :
+Bloc de jeu (`props.jeu`, M7, D-M24), réutilise les types de `packages/core` (code : `apps/mj/src/lib/model/gameBlock.ts`, relu par `normalizeGameBlock`) :
 
 ```ts
 interface GameBlock {
-  palierDe: 'D10' | 'D20' | 'D100'
   stats: Stats; bonusTemporaires: TempBonus[]
   ressources: { vitalite: Resource; endurance: Resource }
-  ressourcesPerso: (Resource & { id: string; nom: string; regle: string })[]
-  categorie: '' | 'mineur' | 'standard' | 'second' | 'capitaine' | 'commodore' | 'shichibukai' | 'vice-amiral' | 'supernova' | 'amiral' | 'empereur'
-  techniques: { id: string; titre: string; cout: number | null; description: string }[]
+  ressourcesPerso: CustomResource[]
+  categorie: string          // libellé de XP_PAR_ADVERSAIRE (« Vice-amiral »…), '' = non précisée
+  competences: Skill[]       // techniques : même forme que les compétences de Vivre Card (« techniques » accepté à la lecture)
   haki: Record<'observation' | 'armement' | 'rois', { maitrise: boolean; notes: string }>  // un PNJ est maîtrisé ou non, le MJ décide
-  notesRapides: string
 }
 ```
+Rien n'est prérempli à la création (caracs et ressources à 0). Les « notes rapides » de session arriveront avec M8 (écran Session en cours), hors du bloc.
 
 ## 4. Liens `[[ ]]` dans le Markdown
 

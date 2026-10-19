@@ -1,5 +1,6 @@
 import { LIMITS, read } from '@onepiece/core'
 import type { Entity } from './entity'
+import { normalizeGameBlock } from './gameBlock'
 import { TYPE_DEFS, type EntityType, type FieldDef } from './types'
 
 // Propriétés d'une fiche (`props`), décrites par le registre des types.
@@ -51,7 +52,7 @@ export function normalizeValue(def: FieldDef, raw: unknown, w: string[], who: st
       return f.multiple ? ids : ids[0]
     }
     case 'gameBlock':
-      return read.obj(raw) === raw ? raw : undefined
+      return normalizeGameBlock(raw, w, who)
     case 'asset':
       return typeof raw === 'string' ? raw : undefined
   }

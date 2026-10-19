@@ -250,3 +250,10 @@ Mise en œuvre de M6 :
 - **Affichage** : images et PDF depuis l'appareil (adresses `blob:`) ; PDF dans le lecteur intégré du navigateur (pages, zoom, impression) plutôt qu'une bibliothèque PDF (~1 Mo de plus) ; fichier absent de l'appareil = message, pas d'erreur.
 - Fichiers acceptés : JPG, PNG, WebP, GIF, PDF ; gardés tels quels (pas de réduction : cartes et fiches doivent rester lisibles).
 **Pourquoi** : la sauvegarde automatique a lieu 5 s après chaque modification ; avec tous les fichiers dedans (17 Mo dès l'import Notion, plus ensuite), chaque modification renverrait tout vers Drive et chaque copie quotidienne de `historique/` pèserait autant.
+
+### D-M24 · 2026-10-19 · Bloc de jeu des PNJ : comme Vivre Card, rien de prérempli, PNJ seulement — *validée*
+Réponses du MJ avant M7 :
+- **comme Vivre Card** : en lecture, la fiche est en « mode jeu » (losanges Vitalité et Endurance cliquables, bonus temporaires) ; caracs, maximums, ressources supplémentaires, catégorie, techniques et Haki se modifient en édition (Ctrl+E) ;
+- **rien de prérempli** à la création du bloc (ni Vitalité / Endurance de la race, ni catégorie d'après le grade) : le MJ remplit lui-même ;
+- **PNJ seulement** : pas de bouton « Ajouter un bloc de jeu » sur un PJ (fiches tenues par les joueurs dans Vivre Card, D-T0).
+**Pourquoi** : mêmes gestes que sur Vivre Card, et des valeurs de PNJ choisies par le MJ plutôt que déduites.

@@ -10,7 +10,9 @@
   import { opened } from '../opened.svelte'
   import { applyRename, renameCandidates } from '../rename'
   import { media } from '../media.svelte'
+  import { createGameBlock, type GameBlock } from '../model/gameBlock'
   import AssetView from './AssetView.svelte'
+  import GameBlockView from './GameBlockView.svelte'
   import ChipsInput from './ChipsInput.svelte'
   import MarkdownEditor from './MarkdownEditor.svelte'
   import MoveForm from './MoveForm.svelte'
@@ -41,6 +43,28 @@
   const def = $derived(entity ? TYPE_DEFS[entity.type] : null)
   const html = $derived(entity && !opened.editing ? renderMarkdown(entity.bodyMd, id => catalog.byId.has(id)) : '')
   const orphans = $derived(entity ? Object.entries((entity.props[ORPHANS] as Record<string, unknown>) ?? {}) : [])
+  /** Propriétés du tableau de lecture (le bloc de jeu a sa propre section). */
+  const tableFields = $derived(def && entity ? def.fields.filter(f => f.field.kind !== 'gameBlock' && entity.props[f.key] !== undefined) : [])
+
+  // Bloc de jeu des PNJ (M7, D-M24) : ajouté à la demande, rempli par le MJ ; retrait en deux temps.
+  let confirmRemoveBlock = $state(false)
+  function addBlock() {
+    if (!entity) return
+    entity.props.jeu = createGameBlock()
+    changed()
+    if (!opened.editing) void opened.setEditing(true)
+  }
+  function removeBlock() {
+    if (!entity) return
+    if (!confirmRemoveBlock) {
+      confirmRemoveBlock = true
+      setTimeout(() => (confirmRemoveBlock = false), 4000)
+      return
+    }
+    confirmRemoveBlock = false
+    delete entity.props.jeu
+    changed()
+  }
 
   /** Chaîne des pages parentes, de la racine à la fiche (au plus 10 niveaux). */
   const ancestors = $derived.by(() => {
@@ -218,6 +242,20 @@
   </Sheet>
 {/if}
 
+{#snippet gameBlock(editing: boolean)}
+  {#if entity && entity.type === 'personnage'}
+    {@const block = entity.props.jeu as GameBlock | undefined}
+    {#if block}
+      <GameBlockView {block} {editing} onChange={changed} />
+      {#if editing}
+        <button class="small danger" onclick={removeBlock}>{confirmRemoveBlock ? 'Confirmer : retirer le bloc de jeu' : 'Retirer le bloc de jeu'}</button>
+      {/if}
+    {:else if entity.props.role !== 'PJ' && !entity.archived}
+      <button class="add-block" onclick={addBlock}>🎲 Ajouter un bloc de jeu</button>
+    {/if}
+  {/if}
+{/snippet}
+
 <article class="view">
   {#if entity && def}
     {#if ancestors.length}
@@ -355,6 +393,7 @@
         />
 
         <PropsForm {entity} onChange={changed} {onCreate} />
+        {@render gameBlock(true)}
 
         {#if orphans.length}
           <section class="orphans">
@@ -395,10 +434,10 @@
         <p class="tags">{#each entity.tags as t (t)}<span class="tag">{t}</span>{/each}</p>
       {/if}
 
-      {#if def.fields.some(f => entity.props[f.key] !== undefined)}
+      {#if tableFields.length}
         <table class="props">
           <tbody>
-            {#each def.fields.filter(f => entity.props[f.key] !== undefined) as f (f.key)}
+            {#each tableFields as f (f.key)}
               <tr>
                 <th>{f.label}</th>
                 <td>
@@ -422,6 +461,8 @@
         </table>
       {/if}
 
+      {@render gameBlock(false)}
+
       {#each def.fields.filter(f => f.field.kind === 'asset' && typeof entity.props[f.key] === 'string') as f (f.key)}
         <AssetView id={String(entity.props[f.key])} />
       {/each}
@@ -435,7 +476,7 @@
       {#if entity.bodyMd.trim()}
         <!-- eslint-disable-next-line svelte/no-at-html-tags -- HTML nettoyé par DOMPurify (markdown.ts) -->
         <div class="md" role="presentation" onclick={onBodyClick} onauxclick={onBodyAux} use:assetImages={`${html}|${media.version}`}>{@html html}</div>
-      {:else if !entity.archived && !def.fields.some(f => entity.props[f.key] !== undefined)}
+      {:else if !entity.archived && !tableFields.length && !entity.props.jeu}
         <p class="empty-body">Fiche vide. <button class="link" onclick={() => opened.setEditing(true)}>La compléter</button> (Ctrl+E).</p>
       {/if}
 
@@ -640,6 +681,10 @@
     min-height: 36px;
     padding: 0 8px;
     font-size: 0.85rem;
+  }
+  .add-block {
+    margin: 12px 0;
+    min-height: 40px;
   }
   .archived,
   .renamed {

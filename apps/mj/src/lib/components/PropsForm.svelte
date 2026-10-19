@@ -17,7 +17,8 @@
     onCreate: (type: EntityType, title: string) => Promise<string | null>
   } = $props()
 
-  const fields = $derived(TYPE_DEFS[entity.type].fields)
+  // Le bloc de jeu a sa propre section (GameBlockView), sous le formulaire.
+  const fields = $derived(TYPE_DEFS[entity.type].fields.filter(d => d.field.kind !== 'gameBlock'))
   const uid = $props.id()
 
   function set(key: string, v: unknown) {
@@ -66,8 +67,6 @@
               {#each f.options as o (o)}<option value={o}>{o}</option>{/each}
               {#if str(v) && !f.options.includes(str(v))}<option value={str(v)}>{str(v)} (hors liste)</option>{/if}
             </select>
-          {:else if f.kind === 'gameBlock'}
-            <p id={fid} class="later">{v ? 'Bloc de jeu présent.' : 'Aucun.'} Son édition arrive à l'étape M7.</p>
           {:else if f.kind === 'asset'}
             <AssetField id={fid} label={def.label} value={v} onChange={x => set(def.key, x)} />
           {/if}
@@ -94,10 +93,5 @@
   input,
   select {
     min-height: 40px;
-  }
-  .later {
-    margin: 0;
-    color: var(--muted);
-    font-size: 0.9rem;
   }
 </style>
