@@ -10,7 +10,7 @@
   import { opened } from '../opened.svelte'
   import { applyRename, renameCandidates } from '../rename'
   import { media } from '../media.svelte'
-  import { createGameBlock, type GameBlock } from '../model/gameBlock'
+  import { createGameBlock, isHumanRace, type GameBlock } from '../model/gameBlock'
   import AssetView from './AssetView.svelte'
   import GameBlockView from './GameBlockView.svelte'
   import ChipsInput from './ChipsInput.svelte'
@@ -246,7 +246,7 @@
   {#if entity && entity.type === 'personnage'}
     {@const block = entity.props.jeu as GameBlock | undefined}
     {#if block}
-      <GameBlockView {block} {editing} onChange={changed} />
+      <GameBlockView {block} {editing} human={isHumanRace(catalog.byId.get(String(entity.props.race ?? '')))} onChange={changed} />
       {#if editing}
         <button class="small danger" onclick={removeBlock}>{confirmRemoveBlock ? 'Confirmer : retirer le bloc de jeu' : 'Retirer le bloc de jeu'}</button>
       {/if}

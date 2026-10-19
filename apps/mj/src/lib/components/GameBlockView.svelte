@@ -1,16 +1,29 @@
 <script lang="ts">
-  import { addCustomResource, isEvanoui, moveItem, removeById, renameCustomResource, setCustomResourceRule, type CustomResource } from '@onepiece/core'
+  import {
+    addCustomResource,
+    isEvanoui,
+    MEMO_CARACS,
+    MEMO_COMPETENCES,
+    MEMO_RESSOURCES,
+    moveItem,
+    removeById,
+    renameCustomResource,
+    setCustomResourceRule,
+    TRIBUS,
+    type CustomResource,
+  } from '@onepiece/core'
+  import InfoButton from '@onepiece/core/ui/InfoButton.svelte'
   import ResourceDiamond from '@onepiece/core/ui/ResourceDiamond.svelte'
   import SkillList from '@onepiece/core/ui/SkillList.svelte'
   import StatGrid from '@onepiece/core/ui/StatGrid.svelte'
   import TempBonuses from '@onepiece/core/ui/TempBonuses.svelte'
   import { CATEGORIES, categoryXp, HAKI_TYPES, masteredHaki, type GameBlock } from '../model/gameBlock'
 
-  // Bloc de jeu d'un PNJ (cahier §4.4, D-M24), avec les composants de Vivre Card : en lecture, « mode jeu »
-  // (losanges Vitalité / Endurance cliquables, bonus temporaires) ; en édition, caracs, maximums, ressources
-  // supplémentaires, catégorie, techniques et Haki. Les composants modifient le bloc ; toute modification
-  // prévient `onChange` (sauvegarde automatique de la fiche).
-  let { block, editing, onChange }: { block: GameBlock; editing: boolean; onChange: () => void } = $props()
+  // Bloc de jeu d'un PNJ (cahier §4.4, D-M24, D-M25), comme une fiche de Vivre Card : en lecture, « mode jeu »
+  // (losanges cliquables, bonus temporaires, équipement et inventaire) ; en édition, caracs, maximums, ressources
+  // supplémentaires, tribu, rêve, catégorie, techniques et Haki. Ambition et tribu : Humains seulement (`human`,
+  // d'après la race liée). Les composants modifient le bloc ; toute modification prévient `onChange`.
+  let { block, editing, human, onChange }: { block: GameBlock; editing: boolean; human: boolean; onChange: () => void } = $props()
 
   const uid = $props.id()
   let previous: string | undefined
@@ -22,6 +35,7 @@
 
   const xp = $derived(categoryXp(block.categorie))
   const haki = $derived(masteredHaki(block))
+  const tribuLabel = $derived(human && block.tribu ? (TRIBUS.find(([k]) => k === block.tribu)?.[1] ?? '') : '')
 
   // Ressources supplémentaires : comme Vivre Card (fenêtre du losange en édition : nom, règle, ordre, suppression).
   let openId = $state<string | null>(null)
@@ -60,12 +74,40 @@
     {/if}
   </header>
 
-  <h4 class="label">Caractéristiques</h4>
+  {#if editing}
+    <div class="ident">
+      {#if human}
+        <label>
+          <span class="label">Tribu</span>
+          <select bind:value={block.tribu}>
+            {#each TRIBUS as [k, l] (k)}<option value={k}>{l}</option>{/each}
+          </select>
+        </label>
+      {/if}
+      <label class="wide">
+        <span class="label">Rêve</span>
+        <input bind:value={block.reve} maxlength="2000" placeholder="Le rêve du PNJ" />
+      </label>
+    </div>
+  {:else if tribuLabel || block.reve}
+    <p class="ident-read">
+      {#if tribuLabel}<span>Tribu : <b>{tribuLabel}</b></span>{/if}
+      {#if block.reve}<span>Rêve : <b>{block.reve}</b></span>{/if}
+    </p>
+  {/if}
+
+  <div class="sec-head">
+    <h4 class="label">Caractéristiques</h4>
+    <InfoButton memo={MEMO_CARACS} />
+  </div>
   <StatGrid owner={block} {editing} />
   <TempBonuses owner={block} />
 
   <div class="res-head">
-    <h4 class="label">Ressources</h4>
+    <div class="sec-head">
+      <h4 class="label">Ressources</h4>
+      <InfoButton memo={MEMO_RESSOURCES} />
+    </div>
     {#if editing}<button class="small" onclick={addResource}>+ Ressource</button>{/if}
   </div>
   {#if isEvanoui(block.ressources.endurance) && block.ressources.endurance.max > 0}
@@ -74,6 +116,11 @@
   <div class="diamonds">
     <ResourceDiamond label="Vitalité" res={block.ressources.vitalite} color="--vitalite" {editing} />
     <ResourceDiamond label="Endurance" res={block.ressources.endurance} color="--endurance" {editing} />
+    <ResourceDiamond label="Rêve" res={block.ressources.reve} color="--reve" {editing} />
+    {#if human}
+      <ResourceDiamond label="Ambition" res={block.ressources.ambition} color="--ambition" {editing} />
+    {/if}
+    <ResourceDiamond label="Transfert" res={block.ressources.transfert} color="--transfert" {editing} />
     {#each block.ressourcesPerso as res, i (res.id)}
       <ResourceDiamond
         label={res.nom || 'Sans nom'}
@@ -104,7 +151,10 @@
     {/each}
   </div>
 
-  <h4 class="label">Techniques</h4>
+  <div class="sec-head">
+    <h4 class="label">Techniques</h4>
+    <InfoButton memo={MEMO_COMPETENCES} />
+  </div>
   <SkillList owner={block} {editing} noun="technique" emptyHint="Ctrl+E pour en ajouter." />
 
   <h4 class="label">Haki</h4>
@@ -126,6 +176,12 @@
   {:else}
     <p class="muted">Aucun Haki maîtrisé.</p>
   {/if}
+
+  <!-- Comme Vivre Card : modifiables aussi en mode jeu (objets pris, perdus, donnés pendant la session). -->
+  <label class="label" for="{uid}-equipement">Équipement</label>
+  <textarea id="{uid}-equipement" bind:value={block.equipement} maxlength="20000"></textarea>
+  <label class="label" for="{uid}-inventaire">Inventaire</label>
+  <textarea id="{uid}-inventaire" bind:value={block.inventaire} maxlength="20000"></textarea>
 </section>
 
 <style>
@@ -163,6 +219,37 @@
   .cat-read {
     margin: 0;
     font-weight: 600;
+  }
+  .sec-head {
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .sec-head h4 {
+    margin: 0;
+  }
+  .ident {
+    display: grid;
+    grid-template-columns: minmax(160px, 220px) 1fr;
+    gap: 8px;
+  }
+  .ident label {
+    display: grid;
+    gap: 2px;
+  }
+  .ident .wide:only-child {
+    grid-column: 1 / -1;
+  }
+  .ident select,
+  .ident input {
+    min-height: 40px;
+  }
+  .ident-read {
+    margin: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px 16px;
   }
   .res-head {
     display: flex;

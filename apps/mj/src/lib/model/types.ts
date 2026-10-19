@@ -67,6 +67,8 @@ export const TYPE_DEFS: Record<EntityType, TypeDef> = {
     fields: [
       { key: 'role', label: 'Rôle', field: { kind: 'select', options: ['PJ', 'PNJ'] }, filterable: true, inSubtitle: true },
       { key: 'etat', label: 'État', field: { kind: 'select', options: ['En vie', 'Mort', 'Inconnu'] }, filterable: true, inSubtitle: true },
+      // Texte, comme Vivre Card : « 25 », « environ 40 », « inconnu ».
+      { key: 'age', label: 'Âge', field: { kind: 'text' } },
       { key: 'alignement', label: 'Alignement', field: { kind: 'select', options: ALIGNEMENTS }, filterable: true },
       {
         key: 'grade',

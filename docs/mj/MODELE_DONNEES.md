@@ -151,6 +151,7 @@ Extrait :
 personnage: [
   { key: 'role',      label: 'Rôle',       field: { kind: 'select', options: ['PJ', 'PNJ'] }, filterable: true, inSubtitle: true },
   { key: 'etat',      label: 'État',       field: { kind: 'select', options: ['En vie', 'Mort', 'Inconnu'] }, filterable: true, inSubtitle: true },
+  { key: 'age',       label: 'Âge',        field: { kind: 'text' } },   // texte, comme Vivre Card (« environ 40 »)
   { key: 'alignement',label: 'Alignement', field: { kind: 'select', options: ['Bon', 'Neutre', 'Hostile', 'Chaotique', 'Joueur'] }, filterable: true },
   { key: 'grade',     label: 'Grade',      field: { kind: 'select', options: ['Amiral en chef', 'Amiral', 'Vice-amiral', 'Contre-amiral', 'Sous-amiral', 'Capitaine', 'Shichibukai'] } },
   { key: 'race',      label: 'Race',       field: { kind: 'relation', to: ['race'], multiple: false }, filterable: true },
@@ -171,14 +172,15 @@ Bloc de jeu (`props.jeu`, M7, D-M24), réutilise les types de `packages/core` (c
 ```ts
 interface GameBlock {
   stats: Stats; bonusTemporaires: TempBonus[]
-  ressources: { vitalite: Resource; endurance: Resource }
+  ressources: { vitalite: Resource; endurance: Resource; reve: Resource; ambition: Resource; transfert: Resource }  // Ambition : Humains seulement
   ressourcesPerso: CustomResource[]
+  tribu: Tribu; reve: string; equipement: string; inventaire: string   // comme une fiche de Vivre Card (D-M25)
   categorie: string          // libellé de XP_PAR_ADVERSAIRE (« Vice-amiral »…), '' = non précisée
   competences: Skill[]       // techniques : même forme que les compétences de Vivre Card (« techniques » accepté à la lecture)
   haki: Record<'observation' | 'armement' | 'rois', { maitrise: boolean; notes: string }>  // un PNJ est maîtrisé ou non, le MJ décide
 }
 ```
-Rien n'est prérempli à la création (caracs et ressources à 0). Les « notes rapides » de session arriveront avec M8 (écran Session en cours), hors du bloc.
+À la création : caracs, Vitalité et Endurance à 0 (rien n'est déduit de la race ou du grade, D-M24) ; Rêve 10, Ambition 10, Transfert 1 « chaque jour » (valeurs des règles, comme Vivre Card, D-M25). Un bloc créé en 0.5.0 reçoit ces trois ressources à la lecture. Les « notes rapides » de session arriveront avec M8 (écran Session en cours), hors du bloc.
 
 ## 4. Liens `[[ ]]` dans le Markdown
 

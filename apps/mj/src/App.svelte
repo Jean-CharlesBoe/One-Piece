@@ -114,8 +114,11 @@
   }
 
   async function closeTab(i: number) {
+    const id = tabs.nav.tabs[i]
     tabs.close(i)
     await show()
+    // Une fiche en édition dont on ferme l'onglet se rouvrira en lecture.
+    if (id && opened.entity?.id !== id) opened.forgetEditing(id)
   }
 
   function selectMode(m: ListMode) {

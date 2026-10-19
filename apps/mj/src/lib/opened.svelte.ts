@@ -33,17 +33,30 @@ class Opened {
   #version = 0
   /** Dernière version enregistrée de la fiche. */
   #saved: Entity | null = null
-  /** Titre au début de la session d'édition. */
-  #titleAtStart = ''
+  /**
+   * Fiches en cours d'édition, avec leur titre au début de la session d'édition : une fiche quittée pour un autre
+   * onglet en édition s'y retrouve à son retour.
+   */
+  #editingTitles = new Map<string, string>()
+  /** Versions gardées pour « Annuler » des fiches en édition quittées pour un autre onglet. */
+  #histories = new Map<string, Entity[]>()
 
   async open(id: string): Promise<void> {
     await this.flush()
+    if (this.entity && this.editing) this.#histories.set(this.entity.id, this.history)
     const e = await (await getRepository()).getEntity(id)
     this.entity = e
-    this.editing = false
-    this.history = []
+    this.editing = !!e && !e.archived && this.#editingTitles.has(e.id)
+    this.history = (this.editing && e && this.#histories.get(e.id)) || []
+    if (e) this.#histories.delete(e.id)
     this.renamed = null
     this.#saved = e ? (structuredClone(e) as Entity) : null
+  }
+
+  /** Onglet fermé : la fiche rouverte plus tard ne sera plus en édition. */
+  forgetEditing(id: string): void {
+    this.#editingTitles.delete(id)
+    this.#histories.delete(id)
   }
 
   async close(): Promise<void> {
@@ -57,15 +70,17 @@ class Opened {
 
   async setEditing(on: boolean): Promise<void> {
     if (on && !this.editing && this.entity) {
-      this.#titleAtStart = this.entity.title
+      this.#editingTitles.set(this.entity.id, this.entity.title)
       this.history = []
       this.renamed = null
     }
     if (!on && this.editing) {
       await this.flush()
       const e = this.entity
-      if (e && this.#titleAtStart && e.title.trim() && e.title.trim() !== this.#titleAtStart.trim()) {
-        this.renamed = { id: e.id, oldTitle: this.#titleAtStart.trim(), newTitle: e.title.trim() }
+      const start = e ? this.#editingTitles.get(e.id) : undefined
+      if (e) this.#editingTitles.delete(e.id)
+      if (e && start && e.title.trim() && e.title.trim() !== start.trim()) {
+        this.renamed = { id: e.id, oldTitle: start.trim(), newTitle: e.title.trim() }
       }
       this.history = []
     }

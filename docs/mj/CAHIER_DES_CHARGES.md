@@ -38,7 +38,7 @@ Deux usages :
 ```
 - **Largeur de fenêtre** (D-M10) : ≥ 1280 px → 3 colonnes ci-dessus ; 900 à 1279 px → 2 colonnes, la liste se replie (ouverte à la demande) ; < 900 px → la fiche seule, barre latérale, liste et panneau Liens en volets. Référence de vérification : 1366 × 768.
 - La liste se masque quand on navigue de fiche en fiche (mode deux colonnes).
-- **Onglets de fiches** (Q-M1, D-M14, D-M21) : **chaque fiche ouverte a son onglet**. Un clic sur une fiche (liste, recherche, lien du texte, panneau Liens, barre latérale) l'ouvre dans un nouvel onglet, placé juste après l'onglet actif, ou revient sur son onglet si elle est déjà ouverte. **Aucun onglet ne se ferme tout seul** : seulement par son ✕ ou d'un clic molette (ou quand sa fiche est supprimée) ; pas de limite de nombre. Pas d'historique Précédent / Suivant. Barre d'onglets au-dessus de la fiche, **comme dans un navigateur** (D-M20) : onglets côte à côte qui se partagent la largeur et rétrécissent ensemble, d'au moins 40 px de haut ; onglet étroit : début du titre seulement, ✕ sur l'onglet actif ; au-delà de leur largeur minimale, la barre défile (molette ou doigt) en gardant l'onglet actif visible ; on les **réordonne en les glissant** (souris ou doigt) ; **« + »** ouvre la recherche. Onglets rouverts au démarrage. En une colonne, les onglets se replient en liste déroulante.
+- **Onglets de fiches** (Q-M1, D-M14, D-M21) : **chaque fiche ouverte a son onglet**. Un clic sur une fiche (liste, recherche, lien du texte, panneau Liens, barre latérale) l'ouvre dans un nouvel onglet, placé juste après l'onglet actif, ou revient sur son onglet si elle est déjà ouverte. **Aucun onglet ne se ferme tout seul** : seulement par son ✕ ou d'un clic molette (ou quand sa fiche est supprimée) ; pas de limite de nombre. Pas d'historique Précédent / Suivant. Barre d'onglets au-dessus de la fiche, **comme dans un navigateur** (D-M20) : onglets côte à côte qui se partagent la largeur et rétrécissent ensemble, d'au moins 40 px de haut ; onglet étroit : début du titre seulement, ✕ sur l'onglet actif ; au-delà de leur largeur minimale, la barre défile (molette ou doigt) en gardant l'onglet actif visible ; on les **réordonne en les glissant** (souris ou doigt) ; **« + »** ouvre la recherche. Onglets rouverts au démarrage. Une fiche laissée **en édition** pour un autre onglet s'y retrouve à son retour (avec son « Annuler ») ; fermer son onglet la rouvrira en lecture. En une colonne, les onglets se replient en liste déroulante.
 - **Souris et doigt** (Q-M1) : le Chromebook s'utilise des deux façons. Cibles d'au moins 40 px, aucune action accessible seulement au survol, appui long = équivalent du clic droit.
 
 ## 4. Base de connaissances
@@ -46,7 +46,7 @@ Deux usages :
 ### 4.1 Types de fiches (D-M1)
 | Type | Champs propres (en plus du titre, du texte riche et des étiquettes) |
 |---|---|
-| **Personnage** | rôle (PJ / PNJ), état (En vie / Mort / Inconnu), alignement (Bon / Neutre / Hostile / Chaotique / Joueur), grade (Marine, Shichibukai…), race →, classes →, fruit →, factions →, lieu d'origine →, mer d'origine, technique de combat, prime, **bloc de jeu** facultatif (§4.4), « fiche à faire » |
+| **Personnage** | rôle (PJ / PNJ), état (En vie / Mort / Inconnu), âge, alignement (Bon / Neutre / Hostile / Chaotique / Joueur), grade (Marine, Shichibukai…), race →, classes →, fruit →, factions →, lieu d'origine →, mer d'origine, technique de combat, prime, **bloc de jeu** facultatif (§4.4), « fiche à faire » |
 | **Faction** | type (Équipage pirate, Marine, Armée révolutionnaire, Gouvernement mondial, Autre), chef →, navire(s) (texte), membres (rétroliens) |
 | **Lieu** | fait partie de → (hiérarchie : mer › archipel › île › ville › bâtiment), mer, alignement, persos affiliés → |
 | **Fruit du démon** | nom japonais, type (Paramecia / Zoan / Logia), détenteur (rétrolien), éveil |
@@ -79,7 +79,7 @@ Deux usages :
 ### 4.4 Bloc de jeu des PNJ (fiches qui évoluent en session)
 Facultatif sur un **PNJ** (bouton « 🎲 Ajouter un bloc de jeu » ; pas sur un PJ, D-M24). Comme Vivre Card : en lecture, « mode jeu » (losanges Vitalité / Endurance cliquables, bonus temporaires) ; le reste en édition (Ctrl+E). Rien n'est prérempli. Contenu :
 - 8 caracs + avantages (composant `StatGrid` partagé), bonus temporaires ;
-- Vitalité, Endurance (losanges partagés), ressources supplémentaires libres ;
+- comme une fiche de Vivre Card (D-M25) : Vitalité, Endurance, Rêve, Ambition (Humains seulement), Transfert (losanges partagés), ressources supplémentaires libres, tribu (Humains), rêve, équipement et inventaire (modifiables aussi en mode jeu), boutons « i » des mémos ;
 - catégorie d'adversaire (Ennemi mineur … Empereur) avec l'XP correspondante affichée (lecture seule) ;
 - techniques (titre, coût en Endurance, description) ;
 - Haki (état par type), fruit (relation, déjà dans les propriétés).

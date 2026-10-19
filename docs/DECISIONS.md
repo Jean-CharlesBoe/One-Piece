@@ -257,3 +257,10 @@ Réponses du MJ avant M7 :
 - **rien de prérempli** à la création du bloc (ni Vitalité / Endurance de la race, ni catégorie d'après le grade) : le MJ remplit lui-même ;
 - **PNJ seulement** : pas de bouton « Ajouter un bloc de jeu » sur un PJ (fiches tenues par les joueurs dans Vivre Card, D-T0).
 **Pourquoi** : mêmes gestes que sur Vivre Card, et des valeurs de PNJ choisies par le MJ plutôt que déduites.
+
+### D-M25 · 2026-10-19 · Bloc de jeu aligné sur Vivre Card, âge des personnages, édition gardée par onglet — *validée*
+Demandes du MJ après la 0.5.0 :
+- le bloc de jeu suit **entièrement la dernière version de Vivre Card** et les règles : Rêve, Ambition (Humains seulement, d'après la fiche de race liée), Transfert, tribu (Humains), rêve, équipement et inventaire, mémos « i ». Rêve, Ambition et Transfert partent des valeurs des règles (10, 10, 1 par jour), comme sur Vivre Card ; Vitalité, Endurance et caracs restent à 0 (D-M24 : rien de déduit de la race) ;
+- un champ **Âge** sur les Personnages, hors du bloc de jeu (texte, comme Vivre Card) ;
+- une fiche **en édition reste en édition** quand on change d'onglet et qu'on y revient (complète D-M21) ; son historique « Annuler » est gardé ; fermer son onglet la rouvre en lecture.
+**Pourquoi** : mêmes ressources et mêmes gestes pour les PNJ que pour les PJ ; préparer plusieurs fiches à la fois sans repasser en édition à chaque onglet.
