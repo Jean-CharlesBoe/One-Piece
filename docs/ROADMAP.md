@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M7 (bloc de jeu des PNJ)** : faite dans le navigateur, version 0.5.0 à publier ; ensuite M8. Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.4.0) ; M0 à M6 closes (import Notion définitif fait et vérifié par le MJ le 2026-10-19). Ensuite : M8 (sessions et journal), M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M7 (bloc de jeu des PNJ)** : publiée (v0.5.0), à vérifier par le MJ ; ensuite M8. Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.4.0) ; M0 à M6 closes (import Notion définitif fait et vérifié par le MJ le 2026-10-19). Ensuite : M8 (sessions et journal), M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -332,3 +332,4 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - `GameBlockView.svelte` avec les composants de Vivre Card (StatGrid, TempBonuses, ResourceDiamond, SkillList) ; fiche : « 🎲 Ajouter un bloc de jeu » (ouvre l'édition), « Retirer le bloc de jeu » en deux temps ; le bloc n'apparaît plus dans le tableau des propriétés ni dans le formulaire. `SkillList` (core) : options `noun` (« technique ») et `emptyHint`, sans changement pour Vivre Card.
 - Vérifié : check, 178 tests (4 nouveaux), builds des deux applis ; navigateur (import Notion restauré dans la base de dev) : bloc ajouté sur un PNJ, caracs et avantage, catégorie (10 XP affichés), Vitalité 45 et Endurance 30, technique, Haki de l'armement ; en lecture : −12 Vitalité par le losange (maximum non modifiable) ; gardé après rechargement ; pas de bouton sur un PJ ; retrait en deux temps. Console sans erreur.
 - Suite : publier 0.5.0 (accord du MJ) ; M8 (sessions, journal, notes de session importées à transformer).
+- Version 0.5.0 publiée avec l'accord du MJ (`86579cb`, run de publication vert, cache `onepiece-mj-0.5.0-…` en ligne).
