@@ -63,6 +63,23 @@ export function closeTab(n: Navigation, i: number): void {
   else if (i < n.active || n.active >= n.tabs.length) n.active = Math.max(0, n.active - 1)
 }
 
+/** Glisser un onglet à une autre place (comme dans un navigateur) : l'onglet actif reste actif. */
+export function moveTab(n: Navigation, from: number, to: number): void {
+  const len = n.tabs.length
+  if (from < 0 || from >= len || to < 0 || to >= len || from === to) return
+  const activeTab = n.tabs[n.active]
+  const [t] = n.tabs.splice(from, 1)
+  n.tabs.splice(to, 0, t)
+  n.active = n.tabs.indexOf(activeTab)
+}
+
+/** Onglet suivant (`delta` = 1) ou précédent (−1), en boucle : Ctrl+Tab, Ctrl+Maj+Tab. */
+export function cycleTab(n: Navigation, delta: number): void {
+  const len = n.tabs.length
+  if (len < 2) return
+  n.active = (((n.active + delta) % len) + len) % len
+}
+
 /**
  * Retire une fiche qui n'existe plus (supprimée) ou n'est plus à afficher : elle disparaît des historiques ;
  * un onglet qui n'a plus rien à montrer se ferme.

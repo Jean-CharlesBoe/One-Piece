@@ -216,3 +216,12 @@ Mise en œuvre de D-M18 (M4) :
 - Une restauration de fichier (sauvegarde ou import Notion) devient la référence : réécrite dans le dossier aussitôt.
 - Réglages de l'appareil (thème, onglets, récentes) hors de la sauvegarde.
 **Pourquoi** : préparer sur le PC et jouer sur le Chromebook sans serveur, avec la garantie qu'aucune version n'écrase l'autre sans l'accord du MJ.
+
+### D-M20 · 2026-10-19 · Onglets façon navigateur — *proposée*
+Demande du MJ après M4 (deux fiches ouvertes, un seul onglet visible : il fallait passer par ‹ ›) ; complète D-M14.
+- Les onglets se **partagent la largeur** de la barre (200 px au plus chacun) et rétrécissent ensemble ; plus de défilement (8 onglets au plus).
+- Onglet étroit : l'icône disparaît pour garder le début du titre (les icônes d'un même type sont identiques) ; ✕ reste sur l'onglet actif, les onglets inactifs étroits se ferment au clic molette ou une fois choisis (écart assumé à « ✕ toujours visible » de D-M14, comme Chrome). L'onglet actif garde au moins 110 px.
+- **Glisser pour réordonner**, à la souris ou au doigt (au-delà de 6 px de déplacement, sinon c'est un clic) ; l'onglet glissé devient actif ; l'ordre est gardé avec les onglets (meta « onglets », format inchangé).
+- **« + »** après le dernier onglet : ouvre la recherche, la fiche choisie s'ouvre dans un nouvel onglet.
+- **Ctrl+Tab / Ctrl+Maj+Tab**, **Ctrl+1…8**, **Ctrl+9** (dernier) : dans l'app installée ; dans un onglet de Chrome, Chrome les garde pour lui.
+**Pourquoi** : retrouver d'un coup d'œil toutes les fiches ouvertes et passer de l'une à l'autre d'un clic, avec les gestes déjà connus du navigateur.

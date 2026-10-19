@@ -38,7 +38,7 @@ Deux usages :
 ```
 - **Largeur de fenêtre** (D-M10) : ≥ 1280 px → 3 colonnes ci-dessus ; 900 à 1279 px → 2 colonnes, la liste se replie (ouverte à la demande) ; < 900 px → la fiche seule, barre latérale, liste et panneau Liens en volets. Référence de vérification : 1366 × 768.
 - La liste se masque quand on navigue de fiche en fiche (mode deux colonnes) ; historique **Précédent / Suivant** (Alt+← / Alt+→ et bouton retour Android).
-- **Onglets de fiches** (Q-M1, D-M14) : un clic sur un lien ou une ligne de liste **remplace** la fiche affichée ; on ouvre un **nouvel onglet** à la demande (Ctrl + clic ou clic molette à la souris, appui long → « Ouvrir dans un nouvel onglet » au doigt, bouton de l'en-tête de la fiche). Barre d'onglets au-dessus de la fiche, onglets d'au moins 40 px, ✕ toujours visible ; Ctrl+W ferme l'onglet. 8 onglets au plus (le plus ancien se ferme), rouverts au démarrage ; chaque onglet a son historique Précédent / Suivant. En une colonne, les onglets se replient en un menu « n fiches ouvertes ▾ ».
+- **Onglets de fiches** (Q-M1, D-M14) : un clic sur un lien ou une ligne de liste **remplace** la fiche affichée ; on ouvre un **nouvel onglet** à la demande (Ctrl + clic ou clic molette à la souris, appui long → « Ouvrir dans un nouvel onglet » au doigt, bouton de l'en-tête de la fiche). Barre d'onglets au-dessus de la fiche, **comme dans un navigateur** (D-M20) : onglets côte à côte qui se partagent la largeur et rétrécissent ensemble (jamais de défilement), d'au moins 40 px de haut ; onglet étroit : début du titre seulement, ✕ sur l'onglet actif (les autres se ferment au clic molette ou une fois choisis) ; on les **réordonne en les glissant** (souris ou doigt) ; **« + »** après le dernier onglet ouvre la recherche, la fiche choisie s'ouvre dans un nouvel onglet. 8 onglets au plus (le plus ancien se ferme), rouverts au démarrage ; chaque onglet a son historique Précédent / Suivant. En une colonne, les onglets se replient en un menu « n fiches ouvertes ▾ ».
 - **Souris et doigt** (Q-M1) : le Chromebook s'utilise des deux façons. Cibles d'au moins 40 px, aucune action accessible seulement au survol, appui long = équivalent du clic droit.
 
 ## 4. Base de connaissances
@@ -150,6 +150,8 @@ Toute entrée de journal qui mentionne une fiche (lien `[[ ]]` ou entrée automa
 | Alt+← / Alt+→ (ou boutons latéraux de la souris) | précédent / suivant dans l'onglet |
 | Ctrl + clic, clic molette, appui long › « Ouvrir dans un nouvel onglet » | ouvrir une fiche dans un nouvel onglet |
 | Ctrl + Entrée (recherche) | ouvrir le résultat dans un nouvel onglet |
+| Ctrl+Tab / Ctrl+Maj+Tab | onglet suivant / précédent (app installée ; dans un onglet de Chrome, Chrome les garde) |
+| Ctrl+1 … Ctrl+8, Ctrl+9 | aller à l'onglet n, au dernier onglet (idem) |
 | Ctrl+J | aller à la saisie du journal (en session) |
 | Échap | fermer la fenêtre / la recherche / le menu |
 

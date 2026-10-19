@@ -45,6 +45,7 @@
   let settingsOpen = $state(false)
   let newOpen = $state(false)
   let searchOpen = $state(false)
+  let searchNewTab = $state(false)
   let mergeOpen = $state(false)
   /** Fusion : première fiche (proposée comme gardée) et, depuis la vue Doublons, la seconde. */
   let mergePair = $state<{ first: string; second: string | null }>({ first: '', second: null })
@@ -107,6 +108,16 @@
 
   async function activateTab(i: number) {
     tabs.activate(i)
+    listView = false
+    await show()
+  }
+
+  function moveTab(from: number, to: number) {
+    tabs.move(from, to)
+  }
+
+  async function cycleTab(delta: number) {
+    tabs.cycle(delta)
     listView = false
     await show()
   }
@@ -243,6 +254,19 @@
       return
     }
     if (!e.ctrlKey || e.altKey) return
+    // Comme un navigateur : Ctrl+Tab / Ctrl+Maj+Tab, Ctrl+1…8 (onglet n), Ctrl+9 (dernier onglet).
+    if (e.key === 'Tab' && tabs.nav.tabs.length) {
+      e.preventDefault()
+      void cycleTab(e.shiftKey ? -1 : 1)
+      return
+    }
+    if (/^Digit[1-9]$/.test(e.code) && !e.shiftKey && tabs.nav.tabs.length) {
+      e.preventDefault()
+      const n = Number(e.code.slice(5))
+      const i = n === 9 ? tabs.nav.tabs.length - 1 : n - 1
+      if (i < tabs.nav.tabs.length && i !== tabs.nav.active) void activateTab(i)
+      return
+    }
     const k = e.key.toLowerCase()
     if (k === 'k') {
       e.preventDefault()
@@ -356,6 +380,8 @@
         compact={layout === 'une'}
         onActivate={activateTab}
         onClose={closeTab}
+        onMove={moveTab}
+        onNew={() => ((searchNewTab = true), (searchOpen = true))}
         onBack={goBack}
         onForward={goForward}
       />
@@ -386,7 +412,7 @@
 <Drawer bind:open={listOpen} label="Liste des fiches">{@render list()}</Drawer>
 <Drawer bind:open={linksOpen} side="right" label="Liens">{@render links()}</Drawer>
 
-<SearchPalette bind:open={searchOpen} onOpen={openEntity} />
+<SearchPalette bind:open={searchOpen} bind:newTab={searchNewTab} onOpen={openEntity} />
 <ContextMenu onOpen={openEntity} />
 <Sheet bind:open={settingsOpen} title="Réglages"><SettingsPanel /></Sheet>
 <Sheet bind:open={newOpen} title={draft.fromLink ? 'Créer la fiche du lien' : 'Nouvelle fiche'}>

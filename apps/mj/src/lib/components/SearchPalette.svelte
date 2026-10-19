@@ -12,9 +12,12 @@
   // par type avec un extrait surligné ; sans recherche, les fiches récentes. Clavier : ↑ ↓, Entrée ; Échap ferme.
   let {
     open = $bindable(false),
+    newTab = $bindable(false),
     onOpen,
   }: {
     open: boolean
+    /** Ouverte par « + » de la barre d'onglets : la fiche choisie s'ouvre toujours dans un nouvel onglet. */
+    newTab?: boolean
     /** `newTab` : Ctrl + Entrée ou Ctrl + clic (onglets, M3b). */
     onOpen: (id: string, newTab: boolean) => void
   } = $props()
@@ -39,6 +42,7 @@
       active = 0
       queueMicrotask(() => input?.focus())
     } else if (!open && dlg.open) dlg.close()
+    if (!open) newTab = false
   })
 
   $effect(() => {
@@ -87,9 +91,10 @@
   /** Ordre de navigation au clavier = ordre affiché. */
   const flat = $derived(groups.flatMap(g => g.rows))
 
-  function pick(r: Row, newTab = false) {
+  function pick(r: Row, inNewTab = false) {
+    const t = inNewTab || newTab
     open = false
-    onOpen(r.entry.id, newTab)
+    onOpen(r.entry.id, t)
   }
 
   function onKey(e: KeyboardEvent) {
@@ -117,7 +122,7 @@
         bind:value={query}
         onkeydown={onKey}
         type="search"
-        placeholder="Rechercher une fiche (titre, alias, propriétés, texte)…"
+        placeholder={newTab ? 'Ouvrir dans un nouvel onglet…' : 'Rechercher une fiche (titre, alias, propriétés, texte)…'}
         aria-label="Rechercher"
         aria-controls="resultats"
         autocomplete="off"

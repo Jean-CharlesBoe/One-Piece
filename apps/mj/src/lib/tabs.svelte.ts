@@ -4,9 +4,11 @@ import {
   canForward,
   closeTab,
   currentId,
+  cycleTab,
   emptyNavigation,
   forget,
   forward,
+  moveTab,
   normalizeNavigation,
   openIn,
   type Navigation,
@@ -57,6 +59,16 @@ class Tabs {
 
   close(i: number): void {
     closeTab(this.nav, i)
+    this.#save()
+  }
+
+  move(from: number, to: number): void {
+    moveTab(this.nav, from, to)
+    this.#save()
+  }
+
+  cycle(delta: number): void {
+    cycleTab(this.nav, delta)
     this.#save()
   }
 
