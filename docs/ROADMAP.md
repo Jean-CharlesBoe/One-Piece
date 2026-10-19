@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M7 (bloc de jeu des PNJ)** : publiée (v0.5.0) ; retours du MJ faits (D-M25 : bloc aligné sur Vivre Card, âge, édition gardée par onglet), version 0.5.1 à publier ; ensuite M8. Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.4.0) ; M0 à M6 closes (import Notion définitif fait et vérifié par le MJ le 2026-10-19). Ensuite : M8 (sessions et journal), M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M7 (bloc de jeu des PNJ)** : publiée (v0.5.0) ; retours du MJ faits (D-M25 : bloc aligné sur Vivre Card, âge, édition gardée par onglet), version 0.5.1 publiée ; ensuite M8. Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.4.0) ; M0 à M6 closes (import Notion définitif fait et vérifié par le MJ le 2026-10-19). Ensuite : M8 (sessions et journal), M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -338,3 +338,4 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Demandes : garder le mode édition d'un onglet quand on en change ; bloc de jeu conforme aux règles et à la dernière Vivre Card (Transfert, Ambition pour les Humains…) ; âge des personnages.
 - **D-M25** : `opened.svelte.ts` retient les fiches en édition (titre de départ pour le renommage, historique « Annuler ») ; fermer l'onglet oublie l'édition. Bloc de jeu : Rêve, Ambition (Humain d'après la race liée, `isHumanRace`), Transfert, tribu, rêve, équipement, inventaire, mémos « i » (MEMO_CARACS, MEMO_RESSOURCES, MEMO_COMPETENCES) ; un bloc de la 0.5.0 reçoit les ressources manquantes à la lecture. Champ `age` (texte) des Personnages.
 - Vérifié : check, 180 tests (2 nouveaux), build ; navigateur : PNJ humain (5 losanges, tribu Longs bras affichée, mémos), PNJ Homme-Poisson (pas d'Ambition ni de tribu), édition gardée en passant d'un onglet à l'autre (et lecture gardée après Ctrl+E), onglet en édition fermé puis rouvert → lecture, âge saisi et affiché. Console sans erreur.
+- Version 0.5.1 publiée avec l'accord du MJ (`ee7126e`, run de publication vert, cache `onepiece-mj-0.5.1-…` en ligne).
