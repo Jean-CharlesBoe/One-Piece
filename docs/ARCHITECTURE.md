@@ -101,6 +101,6 @@ Repris de Sans Nom (D6 de Sans Nom) :
 
 ## 6. Qualité
 
-- Tests Vitest obligatoires pour : `packages/core/src/rules`, chaque `normalize*`, les formats de sauvegarde (aller-retour), le convertisseur Notion (sur un mini-export de test versionné dans `tools/notion-import/fixtures/`).
+- Tests Vitest obligatoires pour : `packages/core/src/rules`, chaque `normalize*`, les formats de sauvegarde (aller-retour), le convertisseur Notion (sur un mini-export inventé, construit dans `tools/notion-import/src/convert.test.ts`).
 - `npm run check` et `npm test` verts avant chaque commit.
 - Vérification visuelle dans le navigateur au format cible : 360 × 780 (joueur), 1366 × 768 (MJ).

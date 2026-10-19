@@ -1,4 +1,4 @@
-import { strFromU8, strToU8, unzipSync, zipSync } from 'fflate'
+import { strFromU8, strToU8, unzipSync, zipSync, type Zippable } from 'fflate'
 import { newId, read } from '@onepiece/core'
 import type { Entity } from '../model/entity'
 import { normalizeEntity } from '../model/normalize'
@@ -82,14 +82,15 @@ export function makeManifest(
   }
 }
 
-export function packBackup(manifest: BackupManifest, data: BackupData): Uint8Array {
-  return zipSync(
-    {
-      'manifest.json': strToU8(JSON.stringify(manifest, null, 2)),
-      'data.json': strToU8(JSON.stringify(data)),
-    },
-    { level: 6 },
-  )
+/** `media` : fichiers des médias, par nom de fichier (`assets.file_name`), rangés dans `media/` (import Notion, M6). */
+export function packBackup(manifest: BackupManifest, data: BackupData, media: Record<string, Uint8Array> = {}): Uint8Array {
+  const files: Zippable = {
+    'manifest.json': strToU8(JSON.stringify(manifest, null, 2)),
+    'data.json': strToU8(JSON.stringify(data)),
+  }
+  // Déjà compressés (images, PDF) : stockés tels quels.
+  for (const [name, bytes] of Object.entries(media)) files[`media/${name}`] = [bytes, { level: 0 }]
+  return zipSync(files, { level: 6 })
 }
 
 /** Erreur de lecture d'une sauvegarde, avec un message en français pour le MJ. */

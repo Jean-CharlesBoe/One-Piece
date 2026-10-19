@@ -1,6 +1,6 @@
 # Migration Notion → appli MJ (unique)
 
-> Statut : **proposé** (D-M5). Après une migration réussie et vérifiée, Notion n'est plus utilisé.
+> Statut : **script fait** (M5, 2026-10-19, D-M22), essayé sur l'export réel du MJ ; import définitif après M6 (médias). Après une migration réussie et vérifiée, Notion n'est plus utilisé.
 
 ## 1. Principe
 
@@ -19,8 +19,8 @@ one-piece.opmj ──(appli MJ : Restaurer)──▶ base SQLite + médias
 
 1. Notion → page « ☠️ One Piece » → ⋯ → **Exporter** → format **Markdown & CSV**, **Inclure le contenu : Tout**, **Inclure les sous-pages** coché, **Créer des dossiers pour les sous-pages** coché, fichiers et images inclus.
 2. Déposer le zip dans `tools/notion-import/input/` (dossier ignoré par git : contenu privé).
-3. `npm run notion:import -- tools/notion-import/input/export.zip one-piece.opmj`
-4. Lire `rapport-import.md` (avertissements, liens cassés, valeurs non reconnues) ; ajuster le mapping si besoin et relancer.
+3. `npm run notion:import -- tools/notion-import/input/export.zip tools/notion-import/input/one-piece.opmj` (le rapport `rapport-import.md` est écrit à côté du fichier de sortie).
+4. Lire `rapport-import.md` (avertissements, liens cassés, valeurs non reconnues) ; ajuster `input/import.json` si besoin et relancer.
 5. Copier `one-piece.opmj` sur le Chromebook (Drive ou clé USB) → appli MJ → **Restaurer**.
 6. Dans l'app, ouvrir la vue **Doublons probables** pour finir le ménage restant.
 7. Contrôle visuel : les 4 PJ, Drake et l'équipage du Cauchemar, le Scénario 1 et ses îles, les règles, les fruits, quelques images.
@@ -99,7 +99,20 @@ Comptes par type ; avertissements groupés (étiquettes non reconnues, valeurs m
 
 ## 6. Tests
 
-`tools/notion-import/fixtures/mini-export/` : un mini-export **anonymisé** reproduisant la structure réelle (2 persos avec relations, 1 groupe, 2 lieux imbriqués, 1 race, 1 fruit, 1 scénario avec une sous-page, 1 image). Tests Vitest : conversion complète, dédoublonnage, réécriture des liens, `.opmj` relu par le `parseBackup` de l'app.
+`tools/notion-import/src/convert.test.ts` : un mini-export **inventé** (aucun contenu du monde du MJ) reproduisant la structure réelle, construit dans le test (2 persos avec relations et étiquettes, 1 groupe, 1 lieu, 1 race, 1 classe, 1 événement, les règles, un sommaire, 1 scénario avec deux sous-pages, 2 notes de session, 1 image, 1 PDF). Tests Vitest : lecture des pages, noms, conversion complète, réécriture des liens, `.opmj` relu par le `readBackup` de l'app.
+
+## 6 bis. Mise en œuvre (M5, D-M22)
+
+- `tools/notion-import/` : `src/notion.ts` (lecture de l'export : pages, propriétés en tête de page, chemins), `src/convert.ts` (pages → fiches), `src/report.ts`, `src/main.ts` ; `run.mjs` le lance par Vite (`runnerImport`), qui charge le TypeScript et le code de l'appli MJ (modèle, `normalizeEntity`, format `.opmj`, doublons probables).
+- **Configuration** : `synonymes.json` (versionné : noms communs, races, grades) + `input/import.json` (privé, ignoré par git : synonymes propres au monde, et `parents` = pages à ranger sous une autre fiche). Exemple de `input/import.json` :
+  ```json
+  { "synonymes": [{ "type": "lieu", "reference": "Nom du lieu", "alias": ["Autre nom"] }],
+    "parents": { "Titre de la page": "Titre de la fiche parente" } }
+  ```
+- Ce que l'export réel a montré (2026-10-19) : la page d'accueil liste les notes de session sous des titres « Session N date » ; « Textes Importants » n'est qu'un sommaire (pas de fiche) ; la base Lieux ne contient qu'un lieu ; les bases « Objets et infos » sont vides (absentes de l'export) ; les relations sont aussi en tête de chaque page (les CSV ne servent pas).
+- Étiquettes des personnages : PJ / PNJ → rôle ; grades → grade (le premier) ; mer → mer d'origine ; **nom d'un lieu (ou d'un alias) → Origine** ; le reste → faction du même nom, rapprochée d'un groupe existant par une comparaison souple (articles, « équipage », pluriels, ponctuation ignorés ; signalé dans le rapport), sinon créée.
+- Noms de personnages : parenthèse (Q-M7), virgule ou tiret (« Shanks, le démon rouge » → « Shanks »), surnom entre guillemets ; les autres noms longs (nom suivi du métier, sans séparateur) restent tels quels, à renommer dans l'app (l'ancien nom peut rester en alias).
+- Fiches de personnage en PDF : fiche Document rattachée au personnage (`rattacheA`). Images du texte : `![image](asset:<id>)`. Médias rangés dans `media/` du `.opmj` (stockés sans recompression) ; **l'app ne les garde qu'à partir de M6**.
 
 ## 7. Après la migration
 

@@ -233,3 +233,11 @@ Retour du MJ sur la 0.3.2 : ouvrir une fiche B depuis la fiche A remplaçait A ;
 - Plus d'historique Précédent / Suivant : boutons ‹ ›, Alt+← / →, boutons latéraux de la souris retirés ; Ctrl + clic, Ctrl + Entrée et le menu contextuel « Ouvrir dans un nouvel onglet » aussi (devenus inutiles). Ctrl+Tab, Ctrl+1…9, glisser et « + » (D-M20) restent.
 - Onglets gardés (meta « onglets ») au nouveau format `{ tabs: [ids], active }` ; l'ancien format (historique par onglet) est relu : la fiche affichée de chaque onglet est gardée.
 **Pourquoi** : le MJ garde ouvertes les fiches qu'il consulte en préparation comme en session, et choisit lui-même lesquelles fermer.
+
+### D-M22 · 2026-10-19 · Import Notion : choix de mise en œuvre et réponses du MJ — *validée*
+Réponses du MJ en découvrant son export (2026-10-19) :
+- les 5 îles du Scénario 1 restent des **notes**, rangées sous la fiche **Île de caille** (le scénario cite ce lieu) ; « Archipel de Caille » et « Île de caille » sont la **même chose** : l'étiquette « Archipel de Caille » des personnages devient leur **Origine** (Île de caille), le nom reste en alias ;
+- les notes de session (sessions 1 à 3, « Idée pour la suite ») deviennent des **notes** titrées « Session N (date) — … », avec l'étiquette `session` : **à transformer en sessions avec M8** ;
+- les bases « Objets et infos » et « Objets et infos perso » sont vides : rien à reprendre.
+Choix de mise en œuvre (proposés) : configuration propre au monde dans `tools/notion-import/input/import.json` (privé, D-T6) et synonymes communs dans `synonymes.json` (versionné) ; script lancé par Vite pour réutiliser le code de l'appli MJ ; fiches de personnage en PDF = fiches Document rattachées ; **import définitif après M6** (sinon les médias, que l'app ne sait pas encore garder, seraient perdus à la première sauvegarde automatique). Détection des doublons de l'app : deux noms qui ne diffèrent que par un nombre (« Année 1500 » / « Année 1504 ») ne sont plus proposés, et `’` = `'`.
+**Pourquoi** : retrouver Notion dans l'app sans rien perdre, sans mettre le contenu du monde dans le dépôt public.

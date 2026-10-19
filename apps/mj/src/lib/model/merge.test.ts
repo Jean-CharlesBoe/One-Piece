@@ -21,6 +21,10 @@ describe('doublons probables', () => {
     expect(compareNames('marine', 'qg de la marine', false)).toBeNull()
     expect(compareNames('ace', 'axe', false)).toBeNull() // trop court pour une faute
     expect(compareNames('luffy', 'zoro', false)).toBeNull()
+    // Nombres différents : des choses différentes.
+    expect(compareNames('annee 1500', 'annee 1504', true)).toBeNull()
+    expect(compareNames('session 1', 'session 12', true)).toBeNull()
+    expect(compareNames('scenario 1', 'scenarios 1', true)).toBe('proche')
   })
 
   it('paires, triées par force, sans les paires écartées', () => {

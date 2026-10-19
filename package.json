@@ -10,10 +10,11 @@
   "scripts": {
     "dev:joueur": "vite apps/joueur",
     "dev:mj": "vite apps/mj",
-    "check": "svelte-check --workspace packages/core --tsconfig ./tsconfig.json && svelte-check --workspace apps/joueur --tsconfig ./tsconfig.app.json && tsc -p apps/joueur/tsconfig.node.json && svelte-check --workspace apps/mj --tsconfig ./tsconfig.app.json && tsc -p apps/mj/tsconfig.node.json",
+    "check": "svelte-check --workspace packages/core --tsconfig ./tsconfig.json && svelte-check --workspace apps/joueur --tsconfig ./tsconfig.app.json && tsc -p apps/joueur/tsconfig.node.json && svelte-check --workspace apps/mj --tsconfig ./tsconfig.app.json && tsc -p apps/mj/tsconfig.node.json && tsc -p tools/notion-import",
     "test": "vitest run",
     "android:joueur": "vite build apps/joueur && cd apps/joueur && cap sync android",
-    "android:joueur:open": "cd apps/joueur && cap open android"
+    "android:joueur:open": "cd apps/joueur && cap open android",
+    "notion:import": "node tools/notion-import/run.mjs"
   },
   "devDependencies": {
     "@sveltejs/vite-plugin-svelte": "^7.3.1",

@@ -78,6 +78,7 @@ export function nameKey(s: string): string {
     .normalize('NFD')
     .replace(/\p{M}/gu, '')
     .toLowerCase()
+    .replace(/[’‘ʼ`]/g, "'")
     .replace(/\s+/g, ' ')
     .trim()
 }

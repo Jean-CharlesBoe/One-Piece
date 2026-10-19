@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 publiée (v0.2.0). M4 (sauvegarde et relais par Drive) publiée (v0.3.0), à vérifier par le MJ sur le PC et le Chromebook. Onglets façon navigateur (D-M20) publiés (v0.3.1) ; correctif de mise à jour publié (v0.3.2) ; un onglet par fiche (D-M21) publié (v0.3.3). Ensuite : M5 (import Notion). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 publiée (v0.2.0). M4 (sauvegarde et relais par Drive) publiée (v0.3.0), à vérifier par le MJ sur le PC et le Chromebook. Onglets façon navigateur (D-M20) publiés (v0.3.1) ; correctif de mise à jour publié (v0.3.2) ; un onglet par fiche (D-M21) publié (v0.3.3). M5 (import Notion) : script fait et essayé sur l'export réel (251 fiches, 30 médias) ; import définitif après M6 (médias). Ensuite : M6. M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -36,10 +36,10 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | M2c | Un nom par chose | fusion de deux fiches, vue « Doublons probables » (détection approchée), « Ajouter comme alias » | — | fait (navigateur) |
 | M3 | Navigation et recherche | Ctrl+K, listes filtrées, épinglés, récents, arborescences, historique, onglets (D-M14) | — | fait (publiée en v0.2.0) |
 | M4 | Sauvegarde et relais | `.opmj` (zip + médias), sauvegarde automatique dans le dossier Drive, reprise de la version la plus récente au lancement, conflit signalé, restauration, rappel | — | fait (navigateur ; vérification sur appareils à faire) |
-| M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | — | à faire |
+| M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | M6 (médias, pour l'import définitif) | script fait (D-M22) ; import définitif après M6 |
 | M6 | Documents | import image/PDF, visionneuse | — | à faire |
 | M7 | Bloc de jeu PNJ | StatGrid, ressources, techniques, Haki, catégorie d'adversaire | — | à faire |
-| M8 | Sessions | campagnes, sessions, écran Session en cours, journal, entrées automatiques, chronologie des fiches, fin de session, entrées Haki | — | à faire |
+| M8 | Sessions | campagnes, sessions, écran Session en cours, journal, entrées automatiques, chronologie des fiches, fin de session, entrées Haki ; **transformer en sessions les notes importées de Notion (étiquette `session`, D-M22)** | — | à faire |
 | M9 | Finitions | raccourcis, thèmes, exports (Markdown, PDF, documents, D-M16), **1re release** | — | à faire |
 
 Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour pouvoir vérifier le résultat dans l'app ; on peut l'avancer juste après M4 pour travailler sur les vraies données le plus tôt possible.
@@ -301,3 +301,13 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Vérifié : check, 157 tests ; navigateur 1366 × 768 : onglets de la 0.3.2 repris (ancien format), Franky puis Sanji → deux onglets, re-clic sur Franky → retour sur son onglet, Usopp inséré après l'actif, 8 onglets → la barre défile, l'actif et « + » visibles, lien `[[Nami]]` du texte de Sanji → nouvel onglet ; une colonne (800 px, après rechargement) : liste déroulante et ✕ ; console sans erreur de l'app.
 - Point d'attention : dans le navigateur intégré, passer de 1366 à 800 px sans recharger ne change pas la disposition (déjà vu) ; non reproduit hors émulation.
 - Version 0.3.3 publiée avec l'accord du MJ (`5b0aab5`, run de publication vert, cache `onepiece-mj-0.3.3-…` en ligne).
+
+### Session 18 · 2026-10-19 (M5 — import Notion)
+- Onglets 0.3.3 vérifiés par le MJ. Export Notion « Markdown & CSV » fourni (15,6 Mo, 269 fichiers), copié dans `tools/notion-import/input/` (ignoré par git) : 109 persos, 15 groupes, 1 lieu, 38 fruits, 9 races, 11 classes, 20 événements, règles, Scénario 1 et 8 sous-pages, 3 notes de session et « Idée pour la suite », 6 images, 24 PDF.
+- Réponses du MJ (D-M22) : îles = notes sous Île de caille ; Archipel de Caille = Île de caille (origine des personnages) ; notes de session en notes, à reprendre en M8 ; bases « Objets » vides.
+- `tools/notion-import` (nouveau workspace) : lecture de l'export, conversion (personnages, factions depuis les groupes et les étiquettes, lieux, races avec Vitalité / Endurance de base, classes avec avantages, fruits, événements avec année, règles en 6 fiches, scénario, notes, notes de session, documents PDF, images), rapport, `.opmj` relu par l'app avant écriture. `npm run notion:import`, projet Vitest, `tsc` dans `npm run check`. Configuration privée `input/import.json`.
+- App : `packBackup` accepte les médias ; détection des doublons : nombres différents = choses différentes, apostrophes confondues.
+- Résultat sur l'export réel : **251 fiches**, 30 médias, aucun lien cassé, 9 étiquettes rapprochées d'un groupe, 3 factions créées depuis des étiquettes sans groupe, 6 doublons probables à trancher dans l'app (vue « Doublons probables »).
+- Vérifié : check, 168 tests (11 pour l'import, 1 pour les doublons) ; restauration du fichier dans l'appli de dev (même chemin que « Restaurer un fichier… ») : 251 fiches par type, le lieu du Scénario 1 (alias, 27 originaires, 5 îles en pages enfants, cité par le scénario), un PNJ (propriétés, factions, origine, fiche PDF en Document), 6 doublons probables.
+- **Pas encore fait** : import définitif chez le MJ. Il attend M6 : l'app ne garde pas encore les médias, la première sauvegarde automatique dans Drive les perdrait.
+- Noms longs sans séparateur restés tels quels (nom suivi du métier) : à renommer dans l'app si le MJ le souhaite.

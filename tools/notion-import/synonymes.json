@@ -1,0 +1,9 @@
+[
+  { "type": "race", "reference": "Skypiéens", "alias": ["Anges", "Ange", "Skypieen", "Skypiéen"] },
+  { "type": "race", "reference": "Hommes-Poissons", "alias": ["Hommes Poisson", "Homme-Poisson", "Homme Poisson"] },
+  { "type": "race", "reference": "Tontatas", "alias": ["Tontata"] },
+  { "type": "race", "reference": "Lunariens", "alias": ["Lunarias", "Lunarien"] },
+  { "type": "race", "reference": "Humains", "alias": ["Humain"] },
+  { "type": "race", "reference": "Minks", "alias": ["Mink"] },
+  { "type": "grade", "reference": "Shichibukai", "alias": ["Schichibukaï", "Shichibukaï", "Schichibukai"] }
+]

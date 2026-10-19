@@ -44,6 +44,7 @@ export function editDistance(a: string, b: string, max = Infinity): number {
 }
 
 const words = (k: string) => k.split(/[^\p{L}\p{N}]+/u).filter(Boolean)
+const numbers = (k: string) => (k.match(/\d+/g) ?? []).join(' ')
 
 /** Distance tolérée selon la longueur : rien sous 5 lettres, 1 jusqu'à 8, 2 au-delà. */
 const tolerance = (len: number) => (len < 5 ? 0 : len <= 8 ? 1 : 2)
@@ -52,6 +53,8 @@ const tolerance = (len: number) => (len < 5 ? 0 : len <= 8 ? 1 : 2)
 export function compareNames(a: string, b: string, sameType: boolean): SimilarReason | null {
   if (!a || !b) return null
   if (a === b) return 'meme-nom'
+  // « Année 1500 » / « Année 1504 », « Session 1 » / « Session 2 » : des choses différentes.
+  if (numbers(a) !== numbers(b)) return null
   const tol = tolerance(Math.min(a.length, b.length))
   if (tol && editDistance(a, b, tol) <= tol) return 'proche'
   const wa = words(a)
