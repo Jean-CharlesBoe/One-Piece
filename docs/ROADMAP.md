@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 publiée (v0.2.0). M4 (sauvegarde et relais par Drive) publiée (v0.3.0), à vérifier par le MJ sur le PC et le Chromebook. Onglets façon navigateur (D-M20) publiés (v0.3.1) ; correctif de mise à jour 0.3.2 prêt. Ensuite : M5 (import Notion). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M2 (fiches)** : M2a, M2b et M2c faites dans le navigateur (2026-10-16). M1 close : appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.1.0), vérifiée par le MJ sur le PC et le Chromebook. M3 publiée (v0.2.0). M4 (sauvegarde et relais par Drive) publiée (v0.3.0), à vérifier par le MJ sur le PC et le Chromebook. Onglets façon navigateur (D-M20) publiés (v0.3.1) ; correctif de mise à jour publié (v0.3.2). Ensuite : M5 (import Notion). M0 close (CI verte) ; son volet Android sera retiré en M1. Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -293,4 +293,4 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Cause : GitHub Pages sert la page avec `Cache-Control: max-age=600`. Le service worker chargeait la page (et remplissait son nouveau cache) à travers le cache HTTP du navigateur : il obtenait l'ancienne page 0.3.0, qui demande des fichiers effacés du serveur et de l'ancien cache. Le problème se corrige seul après 10 min en ligne, mais le cache hors ligne pouvait garder l'ancienne page.
 - Correctif (version **0.3.2**) : `sw.template.js` met en cache avec `cache: 'reload'` et charge la page avec `cache: 'no-cache'` (revalidation par ETag) ; filet dans `index.html` : si un fichier de `assets/` ne se charge pas, la page se recharge une fois (pas plus d'une fois par minute).
 - Vérifié sur le build (port 5185) : service worker 0.3.2 actif, page en cache à jour ; script manquant injecté → un rechargement, pas de boucle au second.
-
+- Version 0.3.2 publiée avec l'accord du MJ (`8fa698a`, run de publication vert, cache `onepiece-mj-0.3.2-…` en ligne). À confirmer par le MJ : l'app s'ouvre de nouveau sur le PC et le Chromebook.
