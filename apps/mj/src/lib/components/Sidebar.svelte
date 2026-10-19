@@ -16,7 +16,7 @@
   }: {
     selected: ListMode
     onSelect: (mode: ListMode) => void
-    onOpen: (id: string, newTab?: boolean) => void
+    onOpen: (id: string) => void
     onSettings: () => void
     onSearch: () => void
   } = $props()
@@ -83,9 +83,8 @@
             <li>
               <button
                 class="type"
-                data-open-id={e.id}
-                onclick={ev => onOpen(e.id, ev.ctrlKey || ev.metaKey)}
-                onauxclick={ev => ev.button === 1 && onOpen(e.id, true)}
+                onclick={ev => onOpen(e.id)}
+                onauxclick={ev => ev.button === 1 && onOpen(e.id)}
               >
                 <span class="icon" aria-hidden="true">{TYPE_DEFS[e.type].icon}</span>
                 <span class="name">{e.title}</span>
@@ -106,9 +105,8 @@
             <li>
               <button
                 class="type"
-                data-open-id={e.id}
-                onclick={ev => onOpen(e.id, ev.ctrlKey || ev.metaKey)}
-                onauxclick={ev => ev.button === 1 && onOpen(e.id, true)}
+                onclick={ev => onOpen(e.id)}
+                onauxclick={ev => ev.button === 1 && onOpen(e.id)}
               >
                 <span class="icon" aria-hidden="true">{TYPE_DEFS[e.type].icon}</span>
                 <span class="name">{e.title}</span>

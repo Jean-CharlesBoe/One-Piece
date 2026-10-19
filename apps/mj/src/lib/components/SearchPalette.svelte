@@ -12,14 +12,10 @@
   // par type avec un extrait surligné ; sans recherche, les fiches récentes. Clavier : ↑ ↓, Entrée ; Échap ferme.
   let {
     open = $bindable(false),
-    newTab = $bindable(false),
     onOpen,
   }: {
     open: boolean
-    /** Ouverte par « + » de la barre d'onglets : la fiche choisie s'ouvre toujours dans un nouvel onglet. */
-    newTab?: boolean
-    /** `newTab` : Ctrl + Entrée ou Ctrl + clic (onglets, M3b). */
-    onOpen: (id: string, newTab: boolean) => void
+    onOpen: (id: string) => void
   } = $props()
 
   interface Row {
@@ -42,7 +38,6 @@
       active = 0
       queueMicrotask(() => input?.focus())
     } else if (!open && dlg.open) dlg.close()
-    if (!open) newTab = false
   })
 
   $effect(() => {
@@ -91,16 +86,15 @@
   /** Ordre de navigation au clavier = ordre affiché. */
   const flat = $derived(groups.flatMap(g => g.rows))
 
-  function pick(r: Row, inNewTab = false) {
-    const t = inNewTab || newTab
+  function pick(r: Row) {
     open = false
-    onOpen(r.entry.id, t)
+    onOpen(r.entry.id)
   }
 
   function onKey(e: KeyboardEvent) {
     if (e.key === 'ArrowDown') active = Math.min(active + 1, flat.length - 1)
     else if (e.key === 'ArrowUp') active = Math.max(active - 1, 0)
-    else if (e.key === 'Enter' && flat[active]) pick(flat[active], e.ctrlKey || e.metaKey)
+    else if (e.key === 'Enter' && flat[active]) pick(flat[active])
     else return
     e.preventDefault()
     document.getElementById(`res-${active}`)?.scrollIntoView({ block: 'nearest' })
@@ -122,7 +116,7 @@
         bind:value={query}
         onkeydown={onKey}
         type="search"
-        placeholder={newTab ? 'Ouvrir dans un nouvel onglet…' : 'Rechercher une fiche (titre, alias, propriétés, texte)…'}
+        placeholder="Rechercher une fiche (titre, alias, propriétés, texte)…"
         aria-label="Rechercher"
         aria-controls="resultats"
         autocomplete="off"
@@ -138,10 +132,9 @@
               role="option"
               aria-selected={i === active}
               class:on={i === active}
-              data-open-id={r.entry.id}
               onmouseenter={() => (active = i)}
-              onclick={e => pick(r, e.ctrlKey || e.metaKey)}
-              onauxclick={e => e.button === 1 && pick(r, true)}
+              onclick={() => pick(r)}
+              onauxclick={e => e.button === 1 && pick(r)}
             >
               <span class="icon" aria-hidden="true">{TYPE_DEFS[r.entry.type].icon}</span>
               <span class="text">
@@ -160,7 +153,7 @@
           </p>
         {/each}
       </div>
-      <p class="hint">↑ ↓ pour choisir · Entrée pour ouvrir · Ctrl + Entrée dans un nouvel onglet · Échap pour fermer</p>
+      <p class="hint">↑ ↓ pour choisir · Entrée pour ouvrir · Échap pour fermer</p>
     </div>
   {/if}
 </dialog>

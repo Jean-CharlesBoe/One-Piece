@@ -182,7 +182,7 @@ La table `search_index` ne fait pas partie de la migration 1. Le repository la c
 Réponses du MJ à Q-M2 et Q-M3 : un seul groupe de joueurs, donc une seule campagne (la table `campaigns` garde une ligne unique, créée d'office ; pas d'écran de campagnes). L'état des blocs de jeu modifié en session reste sur les fiches ; l'instantané pris au démarrage de la session (`sessions.snapshot`) permet un bouton « Remettre à l'état de début de session », par PNJ ou pour tous.
 **Pourquoi** : les blessures et les morts font partie de l'histoire ; la remise à zéro couvre les cas où un PNJ doit revenir intact (combat d'entraînement, erreur de saisie).
 
-### D-M14 · 2026-10-16 · Onglets légers, utilisables à la souris et au doigt — *validée*
+### D-M14 · 2026-10-16 · Onglets légers, utilisables à la souris et au doigt — *validée* ; *en partie remplacée par D-M21* (2026-10-19 : un onglet par fiche, sans historique ni limite)
 Réponse du MJ à Q-M1 (proposition validée) : un clic remplace la fiche affichée ; nouvel onglet à la demande (Ctrl + clic, clic molette, appui long → menu, bouton de la fiche) ; barre d'onglets au-dessus de la fiche (onglets ≥ 40 px, ✕ toujours visible, Ctrl+W) ; 8 onglets au plus, rouverts au démarrage ; historique Précédent / Suivant par onglet ; menu « n fiches ouvertes ▾ » en une colonne. Principe pour toute l'app : cibles d'au moins 40 px, rien d'accessible seulement au survol, appui long = clic droit.
 **Pourquoi** : le Chromebook s'utilise au doigt comme à la souris ; ouvrir un onglet à chaque clic multiplierait les onglets, surtout au doigt. Mise en œuvre avec la navigation (M3).
 
@@ -225,3 +225,11 @@ Demande du MJ après M4 (deux fiches ouvertes, un seul onglet visible : il falla
 - **« + »** après le dernier onglet : ouvre la recherche, la fiche choisie s'ouvre dans un nouvel onglet.
 - **Ctrl+Tab / Ctrl+Maj+Tab**, **Ctrl+1…8**, **Ctrl+9** (dernier) : dans l'app installée ; dans un onglet de Chrome, Chrome les garde pour lui.
 **Pourquoi** : retrouver d'un coup d'œil toutes les fiches ouvertes et passer de l'une à l'autre d'un clic, avec les gestes déjà connus du navigateur.
+
+### D-M21 · 2026-10-19 · Un onglet par fiche ouverte, aucun onglet fermé automatiquement — *validée*
+Retour du MJ sur la 0.3.2 : ouvrir une fiche B depuis la fiche A remplaçait A ; il fallait passer par « + » pour garder les deux. Demande : ne jamais fermer un onglet sans clic sur la croix. Réponses du MJ (2026-10-19) : les liens du texte ouvrent aussi un nouvel onglet ; pas de limite de nombre. Remplace dans D-M14 « un clic remplace la fiche affichée », l'historique par onglet et les 8 onglets au plus.
+- Toute ouverture de fiche (liste, recherche, lien `[[ ]]`, panneau Liens, barre latérale, création, fusion) l'ouvre dans un **nouvel onglet juste après l'onglet actif**, ou **revient sur son onglet** si elle est déjà ouverte (une fiche, un onglet).
+- Un onglet ne se ferme que par son ✕, le clic molette, ou quand sa fiche est supprimée ou absorbée par une fusion. **Pas de limite** : au-delà de la largeur minimale des onglets (64 px, l'actif 110 px), la barre défile ; l'onglet actif est toujours ramené en vue, « + » reste visible.
+- Plus d'historique Précédent / Suivant : boutons ‹ ›, Alt+← / →, boutons latéraux de la souris retirés ; Ctrl + clic, Ctrl + Entrée et le menu contextuel « Ouvrir dans un nouvel onglet » aussi (devenus inutiles). Ctrl+Tab, Ctrl+1…9, glisser et « + » (D-M20) restent.
+- Onglets gardés (meta « onglets ») au nouveau format `{ tabs: [ids], active }` ; l'ancien format (historique par onglet) est relu : la fiche affichée de chaque onglet est gardée.
+**Pourquoi** : le MJ garde ouvertes les fiches qu'il consulte en préparation comme en session, et choisit lui-même lesquelles fermer.

@@ -24,7 +24,7 @@
     onDelete,
     onMerge,
   }: {
-    onOpen: (id: string, newTab?: boolean) => void
+    onOpen: (id: string) => void
     /** Lien rouge cliqué : créer la fiche nommée `label` puis réécrire le lien. */
     onCreateFromLink: (label: string) => void
     /** Création depuis un champ relation : renvoie l'identifiant de la fiche créée. */
@@ -134,37 +134,35 @@
     const a = (ev.target as HTMLElement).closest('a.wl') as HTMLAnchorElement | null
     if (!a) return
     ev.preventDefault()
-    if (a.dataset.id) onOpen(a.dataset.id, ev.ctrlKey || ev.metaKey)
+    if (a.dataset.id) onOpen(a.dataset.id)
     else if (a.dataset.create) onCreateFromLink(a.dataset.create)
   }
 
-  /** Clic molette sur un lien interne : nouvel onglet. */
+  /** Clic molette sur un lien interne : comme un clic (sans fenêtre du navigateur). */
   function onBodyAux(ev: MouseEvent) {
     const a = (ev.target as HTMLElement).closest('a.wl') as HTMLAnchorElement | null
     if (ev.button !== 1 || !a?.dataset.id) return
     ev.preventDefault()
-    onOpen(a.dataset.id, true)
+    onOpen(a.dataset.id)
   }
 
-  /** Lien vers une fiche dans l'interface : clic (Ctrl = nouvel onglet), clic molette, menu contextuel. */
+  /** Lien vers une fiche dans l'interface : clic ou clic molette. */
   function linkTo(node: HTMLElement, id: string) {
     let current = id
-    node.dataset.openId = current
     const click = (e: MouseEvent) => {
       e.preventDefault()
-      onOpen(current, e.ctrlKey || e.metaKey)
+      onOpen(current)
     }
     const aux = (e: MouseEvent) => {
       if (e.button !== 1) return
       e.preventDefault()
-      onOpen(current, true)
+      onOpen(current)
     }
     node.addEventListener('click', click)
     node.addEventListener('auxclick', aux)
     return {
       update(next: string) {
         current = next
-        node.dataset.openId = next
       },
       destroy() {
         node.removeEventListener('click', click)

@@ -5,7 +5,6 @@
   import { backup } from './lib/backup/sync.svelte'
   import { catalog } from './lib/catalog.svelte'
   import BackupBanner from './lib/components/BackupBanner.svelte'
-  import ContextMenu from './lib/components/ContextMenu.svelte'
   import Drawer from './lib/components/Drawer.svelte'
   import EntityList, { type ListMode } from './lib/components/EntityList.svelte'
   import EntityView from './lib/components/EntityView.svelte'
@@ -45,7 +44,6 @@
   let settingsOpen = $state(false)
   let newOpen = $state(false)
   let searchOpen = $state(false)
-  let searchNewTab = $state(false)
   let mergeOpen = $state(false)
   /** Fusion : première fiche (proposée comme gardée) et, depuis la vue Doublons, la seconde. */
   let mergePair = $state<{ first: string; second: string | null }>({ first: '', second: null })
@@ -88,21 +86,11 @@
     }
   }
 
-  /** `newTab` : Ctrl + clic, clic molette, Ctrl + Entrée, menu contextuel « nouvel onglet ». */
-  async function openEntity(id: string, newTab = false) {
-    tabs.open(id, newTab)
+  /** Ouvre la fiche dans un nouvel onglet, ou revient sur son onglet si elle est déjà ouverte (D-M21). */
+  async function openEntity(id: string) {
+    tabs.open(id)
     navOpen = listOpen = false
     listView = false
-    await show()
-  }
-
-  async function goBack() {
-    tabs.back()
-    await show()
-  }
-
-  async function goForward() {
-    tabs.forward()
     await show()
   }
 
@@ -242,12 +230,6 @@
     t instanceof HTMLElement && (t.isContentEditable || ['INPUT', 'TEXTAREA', 'SELECT'].includes(t.tagName))
 
   function onKey(e: KeyboardEvent) {
-    // Alt + ← / → : précédent / suivant dans l'onglet actif.
-    if (e.altKey && !e.ctrlKey && (e.key === 'ArrowLeft' || e.key === 'ArrowRight') && !typing(e.target)) {
-      e.preventDefault()
-      void (e.key === 'ArrowLeft' ? goBack() : goForward())
-      return
-    }
     if (e.key === '/' && !e.ctrlKey && !e.altKey && !e.metaKey && !typing(e.target) && !document.querySelector('dialog[open]')) {
       e.preventDefault()
       searchOpen = true
@@ -289,13 +271,6 @@
       if (document.visibilityState === 'hidden') void opened.flush()
     }
     document.addEventListener('visibilitychange', onHide)
-    // Boutons « précédent / suivant » de la souris.
-    const onMouse = (e: MouseEvent) => {
-      if (e.button !== 3 && e.button !== 4) return
-      e.preventDefault()
-      void (e.button === 3 ? goBack() : goForward())
-    }
-    window.addEventListener('mouseup', onMouse)
 
     // Thème enregistré (table meta), automatique par défaut ; puis le catalogue des fiches.
     getRepository()
@@ -318,7 +293,6 @@
       wide.removeEventListener('change', onResize)
       medium.removeEventListener('change', onResize)
       document.removeEventListener('visibilitychange', onHide)
-      window.removeEventListener('mouseup', onMouse)
     }
   })
 
@@ -381,9 +355,7 @@
         onActivate={activateTab}
         onClose={closeTab}
         onMove={moveTab}
-        onNew={() => ((searchNewTab = true), (searchOpen = true))}
-        onBack={goBack}
-        onForward={goForward}
+        onNew={() => (searchOpen = true)}
       />
     {/if}
     {#if error}<p class="error" role="alert">{error}</p>{/if}
@@ -412,8 +384,7 @@
 <Drawer bind:open={listOpen} label="Liste des fiches">{@render list()}</Drawer>
 <Drawer bind:open={linksOpen} side="right" label="Liens">{@render links()}</Drawer>
 
-<SearchPalette bind:open={searchOpen} bind:newTab={searchNewTab} onOpen={openEntity} />
-<ContextMenu onOpen={openEntity} />
+<SearchPalette bind:open={searchOpen} onOpen={openEntity} />
 <Sheet bind:open={settingsOpen} title="Réglages"><SettingsPanel /></Sheet>
 <Sheet bind:open={newOpen} title={draft.fromLink ? 'Créer la fiche du lien' : 'Nouvelle fiche'}>
   <NewEntityForm

@@ -8,7 +8,7 @@
 
   // Panneau Liens (cahier MJ §4.2) : relations sortantes, rétroliens (par propriété, puis « Mentionné dans »),
   // pages enfants. La chronologie (journal) arrive avec les sessions (M8).
-  let { onOpen, onAddChild }: { onOpen: (id: string, newTab?: boolean) => void; onAddChild: () => void } = $props()
+  let { onOpen, onAddChild }: { onOpen: (id: string) => void; onAddChild: () => void } = $props()
 
   const entity = $derived(opened.entity)
   let backlinks = $state<Backlink[]>([])
@@ -83,9 +83,8 @@
             <li>
               <a
                 href="#{e.id}"
-                data-open-id={e.id}
-                onclick={ev => (ev.preventDefault(), onOpen(e.id, ev.ctrlKey || ev.metaKey))}
-                onauxclick={ev => ev.button === 1 && (ev.preventDefault(), onOpen(e.id, true))}
+                onclick={ev => (ev.preventDefault(), onOpen(e.id))}
+                onauxclick={ev => ev.button === 1 && (ev.preventDefault(), onOpen(e.id))}
               >
                 <span aria-hidden="true">{TYPE_DEFS[e.type].icon}</span>
                 {e.title}
@@ -104,9 +103,8 @@
             <li>
               <a
                 href="#{e.id}"
-                data-open-id={e.id}
-                onclick={ev => (ev.preventDefault(), onOpen(e.id, ev.ctrlKey || ev.metaKey))}
-                onauxclick={ev => ev.button === 1 && (ev.preventDefault(), onOpen(e.id, true))}
+                onclick={ev => (ev.preventDefault(), onOpen(e.id))}
+                onauxclick={ev => ev.button === 1 && (ev.preventDefault(), onOpen(e.id))}
               >
                 <span aria-hidden="true">{TYPE_DEFS[e.type].icon}</span>
                 {e.title}

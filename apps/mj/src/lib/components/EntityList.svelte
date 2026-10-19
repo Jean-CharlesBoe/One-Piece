@@ -26,7 +26,7 @@
   }: {
     mode: ListMode
     selectedId: string | null
-    onOpen: (id: string, newTab?: boolean) => void
+    onOpen: (id: string) => void
     onCreate: () => void
     onMerge: (a: string, b: string) => void
   } = $props()
@@ -113,7 +113,7 @@
   })
 
   function open_(ev: MouseEvent, id: string) {
-    onOpen(id, ev.ctrlKey || ev.metaKey)
+    onOpen(id)
   }
 </script>
 
@@ -195,9 +195,8 @@
               class="row"
               class:on={t.node.id === selectedId}
               aria-current={t.node.id === selectedId}
-              data-open-id={t.node.id}
               onclick={ev => open_(ev, t.node.id)}
-              onauxclick={ev => ev.button === 1 && onOpen(t.node.id, true)}
+              onauxclick={ev => ev.button === 1 && onOpen(t.node.id)}
             >
               <span class="icon" aria-hidden="true">{TYPE_DEFS[t.node.type].icon}</span>
               <span class="text"><span class="title">{t.node.title}</span></span>
@@ -219,9 +218,8 @@
             <button
               class:on={e.id === selectedId}
               aria-current={e.id === selectedId}
-              data-open-id={e.id}
               onclick={ev => open_(ev, e.id)}
-              onauxclick={ev => ev.button === 1 && onOpen(e.id, true)}
+              onauxclick={ev => ev.button === 1 && onOpen(e.id)}
             >
               <span class="icon" aria-hidden="true">{TYPE_DEFS[e.type].icon}</span>
               <span class="text">

@@ -1,13 +1,9 @@
 import {
-  back,
-  canBack,
-  canForward,
   closeTab,
   currentId,
   cycleTab,
   emptyNavigation,
   forget,
-  forward,
   moveTab,
   normalizeNavigation,
   openIn,
@@ -15,7 +11,7 @@ import {
 } from './model/navigation'
 import { getRepository } from './storage/repository'
 
-// Onglets de fiches (D-M14) : état réactif autour de model/navigation.ts, gardé en base (meta « onglets »)
+// Onglets de fiches (D-M14, D-M21) : état réactif autour de model/navigation.ts, gardé en base (meta « onglets »)
 // pour rouvrir les mêmes fiches au démarrage.
 
 const KEY = 'onglets'
@@ -23,8 +19,6 @@ const KEY = 'onglets'
 class Tabs {
   nav = $state<Navigation>(emptyNavigation())
   current = $derived(currentId(this.nav))
-  canBack = $derived(canBack(this.nav))
-  canForward = $derived(canForward(this.nav))
   #timer: ReturnType<typeof setTimeout> | null = null
 
   async load(exists: (id: string) => boolean): Promise<void> {
@@ -37,18 +31,9 @@ class Tabs {
     }
   }
 
-  open(id: string, newTab = false): void {
-    openIn(this.nav, id, newTab)
-    this.#save()
-  }
-
-  back(): void {
-    back(this.nav)
-    this.#save()
-  }
-
-  forward(): void {
-    forward(this.nav)
+  /** Ouvre la fiche dans un nouvel onglet, ou revient sur son onglet si elle est déjà ouverte. */
+  open(id: string): void {
+    openIn(this.nav, id)
     this.#save()
   }
 

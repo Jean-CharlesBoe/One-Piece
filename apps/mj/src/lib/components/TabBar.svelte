@@ -4,27 +4,23 @@
   import { TYPE_DEFS } from '../model/types'
   import { tabs } from '../tabs.svelte'
 
-  // Barre d'onglets (D-M14, D-M20), comme dans un navigateur : Précédent / Suivant de l'onglet actif, puis les
-  // onglets côte à côte qui se partagent la largeur et rétrécissent ensemble (onglet étroit : début du titre
-  // seulement, ✕ sur l'onglet actif), « + » pour ouvrir une fiche dans un nouvel onglet. Un onglet se
-  // déplace en le glissant, à la souris ou au doigt ; clic molette = fermer. En une colonne (`compact`), les
-  // onglets se replient en liste déroulante.
+  // Barre d'onglets (D-M14, D-M20, D-M21), comme dans un navigateur : un onglet par fiche ouverte, côte à côte ;
+  // ils se partagent la largeur et rétrécissent ensemble (onglet étroit : début du titre seulement, ✕ sur
+  // l'onglet actif), puis la barre défile (molette ou glisser) en gardant l'onglet actif visible. « + » ouvre la
+  // recherche. Un onglet se déplace en le glissant, à la souris ou au doigt ; clic molette = fermer. En une
+  // colonne (`compact`), les onglets se replient en liste déroulante.
   let {
     compact = false,
     onActivate,
     onClose,
     onMove,
     onNew,
-    onBack,
-    onForward,
   }: {
     compact?: boolean
     onActivate: (i: number) => void
     onClose: (i: number) => void
     onMove: (from: number, to: number) => void
     onNew: () => void
-    onBack: () => void
-    onForward: () => void
   } = $props()
 
   const items = $derived(
@@ -124,12 +120,24 @@
   function click(fn: () => void) {
     if (!swallowClick) fn()
   }
+
+  // L'onglet actif reste visible quand la barre défile (nouvel onglet, Ctrl+Tab, liste déroulante…).
+  $effect(() => {
+    const i = tabs.nav.active
+    void tabs.nav.tabs.length
+    queueMicrotask(() => strip?.querySelectorAll<HTMLElement>('.tab')[i]?.scrollIntoView({ block: 'nearest', inline: 'nearest' }))
+  })
+
+  /** Molette verticale sur la barre : défilement horizontal. */
+  function onWheel(e: WheelEvent) {
+    if (!strip || strip.scrollWidth <= strip.clientWidth || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return
+    e.preventDefault()
+    strip.scrollLeft += e.deltaY
+  }
 </script>
 
 {#if items.length}
   <div class="tabbar" class:compact role="toolbar" aria-label="Fiches ouvertes">
-    <button class="nav" disabled={!tabs.canBack} onclick={onBack} aria-label="Précédent" title="Précédent (Alt+←)">‹</button>
-    <button class="nav" disabled={!tabs.canForward} onclick={onForward} aria-label="Suivant" title="Suivant (Alt+→)">›</button>
     {#if compact}
       <select
         value={tabs.nav.active}
@@ -140,7 +148,7 @@
       </select>
       <button class="nav" onclick={() => onClose(tabs.nav.active)} aria-label="Fermer l'onglet" title="Fermer l'onglet">✕</button>
     {:else}
-      <div class="tabs" role="tablist" bind:this={strip}>
+      <div class="tabs" role="tablist" bind:this={strip} onwheel={onWheel}>
         {#each items as t (t.i)}
           <!-- Le glisser se fait sur tout l'onglet ; ses deux boutons restent les cibles du clavier. -->
           <!-- svelte-ignore a11y_no_static_element_interactions -->
@@ -181,7 +189,7 @@
     align-items: stretch;
     gap: 2px;
     min-height: 44px;
-    padding: 4px 6px 0;
+    padding: 4px 6px 0 8px;
     border-bottom: 1px solid var(--line);
     background: var(--bg);
   }
@@ -205,12 +213,15 @@
     align-items: stretch;
     gap: 2px;
     min-width: 0;
-    overflow: hidden;
+    /* Au-delà de la largeur minimale des onglets : défilement horizontal, sans barre visible. */
+    overflow-x: auto;
+    overflow-y: hidden;
+    scrollbar-width: none;
   }
   .tab {
     /* Comme un navigateur : 200 px au plus, tous les onglets rétrécissent ensemble. */
     flex: 0 1 200px;
-    min-width: 0;
+    min-width: 64px;
     position: relative;
     display: flex;
     align-items: center;
@@ -305,6 +316,11 @@
     }
   }
   .new {
+    /* Toujours visible, même quand la barre défile. */
+    position: sticky;
+    right: 0;
+    z-index: 3;
+    background: var(--bg);
     flex: none;
     align-self: center;
     min-height: 36px;
@@ -319,6 +335,5 @@
   }
   .new:hover {
     color: var(--text);
-    background: color-mix(in srgb, var(--surface) 55%, var(--bg));
   }
 </style>
