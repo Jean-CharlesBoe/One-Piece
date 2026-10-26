@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M8a (sessions)** — faite dans le navigateur, version 0.6.0 à publier ; M8 découpée en M8a, M8b, M8c (D-M26). Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.5.1) ; M0 à M7 closes (M7 vérifiée par le MJ sur le PC le 2026-10-26). Ensuite : M8b, M8c, puis M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M8a (sessions)** — publiée (v0.6.0), à vérifier par le MJ ; M8 découpée en M8a, M8b, M8c (D-M26). Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.5.1) ; M0 à M7 closes (M7 vérifiée par le MJ sur le PC le 2026-10-26). Ensuite : M8b, M8c, puis M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -348,3 +348,4 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Des modifications non commitées d'une autre branche de cette conversation (maquette B, début de méthodes de sessions) ont été trouvées sur le disque : supprimées à la demande du MJ, travail repris pour la maquette A.
 - `model/session.ts` (Session, normalisation, ligne SQL, libellés, onglet `session:<id>`, reprise des notes : `parseSessionNoteTitle`, `planImportedNotes`) ; repository : `campaignId`, `listSessions`, `saveSession`, `deleteSession` ; `sessions.svelte.ts` ; `SessionView.svelte` (lecture / édition, enregistrement 400 ms, Ctrl+E) ; barre latérale : liste, « + Session », reprise des notes ; onglets de session (titre, icône, rouverts au démarrage).
 - Vérifié : check, 185 tests (5 nouveaux), build ; navigateur (import Notion restauré dans la base de dev) : 4 notes reprises → sessions 1 à 3 terminées, dates, « Idée pour la suite » en préparation de la session 3, notes archivées (15 → 11) ; nouvelle session 4 (édition, titre, date, scénario), édition gardée en changeant d'onglet, Ctrl+E, onglet rouvert après rechargement, lien du scénario, suppression en deux temps (onglet fermé). Console sans erreur.
+- Version 0.6.0 publiée avec l'accord du MJ (`7bb5a4f`, run de publication vert, cache `onepiece-mj-0.6.0-…` en ligne).
