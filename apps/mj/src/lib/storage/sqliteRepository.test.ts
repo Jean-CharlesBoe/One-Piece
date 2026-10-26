@@ -2,6 +2,7 @@ import initSqlJs, { type Database } from 'sql.js'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createAsset } from '../model/asset'
 import { createEntity } from '../model/entity'
+import { createSession } from '../model/session'
 import type { Db } from './db'
 import { META_SCHEMA_VERSION, META_SEARCH_ENGINE } from './repository'
 import { MIGRATIONS } from './schema'
@@ -249,6 +250,24 @@ describe('base MJ', () => {
     const other = await createSqliteRepository(sqlJsDb(new SQL.Database()))
     await other.importData(data)
     expect(await other.listAssets()).toEqual(await repo.listAssets())
+  })
+
+  it('campagne unique, sessions : enregistrées, triées, sauvegardées avec la base, supprimées', async () => {
+    const repo = await createSqliteRepository(db)
+    const c = await repo.campaignId()
+    expect(await repo.campaignId()).toBe(c)
+    const s2 = { ...createSession(c, 2), title: 'Le retour', pinnedIds: ['x'] }
+    const s1 = { ...createSession(c, 1), status: 'terminee' as const, summaryMd: 'Rencontre.' }
+    await repo.saveSession(s2)
+    await repo.saveSession(s1)
+    await repo.saveSession({ ...s2, title: 'Le grand retour' })
+    expect((await repo.listSessions()).map(s => [s.number, s.title])).toEqual([[1, ''], [2, 'Le grand retour']])
+    const other = await createSqliteRepository(sqlJsDb(new SQL.Database()))
+    await other.importData(await repo.exportData())
+    expect(await other.listSessions()).toEqual(await repo.listSessions())
+    expect(await other.campaignId()).toBe(c)
+    await repo.deleteSession(s1.id)
+    expect((await repo.listSessions()).map(s => s.number)).toEqual([2])
   })
 
   it('réglages (meta)', async () => {

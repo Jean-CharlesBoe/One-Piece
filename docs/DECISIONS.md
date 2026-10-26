@@ -264,3 +264,11 @@ Demandes du MJ après la 0.5.0 :
 - un champ **Âge** sur les Personnages, hors du bloc de jeu (texte, comme Vivre Card) ;
 - une fiche **en édition reste en édition** quand on change d'onglet et qu'on y revient (complète D-M21) ; son historique « Annuler » est gardé ; fermer son onglet la rouvre en lecture.
 **Pourquoi** : mêmes ressources et mêmes gestes pour les PNJ que pour les PJ ; préparer plusieurs fiches à la fois sans repasser en édition à chaque onglet.
+
+### D-M26 · 2026-10-26 · Sessions : découpage de M8, écran de session, reprise des notes importées — *validée*
+Réponses du MJ avant M8 :
+- **Écran « Session en cours » = maquette A** : la colonne de la liste devient le **journal** (saisie rapide en bas) ; la fiche reste au centre avec ses onglets, qui sont les fiches de la session ; barre latérale, recherche et panneau Liens restent là. La maquette B (écran dédié sans barre latérale ni panneau Liens) est écartée.
+- **Notes rapides** d'une fiche pendant la session : une entrée « Note MJ » du journal liée à la fiche (elle apparaît dans sa chronologie), pas de zone à part.
+- **Notes de session importées de Notion** (étiquette `session`, D-M22) : chaque « Session N (date) — Note de session » devient le **résumé** de la session N (numéro et date repris du titre, statut Terminée) ; une autre note rattachée à la session N (« Idée pour la suite ») va dans la **préparation de la session N+1** ; les notes sont ensuite **archivées** (récupérables).
+- Découpage : **M8a** sessions (liste, fiche de session, reprise des notes) ; **M8b** écran Session en cours ; **M8c** entrées Haki, chronologie des fiches, groupe « Journal » de la recherche.
+**Pourquoi** : garder pendant la session tout ce que l'app sait déjà faire (recherche, onglets, bloc de jeu, liens), une seule trace écrite (le journal), et livrer M8 en trois morceaux vérifiables.

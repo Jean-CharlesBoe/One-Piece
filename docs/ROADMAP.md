@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M7 (bloc de jeu des PNJ)** : publiée (v0.5.0) ; retours du MJ faits (D-M25 : bloc aligné sur Vivre Card, âge, édition gardée par onglet), version 0.5.1 publiée ; ensuite M8. Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.4.0) ; M0 à M6 closes (import Notion définitif fait et vérifié par le MJ le 2026-10-19). Ensuite : M8 (sessions et journal), M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M8a (sessions)** — faite dans le navigateur, version 0.6.0 à publier ; M8 découpée en M8a, M8b, M8c (D-M26). Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.5.1) ; M0 à M7 closes (M7 vérifiée par le MJ sur le PC le 2026-10-26). Ensuite : M8b, M8c, puis M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -38,8 +38,10 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | M4 | Sauvegarde et relais | `.opmj` (zip + médias), sauvegarde automatique dans le dossier Drive, reprise de la version la plus récente au lancement, conflit signalé, restauration, rappel | — | fait (navigateur ; vérification sur appareils à faire) |
 | M5 | Import Notion | script `tools/notion-import`, table de synonymes, fixtures, rapport (doublons probables) ; import réel et vérification avec le MJ | — | fait (import définitif vérifié par le MJ) |
 | M6 | Documents | import image/PDF, visionneuse | — | fait (vérifié par le MJ) |
-| M7 | Bloc de jeu PNJ | StatGrid, ressources, techniques, Haki, catégorie d'adversaire | — | fait (navigateur, D-M24) |
-| M8 | Sessions | campagnes, sessions, écran Session en cours, journal, entrées automatiques, chronologie des fiches, fin de session, entrées Haki ; **transformer en sessions les notes importées de Notion (étiquette `session`, D-M22)** | — | à faire |
+| M7 | Bloc de jeu PNJ | StatGrid, ressources, techniques, Haki, catégorie d'adversaire | — | fait (D-M24, D-M25 ; vérifié par le MJ) |
+| M8a | Sessions | campagne unique, liste des sessions, fiche de session (numéro, titre, date, scénario, statut, préparation, résumé), reprise des notes de session importées (D-M22, D-M26) | — | fait (navigateur) |
+| M8b | Session en cours | journal à la place de la liste (maquette A, D-M26), saisie rapide, fiches de la session, entrées automatiques, notes MJ, terminer, remettre à l'état de début (D-M13, D-M15) | M8a | à faire |
+| M8c | Haki, chronologie, recherche | entrées Haki (D-M9), chronologie des fiches, groupe « Journal » de Ctrl+K (D-M15) | M8b | à faire |
 | M9 | Finitions | raccourcis, thèmes, exports (Markdown, PDF, documents, D-M16), **1re release** | — | à faire |
 
 Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour pouvoir vérifier le résultat dans l'app ; on peut l'avancer juste après M4 pour travailler sur les vraies données le plus tôt possible.
@@ -339,3 +341,10 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - **D-M25** : `opened.svelte.ts` retient les fiches en édition (titre de départ pour le renommage, historique « Annuler ») ; fermer l'onglet oublie l'édition. Bloc de jeu : Rêve, Ambition (Humain d'après la race liée, `isHumanRace`), Transfert, tribu, rêve, équipement, inventaire, mémos « i » (MEMO_CARACS, MEMO_RESSOURCES, MEMO_COMPETENCES) ; un bloc de la 0.5.0 reçoit les ressources manquantes à la lecture. Champ `age` (texte) des Personnages.
 - Vérifié : check, 180 tests (2 nouveaux), build ; navigateur : PNJ humain (5 losanges, tribu Longs bras affichée, mémos), PNJ Homme-Poisson (pas d'Ambition ni de tribu), édition gardée en passant d'un onglet à l'autre (et lecture gardée après Ctrl+E), onglet en édition fermé puis rouvert → lecture, âge saisi et affiché. Console sans erreur.
 - Version 0.5.1 publiée avec l'accord du MJ (`ee7126e`, run de publication vert, cache `onepiece-mj-0.5.1-…` en ligne).
+
+### Session 20 · 2026-10-26 (M7 close, M8a — sessions)
+- M7 (0.5.1) vérifiée par le MJ sur le PC : close.
+- Réponses du MJ (D-M26) : écran Session en cours = **maquette A** (journal à la place de la liste) après comparaison des deux maquettes ; notes rapides = entrées « Note MJ » du journal ; notes importées → résumé / préparation puis archivées ; M8 découpée en M8a, M8b, M8c.
+- Des modifications non commitées d'une autre branche de cette conversation (maquette B, début de méthodes de sessions) ont été trouvées sur le disque : supprimées à la demande du MJ, travail repris pour la maquette A.
+- `model/session.ts` (Session, normalisation, ligne SQL, libellés, onglet `session:<id>`, reprise des notes : `parseSessionNoteTitle`, `planImportedNotes`) ; repository : `campaignId`, `listSessions`, `saveSession`, `deleteSession` ; `sessions.svelte.ts` ; `SessionView.svelte` (lecture / édition, enregistrement 400 ms, Ctrl+E) ; barre latérale : liste, « + Session », reprise des notes ; onglets de session (titre, icône, rouverts au démarrage).
+- Vérifié : check, 185 tests (5 nouveaux), build ; navigateur (import Notion restauré dans la base de dev) : 4 notes reprises → sessions 1 à 3 terminées, dates, « Idée pour la suite » en préparation de la session 3, notes archivées (15 → 11) ; nouvelle session 4 (édition, titre, date, scénario), édition gardée en changeant d'onglet, Ctrl+E, onglet rouvert après rechargement, lien du scénario, suppression en deux temps (onglet fermé). Console sans erreur.

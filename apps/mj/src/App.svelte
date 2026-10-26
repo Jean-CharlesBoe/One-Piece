@@ -16,6 +16,7 @@
   import Sidebar from './lib/components/Sidebar.svelte'
   import TabBar from './lib/components/TabBar.svelte'
   import MediaViewer from './lib/components/MediaViewer.svelte'
+  import SessionView from './lib/components/SessionView.svelte'
   import { media } from './lib/media.svelte'
   import { mergeEntities } from './lib/mergeOps'
   import { titleFromFileName } from './lib/model/asset'
@@ -26,6 +27,8 @@
   import { recents } from './lib/recents.svelte'
   import { getRepository, META_THEME } from './lib/storage/repository'
   import { tabs } from './lib/tabs.svelte'
+  import { parseSessionNoteTitle, planImportedNotes, sessionIdOfTab, sessionTab, type ImportedNote } from './lib/model/session'
+  import { sessions } from './lib/sessions.svelte'
 
   // Disposition selon la largeur de la fenêtre (D-M10) :
   // ≥ 1280 px : barre latérale + liste, fiche, Liens ; 900 à 1279 px : la liste passe en volet ;
@@ -67,7 +70,11 @@
     console.error('[onepiece-mj]', e)
   }
 
-  /** Affiche la fiche de l'onglet actif (D-M14) ; une fiche disparue entre-temps est retirée des onglets. */
+  /** Session affichée par l'onglet actif (M8a), ou null : l'onglet montre une fiche. */
+  const currentSession = $derived(sessionIdOfTab(tabs.current ?? ''))
+  let sessionView = $state<SessionView | undefined>()
+
+  /** Affiche la fiche (ou la session) de l'onglet actif (D-M14) ; une fiche disparue est retirée des onglets. */
   async function show() {
     try {
       for (;;) {
@@ -75,6 +82,15 @@
         if (!id) {
           await opened.close()
           break
+        }
+        const sid = sessionIdOfTab(id)
+        if (sid) {
+          if (sessions.byId.has(sid)) {
+            await opened.close()
+            break
+          }
+          tabs.forget(id)
+          continue
         }
         if (opened.entity?.id !== id) await opened.open(id)
         if (opened.entity) {
@@ -161,6 +177,70 @@
       await openEntity(e.id)
     } catch (err) {
       fail(err)
+    }
+  }
+
+  // Sessions (M8a) : ouvertes dans un onglet comme une fiche.
+  async function openSession(id: string) {
+    await openEntity(sessionTab(id))
+  }
+
+  async function newSession() {
+    try {
+      const s = await sessions.create()
+      sessions.setEditing(s.id, true)
+      await openSession(s.id)
+    } catch (e) {
+      fail(e)
+    }
+  }
+
+  /** Session supprimée : son onglet se ferme. */
+  async function closeSessionTab(id: string) {
+    tabs.forget(sessionTab(id))
+    await show()
+  }
+
+  /** Notes de session importées de Notion encore à reprendre (D-M26). */
+  const sessionNotes = $derived(catalog.active.filter(e => e.type === 'note' && parseSessionNoteTitle(e.title)))
+
+  /**
+   * Reprise des notes de session importées (D-M26) : résumé de la session N, « Idée pour la suite » dans la
+   * préparation de N+1 ; sessions existantes complétées ; notes archivées ensuite.
+   */
+  async function importSessionNotes() {
+    try {
+      const r = await getRepository()
+      const notes: ImportedNote[] = []
+      for (const c of sessionNotes) {
+        const e = await r.getEntity(c.id)
+        if (e && e.tags.includes('session')) notes.push({ id: e.id, title: e.title, bodyMd: e.bodyMd })
+      }
+      const plan = planImportedNotes(notes)
+      const join = (a: string, b: string) => [a.trim(), b.trim()].filter(Boolean).join('\n\n')
+      for (const p of plan.sessions) {
+        const existing = sessions.list.find(x => x.number === p.number)
+        const base = existing ?? (await sessions.create())
+        await sessions.save({
+          ...base,
+          number: p.number,
+          playedOn: base.playedOn ?? p.playedOn,
+          status: p.done ? 'terminee' : base.status,
+          summaryMd: join(base.summaryMd, p.summaryMd),
+          prepMd: join(base.prepMd, p.prepMd),
+        })
+      }
+      for (const id of plan.noteIds) {
+        const e = await r.getEntity(id)
+        if (!e) continue
+        e.archived = true
+        e.updatedAt = new Date().toISOString()
+        await r.saveEntity(e)
+        catalog.upsert(toCatalogEntry(e))
+        if (opened.entity?.id === id) await opened.open(id)
+      }
+    } catch (e) {
+      fail(e)
     }
   }
 
@@ -303,6 +383,9 @@
     } else if (k === 'n') {
       e.preventDefault()
       newEntity()
+    } else if (k === 'e' && currentSession) {
+      e.preventDefault()
+      sessionView?.toggle()
     } else if (k === 'e' && entity && !entity.archived) {
       e.preventDefault()
       void opened.setEditing(!opened.editing)
@@ -329,7 +412,8 @@
     // Catalogue, puis les onglets de la dernière fois (sans les fiches disparues), puis les récentes.
     catalog
       .load()
-      .then(() => tabs.load(id => catalog.byId.has(id)))
+      .then(() => sessions.load())
+      .then(() => tabs.load(id => (sessionIdOfTab(id) ? sessions.byId.has(sessionIdOfTab(id)!) : catalog.byId.has(id))))
       .then(show)
       .catch(fail)
     recents.load().catch(fail)
@@ -356,6 +440,10 @@
     selected={mode}
     onSelect={selectMode}
     onOpen={openEntity}
+    onOpenSession={openSession}
+    onNewSession={newSession}
+    importableNotes={sessionNotes.length}
+    onImportNotes={importSessionNotes}
     onSettings={() => (settingsOpen = true)}
     onSearch={() => ((navOpen = false), (searchOpen = true))}
   />
@@ -409,8 +497,12 @@
     {/if}
     {#if error}<p class="error" role="alert">{error}</p>{/if}
     <div class="content">
-      {#if layout === 'une' && (listView || !entity)}
+      {#if layout === 'une' && (listView || (!entity && !currentSession))}
         {@render list()}
+      {:else if currentSession}
+        {#key currentSession}
+          <SessionView bind:this={sessionView} id={currentSession} onOpen={openEntity} onDeleted={closeSessionTab} />
+        {/key}
       {:else}
         <EntityView
           onOpen={openEntity}

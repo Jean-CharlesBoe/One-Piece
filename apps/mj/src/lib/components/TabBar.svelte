@@ -1,7 +1,9 @@
 <script lang="ts">
   import { catalog } from '../catalog.svelte'
   import { currentId } from '../model/navigation'
+  import { sessionIdOfTab, sessionLabel } from '../model/session'
   import { TYPE_DEFS } from '../model/types'
+  import { sessions } from '../sessions.svelte'
   import { tabs } from '../tabs.svelte'
 
   // Barre d'onglets (D-M14, D-M20, D-M21), comme dans un navigateur : un onglet par fiche ouverte, côte à côte ;
@@ -26,6 +28,9 @@
   const items = $derived(
     tabs.nav.tabs.map((_, i) => {
       const id = currentId(tabs.nav, i)
+      // Onglet de session (M8a) ou de fiche.
+      const se = id ? sessions.byId.get(sessionIdOfTab(id) ?? '') : undefined
+      if (se) return { i, title: sessionLabel(se), icon: '📖' }
       const e = id ? catalog.byId.get(id) : undefined
       return { i, title: e?.title ?? '…', icon: e ? TYPE_DEFS[e.type].icon : '' }
     }),

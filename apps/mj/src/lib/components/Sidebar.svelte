@@ -1,6 +1,9 @@
 <script lang="ts">
   import { catalog } from '../catalog.svelte'
+  import { dayLabel, sessionLabel } from '../model/session'
   import { recents } from '../recents.svelte'
+  import { sessions } from '../sessions.svelte'
+  import { tabs } from '../tabs.svelte'
   import BackupStatus from './BackupStatus.svelte'
   import { ENTITY_TYPES, TYPE_DEFS } from '../model/types'
   import type { ListMode } from './EntityList.svelte'
@@ -13,10 +16,19 @@
     onOpen,
     onSettings,
     onSearch,
+    onOpenSession,
+    onNewSession,
+    importableNotes,
+    onImportNotes,
   }: {
     selected: ListMode
     onSelect: (mode: ListMode) => void
     onOpen: (id: string) => void
+    onOpenSession: (id: string) => void
+    onNewSession: () => void
+    /** Notes de session importées de Notion encore à reprendre (D-M26). */
+    importableNotes: number
+    onImportNotes: () => Promise<void>
     onSettings: () => void
     onSearch: () => void
   } = $props()
@@ -26,6 +38,25 @@
   )
   const archived = $derived(catalog.entries.filter(e => e.archived).length)
   const pinned = $derived(catalog.active.filter(e => e.pinned))
+  /** Sessions, la plus récente en haut ; celle de l'onglet actif est marquée. */
+  const sessionList = $derived([...sessions.list].reverse())
+  let confirmImport = $state(false)
+  let importing = $state(false)
+  async function importNotes() {
+    if (!confirmImport) {
+      confirmImport = true
+      setTimeout(() => (confirmImport = false), 5000)
+      return
+    }
+    confirmImport = false
+    importing = true
+    try {
+      await onImportNotes()
+    } finally {
+      importing = false
+    }
+  }
+
   const recent = $derived(
     recents.ids
       .flatMap(id => catalog.byId.get(id) ?? [])
@@ -118,8 +149,38 @@
     {/if}
 
     <section aria-labelledby="sessions-titre">
-      <h2 class="label" id="sessions-titre">Sessions</h2>
-      <p class="empty">Les sessions de jeu arriveront plus tard.</p>
+      <div class="sec-head">
+        <h2 class="label" id="sessions-titre">Sessions</h2>
+        <button class="add" onclick={onNewSession} title="Nouvelle session">+ Session</button>
+      </div>
+      {#if importableNotes}
+        <button class="import" class:confirm={confirmImport} disabled={importing} onclick={importNotes}>
+          {importing
+            ? 'Reprise…'
+            : confirmImport
+              ? 'Confirmer : créer les sessions et archiver les notes'
+              : `Reprendre les ${importableNotes} notes de session importées`}
+        </button>
+      {/if}
+      {#if sessionList.length}
+        <ul>
+          {#each sessionList as se (se.id)}
+            <li>
+              <button
+                class="type"
+                class:on={tabs.current === `session:${se.id}`}
+                onclick={() => onOpenSession(se.id)}
+                title={se.playedOn ? dayLabel(se.playedOn) : ''}
+              >
+                <span class="icon" aria-hidden="true">{se.status === 'en_cours' ? '▶' : se.status === 'terminee' ? '✓' : '📖'}</span>
+                <span class="name">{sessionLabel(se)}</span>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p class="empty">Aucune session.</p>
+      {/if}
     </section>
   </div>
 
@@ -130,6 +191,34 @@
 </nav>
 
 <style>
+  .sec-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+  }
+  .sec-head h2 {
+    margin-bottom: 0;
+  }
+  .add {
+    min-height: 32px;
+    padding: 0 8px;
+    font-size: 0.85rem;
+    background: none;
+  }
+  .import {
+    width: 100%;
+    min-height: 40px;
+    margin: 6px 0;
+    padding: 4px 8px;
+    font-size: 0.85rem;
+    text-align: left;
+    border-color: var(--reve);
+  }
+  .import.confirm {
+    border-color: var(--danger);
+    color: var(--danger);
+  }
   .sidebar {
     display: flex;
     flex-direction: column;

@@ -1,3 +1,4 @@
+import { newId } from '@onepiece/core'
 import { RAW_TABLES, TABLE_COLUMNS, type BackupData, type RawRow } from '../backup/format'
 import { assetRow, normalizeAsset } from '../model/asset'
 import { toCatalogEntry, type CatalogEntry, type Entity } from '../model/entity'
@@ -5,6 +6,7 @@ import { computeLinks, plainText } from '../model/links'
 import { normalizeEntity } from '../model/normalize'
 import { displayValue, relationIds } from '../model/props'
 import { ftsQuery, MARK_END, MARK_START, searchWords, snippetHtml, type SearchHit } from '../model/search'
+import { normalizeSession, sessionRow } from '../model/session'
 import { TYPE_DEFS } from '../model/types'
 import type { Db, Row } from './db'
 import {
@@ -261,6 +263,34 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
     async markNotDuplicate(a, b) {
       const [x, y] = a < b ? [a, b] : [b, a]
       await db.run(`INSERT OR IGNORE INTO not_duplicates (a_id, b_id) VALUES (?, ?)`, [x, y])
+      await touch()
+    },
+    async campaignId() {
+      const r = await db.query(`SELECT id FROM campaigns ORDER BY created_at LIMIT 1`)
+      if (r.length) return String(r[0].id)
+      const id = newId()
+      const now = new Date().toISOString()
+      await db.run(`INSERT INTO campaigns (id, title, description_md, created_at, updated_at) VALUES (?, ?, '', ?, ?)`, [id, 'Campagne', now, now])
+      await touch()
+      return id
+    },
+    async listSessions() {
+      return (await db.query(`SELECT * FROM sessions ORDER BY number, created_at`)).flatMap(r => normalizeSession(r) ?? [])
+    },
+    async saveSession(s) {
+      const row = sessionRow(s)
+      const cols = TABLE_COLUMNS.sessions
+      await db.run(
+        `INSERT INTO sessions (${cols.join(', ')}) VALUES (${cols.map(() => '?').join(', ')})
+           ON CONFLICT(id) DO UPDATE SET ${cols.filter(c => c !== 'id').map(c => `${c} = excluded.${c}`).join(', ')}`,
+        cols.map(c => row[c] ?? null),
+      )
+      await touch()
+    },
+    async deleteSession(id) {
+      // Entrées du journal : supprimées par la clé étrangère (ON DELETE CASCADE) ; leurs liens, à la main.
+      await db.run(`DELETE FROM links WHERE from_kind = 'journal' AND from_id IN (SELECT id FROM journal_entries WHERE session_id = ?)`, [id])
+      await db.run(`DELETE FROM sessions WHERE id = ?`, [id])
       await touch()
     },
     async listAssets() {

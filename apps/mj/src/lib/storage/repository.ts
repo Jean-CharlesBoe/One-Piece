@@ -2,6 +2,7 @@ import type { BackupData } from '../backup/format'
 import type { Asset } from '../model/asset'
 import type { CatalogEntry, Entity } from '../model/entity'
 import type { SearchHit } from '../model/search'
+import type { Session } from '../model/session'
 import type { SearchEngine } from './schema'
 
 /**
@@ -26,6 +27,13 @@ export interface MjRepository {
   /** Paires écartées de la vue « Doublons probables », sous la forme « idA|idB » (idA < idB). */
   listNotDuplicates(): Promise<string[]>
   markNotDuplicate(a: string, b: string): Promise<void>
+  /** La campagne (une seule, D-M13), créée au premier besoin. */
+  campaignId(): Promise<string>
+  /** Sessions de jeu, par numéro. */
+  listSessions(): Promise<Session[]>
+  saveSession(session: Session): Promise<void>
+  /** Supprime la session et son journal. */
+  deleteSession(id: string): Promise<void>
   /** Médias (images, PDF) : la description ; le fichier est dans storage/media.ts. */
   listAssets(): Promise<Asset[]>
   saveAsset(asset: Asset): Promise<void>

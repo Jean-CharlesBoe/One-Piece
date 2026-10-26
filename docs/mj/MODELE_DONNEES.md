@@ -79,6 +79,9 @@ CREATE TABLE sessions (
   created_at   TEXT NOT NULL, updated_at TEXT NOT NULL
 );
 
+-- Code (M8a) : model/session.ts (Session, normalizeSession, sessionRow), repository : campaignId (campagne unique créée
+-- au premier besoin), listSessions, saveSession, deleteSession. Onglet d'une session : « session:<id> ».
+
 CREATE TABLE journal_entries (
   id          TEXT PRIMARY KEY NOT NULL,
   session_id  TEXT NOT NULL REFERENCES sessions(id) ON DELETE CASCADE,

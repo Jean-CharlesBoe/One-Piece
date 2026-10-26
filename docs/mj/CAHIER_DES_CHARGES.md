@@ -107,7 +107,8 @@ Réponse directe à l'éparpillement de Notion :
 ### 5.1 Campagnes et sessions
 - **Campagne** : une seule (un seul groupe de joueurs, Q-M2, D-M13). Pas d'écran de campagnes : les sessions sont numérotées à la suite.
 - **Session** : numéro, titre, date réelle, scénario →, statut (Prévue / En cours / Terminée), **préparation** (Markdown), **résumé** (Markdown), PNJ épinglés.
-- Liste des sessions dans la barre latérale ; « Démarrer la session » passe en écran Session en cours.
+- Liste des sessions dans la barre latérale (la plus récente en haut, « + Session ») ; une session s'ouvre dans un **onglet**, comme une fiche : lecture (statut, date, scénario cliquable, préparation et résumé rendus avec leurs liens) ou édition (Ctrl+E ou « Modifier », gardée par onglet) ; suppression en deux temps (son journal avec). « Démarrer la session » passe en écran Session en cours (M8b).
+- **Notes de session importées de Notion** (D-M26) : bouton « Reprendre les n notes de session importées » dans la barre latérale (confirmation) : résumé de la session N, « Idée pour la suite » dans la préparation de N+1, notes archivées.
 
 ### 5.2 Écran « Session en cours »
 ```
