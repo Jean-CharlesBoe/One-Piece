@@ -2,6 +2,7 @@ import initSqlJs, { type Database } from 'sql.js'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createAsset } from '../model/asset'
 import { createEntity } from '../model/entity'
+import { createEntry } from '../model/journal'
 import { createSession } from '../model/session'
 import type { Db } from './db'
 import { META_SCHEMA_VERSION, META_SEARCH_ENGINE } from './repository'
@@ -268,6 +269,31 @@ describe('base MJ', () => {
     expect(await other.campaignId()).toBe(c)
     await repo.deleteSession(s1.id)
     expect((await repo.listSessions()).map(s => s.number)).toEqual([2])
+  })
+
+  it('journal : entrées triées, liens vers les fiches citées, restaurés avec la base, supprimés avec la session', async () => {
+    const repo = await createSqliteRepository(db)
+    const drake = createEntity('personnage', 'Drake')
+    await repo.saveEntity(drake)
+    const s = createSession(await repo.campaignId(), 1)
+    await repo.saveSession(s)
+    const late = createEntry(s.id, 'combat', `Contre [[${drake.id}|Drake]]`, '2026-11-01T21:00:00.000Z')
+    const early = createEntry(s.id, 'evenement', 'Arrivée', '2026-11-01T20:00:00.000Z')
+    await repo.saveJournalEntry(late)
+    await repo.saveJournalEntry(early)
+    expect((await repo.listJournal(s.id)).map(e => e.textMd)).toEqual(['Arrivée', `Contre [[${drake.id}|Drake]]`])
+    const journalLinks = async (d: Db) => (await d.query(`SELECT from_id, to_id FROM links WHERE from_kind = 'journal'`)).map(r => [r.from_id, r.to_id])
+    expect(await journalLinks(db)).toEqual([[late.id, drake.id]])
+    const otherDb = sqlJsDb(new SQL.Database())
+    const other = await createSqliteRepository(otherDb)
+    await other.importData(await repo.exportData())
+    expect(await other.listJournal(s.id)).toEqual(await repo.listJournal(s.id))
+    expect(await journalLinks(otherDb)).toEqual([[late.id, drake.id]])
+    await repo.deleteJournalEntry(early.id)
+    expect(await repo.listJournal(s.id)).toHaveLength(1)
+    await repo.deleteSession(s.id)
+    expect(await repo.listJournal(s.id)).toEqual([])
+    expect(await journalLinks(db)).toEqual([])
   })
 
   it('réglages (meta)', async () => {

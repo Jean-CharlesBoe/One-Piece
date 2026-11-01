@@ -18,6 +18,10 @@
   import TabBar from './lib/components/TabBar.svelte'
   import MediaViewer from './lib/components/MediaViewer.svelte'
   import SessionView from './lib/components/SessionView.svelte'
+  import JournalPanel from './lib/components/JournalPanel.svelte'
+  import { play } from './lib/play.svelte'
+  import { relationIds } from './lib/model/props'
+  import type { Session } from './lib/model/session'
   import { media } from './lib/media.svelte'
   import { mergeEntities } from './lib/mergeOps'
   import { titleFromFileName } from './lib/model/asset'
@@ -46,6 +50,8 @@
       ? 'minmax(0, 1fr)'
       : [
           disposition.sidebarOpen ? `${disposition.sidebarWidth}px 6px` : '40px',
+          // Journal de la session en cours (M8b, maquette A).
+          ...(play.running ? ['340px'] : []),
           'minmax(0, 1fr)',
           disposition.linksOpen ? '280px' : '40px',
         ].join(' '),
@@ -62,6 +68,7 @@
 
   let navOpen = $state(false)
   let linksOpen = $state(false)
+  let journalOpen = $state(false)
   let settingsOpen = $state(false)
   let newOpen = $state(false)
   let searchOpen = $state(false)
@@ -226,6 +233,38 @@
     } catch (e) {
       fail(e)
     }
+  }
+
+  // Session en cours (M8b) : journal rechargé quand elle change.
+  $effect(() => {
+    void play.running?.id
+    play.sync().catch(fail)
+  })
+
+  /** Démarrer : instantané, journal, et les PNJ et lieux du scénario ouverts dans des onglets (cahier §5.2). */
+  async function startSession(s: Session) {
+    await play.start(s)
+    const sc = s.scenarioId ? catalog.byId.get(s.scenarioId) : undefined
+    const ids = sc ? [...relationIds(sc.props.pnj), ...relationIds(sc.props.lieux)].filter(id => catalog.byId.has(id)) : []
+    for (const id of ids) tabs.open(id)
+    tabs.open(sessionTab(s.id))
+    await show()
+  }
+
+  /** Terminer : la session s'ouvre en édition, résumé pré-rempli avec le journal s'il était vide. */
+  async function finishSession() {
+    const id = await play.finish()
+    journalOpen = false
+    if (!id) return
+    sessions.setEditing(id, true)
+    await openSession(id)
+  }
+
+  /** Remettre des PNJ à l'état du début de la session ; la fiche ouverte est relue si elle en fait partie. */
+  async function resetSession(s: Session, ids: string[]) {
+    await opened.flush()
+    const done = await play.reset(s, ids)
+    if (opened.entity && done.includes(opened.entity.id)) await opened.open(opened.entity.id)
   }
 
   /** Session supprimée : son onglet se ferme. */
@@ -451,6 +490,8 @@
     recents.load().catch(fail)
     media.load().catch(fail)
     disposition.load().catch(fail)
+    // Changements du bloc de jeu ou de l'état d'un PNJ pendant la session : entrées automatiques (D-M15).
+    opened.onSaved = (before, after) => void play.noteChanges(before, after).catch(fail)
     // Sauvegarde automatique et relais entre appareils (M4, D-M18).
     backup.start().catch(fail)
 
@@ -479,6 +520,14 @@
     onSettings={() => (settingsOpen = true)}
     onSearch={() => ((navOpen = false), (searchOpen = true))}
     onCollapse={layout === 'large' ? () => disposition.toggleSidebar() : undefined}
+  />
+{/snippet}
+
+{#snippet journal()}
+  <JournalPanel
+    onOpen={id => ((journalOpen = false), void openEntity(id))}
+    onFinish={finishSession}
+    onOpenSession={id => ((journalOpen = false), void openSession(id))}
   />
 {/snippet}
 
@@ -519,10 +568,15 @@
     {/if}
   {/if}
 
+  {#if layout === 'large' && play.running}
+    <div class="col">{@render journal()}</div>
+  {/if}
+
   <main class="col main">
     {#if layout === 'une'}
       <div class="bar">
         <button onclick={() => (navOpen = true)} aria-label="Menu">☰</button>
+        {#if play.running}<button onclick={() => (journalOpen = true)}>Journal</button>{/if}
         <span class="spacer"></span>
         {#if entity}<button onclick={() => (linksOpen = true)}>Liens</button>{/if}
       </div>
@@ -549,7 +603,15 @@
         {/key}
       {:else if currentSession}
         {#key currentSession}
-          <SessionView bind:this={sessionView} id={currentSession} onOpen={openEntity} onDeleted={closeSessionTab} />
+          <SessionView
+            bind:this={sessionView}
+            id={currentSession}
+            onOpen={openEntity}
+            onDeleted={closeSessionTab}
+            onStart={startSession}
+            onFinish={finishSession}
+            onReset={resetSession}
+          />
         {/key}
       {:else if entity || layout === 'large'}
         <EntityView
@@ -583,6 +645,7 @@
 
 <Drawer bind:open={navOpen} label="Navigation">{@render sidebar()}</Drawer>
 <Drawer bind:open={linksOpen} side="right" label="Liens">{@render links()}</Drawer>
+<Drawer bind:open={journalOpen} label="Journal de la session">{@render journal()}</Drawer>
 
 <SearchPalette bind:open={searchOpen} onOpen={openEntity} />
 <Sheet bind:open={settingsOpen} title="Réglages"><SettingsPanel /></Sheet>

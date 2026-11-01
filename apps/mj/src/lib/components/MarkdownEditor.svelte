@@ -15,7 +15,26 @@
 
   // Éditeur du texte d'une fiche (D-M3) : Markdown source avec CodeMirror 6, barre d'outils,
   // autocomplétion `[[` sur les titres et alias, qui insère la forme stockée `[[id|Titre]]`.
-  let { value, selfId, onChange }: { value: string; selfId: string; onChange: (value: string) => void } = $props()
+  let {
+    value,
+    selfId,
+    onChange,
+    onSubmit,
+    compact = false,
+    hint = 'Texte de la fiche (Markdown). [[ pour lier une autre fiche.',
+  }: {
+    value: string
+    selfId: string
+    onChange: (value: string) => void
+    /**
+     * Saisie rapide (journal de session, M8b) : Entrée envoie le texte (Maj+Entrée : nouvelle ligne), puis
+     * l'éditeur se vide. Une proposition `[[` ouverte est choisie par Entrée, comme ailleurs.
+     */
+    onSubmit?: (value: string) => void
+    /** Sans barre d'outils, petite hauteur. */
+    compact?: boolean
+    hint?: string
+  } = $props()
 
   let host: HTMLDivElement
   let view: EditorView
@@ -26,18 +45,27 @@
     if (!m) return null
     const q = m.text.slice(2)
     const k = nameKey(q)
-    const options: Completion[] = []
+    // Nom identique, puis nom qui commence par la saisie, puis le reste (« Fushia » avant « Fiche … — Fushia »).
+    const found: { option: Completion; rank: number }[] = []
     for (const e of catalog.active) {
-      if (options.length >= 40) break
       if (e.id === selfId) continue
-      const via = [e.title, ...e.aliases].find(n => nameKey(n).includes(k))
+      const names = [e.title, ...e.aliases]
+      const via = names.find(n => nameKey(n) === k) ?? names.find(n => nameKey(n).startsWith(k)) ?? names.find(n => nameKey(n).includes(k))
       if (via === undefined) continue
-      options.push({
-        label: via,
-        detail: via === e.title ? TYPE_DEFS[e.type].label : `alias de ${e.title}`,
-        apply: wikiLink(e.id, e.title),
+      const vk = nameKey(via)
+      found.push({
+        rank: vk === k ? 0 : vk.startsWith(k) ? 1 : 2,
+        option: {
+          label: via,
+          detail: via === e.title ? TYPE_DEFS[e.type].label : `alias de ${e.title}`,
+          apply: wikiLink(e.id, e.title),
+        },
       })
     }
+    const options: Completion[] = found
+      .sort((a, b) => a.rank - b.rank || a.option.label.localeCompare(b.option.label, 'fr'))
+      .slice(0, 40)
+      .map(f => f.option)
     if (q.trim()) {
       options.push({ label: `Fiche à créer : ${q.trim()}`, detail: 'lien rouge', apply: wikiLink('?', q) })
     }
@@ -61,7 +89,8 @@
       color: 'var(--text)',
       border: '1px solid var(--line)',
       borderRadius: 'var(--radius)',
-      minHeight: '240px',
+      // svelte-ignore state_referenced_locally -- mode fixé pour la vie de l'éditeur
+      minHeight: compact ? '64px' : '240px',
     },
     '&.cm-focused': { outline: '2px solid var(--accent)', outlineOffset: '2px' },
     '.cm-scroller': { fontFamily: 'inherit', lineHeight: '1.5' },
@@ -83,12 +112,29 @@
         doc: value,
         extensions: [
           history(),
+          // L'autocomplétion a la priorité sur Entrée tant qu'une proposition est ouverte.
+          ...(onSubmit
+            ? [
+                keymap.of([
+                  {
+                    key: 'Enter',
+                    run: v => {
+                      const text = v.state.doc.toString()
+                      if (!text.trim()) return true
+                      onSubmit(text)
+                      v.dispatch({ changes: { from: 0, to: v.state.doc.length, insert: '' } })
+                      return true
+                    },
+                  },
+                ]),
+              ]
+            : []),
           keymap.of([...defaultKeymap, ...historyKeymap]),
           markdown(),
           syntaxHighlighting(highlight),
           autocompletion({ override: [linkCompletions], icons: false }),
           EditorView.lineWrapping,
-          placeholder('Texte de la fiche (Markdown). [[ pour lier une autre fiche.'),
+          placeholder(hint),
           theme,
           EditorView.updateListener.of(u => {
             if (u.docChanged) onChange(u.state.doc.toString())
@@ -183,6 +229,7 @@
 </script>
 
 <div class="editor">
+  {#if !compact}
   <div class="toolbar" role="toolbar" aria-label="Mise en forme">
     <button type="button" title="Gras (entoure la sélection)" onclick={() => wrap('**')}><b>G</b></button>
     <button type="button" title="Italique" onclick={() => wrap('*')}><i>I</i></button>
@@ -193,6 +240,7 @@
     <button type="button" title="Lien vers une fiche ([[)" onclick={insertLink}>[[ Lien</button>
     <button type="button" title="Image ou PDF (aussi : glisser ou coller dans le texte)" onclick={() => fileInput.click()}>🖼 Image</button>
   </div>
+  {/if}
   <input
     bind:this={fileInput}
     type="file"

@@ -1,6 +1,7 @@
 import type { BackupData } from '../backup/format'
 import type { Asset } from '../model/asset'
 import type { CatalogEntry, Entity } from '../model/entity'
+import type { JournalEntry } from '../model/journal'
 import type { SearchHit } from '../model/search'
 import type { Session } from '../model/session'
 import type { SearchEngine } from './schema'
@@ -34,6 +35,11 @@ export interface MjRepository {
   saveSession(session: Session): Promise<void>
   /** Supprime la session et son journal. */
   deleteSession(id: string): Promise<void>
+  /** Journal d'une session, dans l'ordre chronologique (M8b). */
+  listJournal(sessionId: string): Promise<JournalEntry[]>
+  /** Enregistre l'entrée et ses liens vers les fiches citées (chronologie). */
+  saveJournalEntry(entry: JournalEntry): Promise<void>
+  deleteJournalEntry(id: string): Promise<void>
   /** Médias (images, PDF) : la description ; le fichier est dans storage/media.ts. */
   listAssets(): Promise<Asset[]>
   saveAsset(asset: Asset): Promise<void>

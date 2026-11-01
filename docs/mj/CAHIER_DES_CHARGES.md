@@ -112,6 +112,7 @@ Réponse directe à l'éparpillement de Notion :
 - **Notes de session importées de Notion** (D-M26) : bouton « Reprendre les n notes de session importées » dans la barre latérale (confirmation) : résumé de la session N, « Idée pour la suite » dans la préparation de N+1, notes archivées.
 
 ### 5.2 Écran « Session en cours »
+Mise en œuvre (M8b, D-M26, D-M27, D-M28) : **▶ Démarrer la session** sur une session prévue (une seule session en cours à la fois) prend l'instantané des blocs de jeu, met la date du jour si elle manque, et ouvre dans des onglets les PNJ et lieux du scénario. Le **journal** s'affiche dans sa colonne à gauche des onglets (volet « Journal » en disposition étroite) tant que la session est en cours, même après un rechargement. Le croquis ci-dessous date du cadrage : la colonne de droite est remplacée par les onglets de l'app.
 ```
 ┌──────────────────────────┬──────────────────────────────────┐
 │ Journal                  │ Fiches de la session (onglets)   │
@@ -122,12 +123,12 @@ Réponse directe à l'éparpillement de Notion :
 │ [ saisie rapide……… ] ⏎  │                                  │
 └──────────────────────────┴──────────────────────────────────┘
 ```
-- **Saisie rapide** en bas du journal : texte libre avec `[[` ; Entrée = nouvelle entrée horodatée. Type facultatif via préfixe ou bouton : Événement (défaut), Combat, Découverte, XP, **Haki**, Note MJ.
+- **Saisie rapide** en bas du journal : texte libre avec `[[` (propositions : nom exact, puis noms qui commencent par la saisie) ; Entrée = nouvelle entrée horodatée, Maj+Entrée = nouvelle ligne. Type au choix par boutons : Événement (défaut, repris après chaque entrée), Combat, Découverte, XP, Note MJ ; **Haki** en M8c. Chaque entrée se supprime en deux clics.
 - **Entrée Haki** (D-M9) : PJ concerné (fiche de lore), type (Observation / Armement / Rois), résultat du D100. L'app affiche l'effet de la table (§7 des règles) et indique si c'est un « meilleur résultat ». Sur la fiche du PJ, un petit récapitulatif lit le journal : « Observation : 3 meilleurs résultats ; Rois : résultat 1–5 obtenu (session 4) ». Ce n'est pas une fiche technique du PJ (D-T0) : seulement le relevé des jets du MJ. Quand un Haki est maîtrisé, le MJ le dit au joueur, qui ajoute la compétence sur sa Vivre Card.
-- **Fiches de la session** : PNJ et lieux du scénario pré-épinglés + ajout à la volée depuis la recherche ; bloc de jeu modifiable en direct ; zone « notes rapides » par fiche.
-- Chaque changement de ressource, de bonus, d'état (ex. PNJ → Mort) d'une fiche épinglée **ajoute une entrée automatique** (regroupée si plusieurs changements en moins de 10 s sur la même ressource) : « 21:17 Drake : Vitalité 60 → 40 », « 21:40 Drake : mort ». Ces lignes sont grisées, masquables par un filtre et supprimables une à une (Q-M3, D-M15).
+- **Fiches de la session** : les onglets ; PNJ et lieux du scénario ouverts au démarrage, toute autre fiche ouverte à la volée (recherche, liens du journal) ; bloc de jeu modifiable en direct. Notes rapides = entrées « Note MJ » liées à la fiche (D-M26).
+- Chaque changement de ressource actuelle (Vitalité, Endurance, Rêve, Ambition, Transfert, ressources supplémentaires), de bonus temporaires ou d'état (ex. PNJ → Mort) d'un PNJ pendant la session **ajoute une entrée automatique** (les maximums et les caracs, réglages de préparation, ne sont pas notés ; une valeur revenue à son point de départ en moins de 10 s efface l'entrée) (regroupée si plusieurs changements en moins de 10 s sur la même ressource) : « 21:17 Drake : Vitalité 60 → 40 », « 21:40 Drake : mort ». Ces lignes sont grisées, masquables par un filtre et supprimables une à une (Q-M3, D-M15).
 - Recherche globale accessible sans quitter l'écran (ouverture dans un panneau latéral).
-- « Terminer la session » : propose de rédiger le résumé (pré-rempli avec la liste des entrées). L'état des PNJ **reste** tel qu'à la fin de la session (Q-M3, D-M13) ; un bouton **« Remettre à l'état de début de session »** (par PNJ ou pour tous) reste disponible ensuite, à partir de l'instantané pris au démarrage.
+- « Terminer la session » (confirmation) : la session passe en Terminée et s'ouvre en édition ; un résumé vide est pré-rempli avec les entrées du journal (sans les entrées automatiques). L'état des PNJ **reste** tel qu'à la fin de la session (Q-M3, D-M13) ; la session liste les **PNJ modifiés depuis le début** (bloc de jeu ou état) avec **« Remettre à l'état de début »** par PNJ et « Tout remettre », pendant la session et ensuite, à partir de l'instantané pris au démarrage.
 
 ### 5.3 Chronologie des fiches
 Toute entrée de journal qui mentionne une fiche (lien `[[ ]]` ou entrée automatique) apparaît dans la **Chronologie** de cette fiche, avec le numéro de session. C'est ainsi que « les événements notés en session » enrichissent la base de connaissances sans recopie.

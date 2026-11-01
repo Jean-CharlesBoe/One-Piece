@@ -93,6 +93,10 @@ CREATE TABLE journal_entries (
   created_at  TEXT NOT NULL, updated_at TEXT NOT NULL
 );
 CREATE INDEX journal_session ON journal_entries(session_id, at);
+-- Code (M8b) : model/journal.ts (JournalEntry, normalizeEntry, entryRow, gameChanges, mergeAuto), repository :
+-- listJournal, saveJournalEntry (liens from_kind = 'journal' vers les fiches citées et la fiche d'une entrée
+-- automatique ; reconstruits à la restauration), deleteJournalEntry. Instantané (sessions.snapshot) :
+-- model/snapshot.ts, JSON { <idFiche>: { jeu, etat } } pour chaque personnage qui a un bloc de jeu au démarrage.
 
 -- Paires écartées de la vue « Doublons probables » (a_id < b_id)
 CREATE TABLE not_duplicates (

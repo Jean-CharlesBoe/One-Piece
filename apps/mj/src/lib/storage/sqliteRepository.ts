@@ -6,6 +6,7 @@ import { computeLinks, plainText } from '../model/links'
 import { normalizeEntity } from '../model/normalize'
 import { displayValue, relationIds } from '../model/props'
 import { ftsQuery, MARK_END, MARK_START, searchWords, snippetHtml, type SearchHit } from '../model/search'
+import { entryMentions, entryRow, normalizeEntry, type JournalEntry } from '../model/journal'
 import { normalizeSession, sessionRow } from '../model/session'
 import { TYPE_DEFS } from '../model/types'
 import type { Db, Row } from './db'
@@ -180,6 +181,18 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
     }
   }
 
+  /** Liens d'une entrée du journal vers les fiches citées (mentions et fiche d'une entrée automatique). */
+  async function writeJournalLinks(e: JournalEntry) {
+    await db.run(`DELETE FROM links WHERE from_kind = 'journal' AND from_id = ?`, [e.id])
+    for (const toId of entryMentions(e)) {
+      await db.run(
+        `INSERT INTO links (from_kind, from_id, to_id, kind)
+           SELECT 'journal', ?, ?, 'mention' WHERE EXISTS (SELECT 1 FROM entities WHERE id = ?)`,
+        [e.id, toId, toId],
+      )
+    }
+  }
+
   return {
     searchEngine: engine,
     async getMeta(key) {
@@ -293,6 +306,27 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
       await db.run(`DELETE FROM sessions WHERE id = ?`, [id])
       await touch()
     },
+    async listJournal(sessionId) {
+      return (await db.query(`SELECT * FROM journal_entries WHERE session_id = ? ORDER BY at, created_at`, [sessionId])).flatMap(
+        r => normalizeEntry(r) ?? [],
+      )
+    },
+    async saveJournalEntry(e) {
+      const row = entryRow(e)
+      const cols = TABLE_COLUMNS.journal_entries
+      await db.run(
+        `INSERT INTO journal_entries (${cols.join(', ')}) VALUES (${cols.map(() => '?').join(', ')})
+           ON CONFLICT(id) DO UPDATE SET ${cols.filter(c => c !== 'id').map(c => `${c} = excluded.${c}`).join(', ')}`,
+        cols.map(c => row[c] ?? null),
+      )
+      await writeJournalLinks(e)
+      await touch()
+    },
+    async deleteJournalEntry(id) {
+      await db.run(`DELETE FROM links WHERE from_kind = 'journal' AND from_id = ?`, [id])
+      await db.run(`DELETE FROM journal_entries WHERE id = ?`, [id])
+      await touch()
+    },
     async listAssets() {
       return (await db.query(`SELECT * FROM assets ORDER BY created_at`)).flatMap(r => normalizeAsset(r) ?? [])
     },
@@ -351,6 +385,10 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
         for (const e of data.entities) {
           await writeLinks(e)
           await indexEntity(db, engine, e)
+        }
+        for (const row of data.journal_entries) {
+          const j = normalizeEntry(row)
+          if (j) await writeJournalLinks(j)
         }
         await db.run('COMMIT')
       } catch (e) {

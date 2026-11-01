@@ -38,6 +38,8 @@ class Opened {
    * onglet en édition s'y retrouve à son retour.
    */
   #editingTitles = new Map<string, string>()
+  /** Prévenu après chaque enregistrement (version précédente, nouvelle version) : journal de session (play.svelte.ts). */
+  onSaved: ((before: Entity, after: Entity) => void) | null = null
   /** Versions gardées pour « Annuler » des fiches en édition quittées pour un autre onglet. */
   #histories = new Map<string, Entity[]>()
 
@@ -135,10 +137,13 @@ class Opened {
     try {
       await (await getRepository()).saveEntity(snap)
       catalog.upsert(toCatalogEntry(snap))
-      if (keepHistory && this.#saved && this.#saved.id === snap.id) {
-        this.history = [...this.history, this.#saved].slice(-HISTORY_MAX)
+      const before = this.#saved && this.#saved.id === snap.id ? this.#saved : null
+      if (keepHistory && before) {
+        this.history = [...this.history, before].slice(-HISTORY_MAX)
       }
       this.#saved = structuredClone(snap)
+      // Session en cours : les changements du bloc de jeu ou de l'état deviennent des entrées du journal (M8b).
+      if (before) this.onSaved?.(before, snap)
       if (this.#version === version) this.save = 'enregistre'
       this.error = ''
     } catch (err) {

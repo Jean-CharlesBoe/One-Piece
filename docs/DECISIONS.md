@@ -280,3 +280,13 @@ Retours du MJ après la 0.6.0 : le bouton « + Session » disparaissait selon la
 - deux dispositions seulement : large (≥ 900 px) et étroite (volets) ; la disposition « deux colonnes » disparaît avec la colonne de liste ;
 - **M8b** (maquette A, D-M26) : le journal n'a plus de colonne de liste à remplacer ; il aura sa propre colonne à gauche des onglets, affichée seulement pendant une session.
 **Pourquoi** : la colonne de liste prenait 300 px en permanence pour une liste étroite ; en onglet, la liste gagne la largeur (un vrai tableau) et suit le modèle du navigateur déjà adopté pour les fiches (D-M20, D-M21).
+
+### D-M28 · 2026-11-01 · Session en cours : choix de mise en œuvre — *proposée*
+Mise en œuvre de M8b (cahier §5.2), annoncée au MJ avant le code :
+- **une seule session en cours** à la fois ; « En cours » ne s'obtient que par « Démarrer la session » (pas par le statut en édition), qui prend l'instantané ;
+- **instantané** : bloc de jeu et état de **chaque personnage qui a un bloc de jeu** au démarrage (pas seulement ceux du scénario), pour pouvoir remettre n'importe quel PNJ ;
+- **entrées automatiques** pour tout PNJ modifié pendant la session, onglet ouvert au démarrage ou non : ressources actuelles, ressources supplémentaires, bonus temporaires, état ; pas les maximums ni les caracs ; regroupées sur 10 s, effacées si la valeur revient à son départ dans ce délai ;
+- au démarrage, les **PNJ et lieux du scénario** (propriétés « PNJ » et « Lieux » du scénario) s'ouvrent dans des onglets ;
+- **terminer** : résumé pré-rempli seulement s'il est vide, sans les entrées automatiques (elles restent dans le journal) ;
+- **remettre à l'état de début** : depuis la session, PNJ modifiés listés (comparaison avec l'instantané), un bouton par PNJ et « Tout remettre » ; possible pendant et après la session.
+**Pourquoi** : le journal reste lisible (une entrée par coup, pas par clic) et rien de ce qui arrive aux PNJ n'échappe au relevé, sans demander au MJ de déclarer à l'avance les fiches de la session.
