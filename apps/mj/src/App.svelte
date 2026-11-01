@@ -1,7 +1,7 @@
 <script lang="ts">
   import { isTheme, theme } from '@onepiece/core'
   import Sheet from '@onepiece/core/ui/Sheet.svelte'
-  import { onMount } from 'svelte'
+  import { onMount, tick } from 'svelte'
   import { backup } from './lib/backup/sync.svelte'
   import { catalog } from './lib/catalog.svelte'
   import BackupBanner from './lib/components/BackupBanner.svelte'
@@ -232,11 +232,11 @@
   async function openJournalEntry(sessionId: string, entryId: string) {
     try {
       play.reveal(sessionId, entryId)
+      linksOpen = false
       if (play.running?.id === sessionId) {
         if (layout !== 'large') journalOpen = true
         return
       }
-      linksOpen = false
       await openSession(sessionId)
     } catch (e) {
       fail(e)
@@ -433,6 +433,23 @@
     }
   }
 
+  // Impression (Imprimer / PDF ou Ctrl+P, D-M30) : toujours en couleurs claires, thème rétabli ensuite.
+  $effect(() => {
+    const root = document.documentElement
+    let prev: string | null = null
+    const before = () => {
+      prev = root.getAttribute('data-theme')
+      root.setAttribute('data-theme', 'light')
+    }
+    const after = () => (prev === null ? root.removeAttribute('data-theme') : root.setAttribute('data-theme', prev))
+    window.addEventListener('beforeprint', before)
+    window.addEventListener('afterprint', after)
+    return () => {
+      window.removeEventListener('beforeprint', before)
+      window.removeEventListener('afterprint', after)
+    }
+  })
+
   // Les volets n'ont plus lieu d'être quand la fenêtre s'élargit.
   $effect(() => {
     if (layout === 'large') navOpen = linksOpen = false
@@ -475,7 +492,18 @@
     } else if (k === 'e' && entity && !entity.archived) {
       e.preventDefault()
       void opened.setEditing(!opened.editing)
+    } else if (k === 'j' && play.running) {
+      e.preventDefault()
+      void focusJournal()
     }
+  }
+
+  /** Ctrl+J (cahier §7) : curseur dans la saisie du journal (volet ouvert en disposition étroite). */
+  async function focusJournal() {
+    if (layout !== 'large') journalOpen = true
+    await tick()
+    const target = document.querySelector<HTMLElement>('section.journal .cm-content, section.journal form.haki input, section.journal form.haki select')
+    target?.focus()
   }
 
   onMount(() => {
@@ -704,6 +732,25 @@
     display: grid;
     height: 100dvh;
     overflow: hidden;
+  }
+  /* Impression : seul le contenu de l'onglet actif (la fiche), sur toute la largeur et toute sa hauteur. */
+  @media print {
+    .app {
+      display: block;
+      height: auto;
+      overflow: visible;
+    }
+    /* Composants (bandeau, onglets) : hors de la portée des styles d'App, d'où :global. */
+    .app > :global(:not(main)),
+    .main > :global(:not(.content)) {
+      display: none !important;
+    }
+    .main,
+    .content {
+      display: block;
+      border: none;
+      background: none;
+    }
   }
   /* Barre latérale (ou rail), poignée, onglets, Liens (ou rail). */
   .resizer {

@@ -4,6 +4,7 @@
   import { catalog } from '../catalog.svelte'
   import { renderMarkdown } from '../markdown'
   import type { Entity } from '../model/entity'
+  import { entityMarkdown, markdownFileName } from '../model/export'
   import { sameName } from '../model/links'
   import { changeType, displayValue, ORPHANS, relationIds, removeOrphan, subtitle } from '../model/props'
   import { ENTITY_TYPES, TYPE_DEFS, type EntityType } from '../model/types'
@@ -89,6 +90,31 @@
     confirmDelete = false
     menuOpen = false
   })
+
+  // Exports (M9, D-M16, D-M30) : Markdown copié ou téléchargé ; PDF par l'impression de Chrome (feuille
+  // d'impression : la fiche seule, en couleurs claires, voir App.svelte).
+  let notice = $state('')
+  function say(text: string) {
+    notice = text
+    setTimeout(() => notice === text && (notice = ''), 3000)
+  }
+  const markdown = (e: Entity) => entityMarkdown(e, id => catalog.title(id), id => media.byId.get(id)?.originalName ?? '')
+  async function copyMarkdown(e: Entity) {
+    try {
+      await navigator.clipboard.writeText(markdown(e))
+      say('Markdown copié.')
+    } catch {
+      say('Copie refusée par le navigateur : utilise « Télécharger .md ».')
+    }
+  }
+  function downloadMarkdown(e: Entity) {
+    const url = URL.createObjectURL(new Blob([markdown(e)], { type: 'text/markdown;charset=utf-8' }))
+    const a = document.createElement('a')
+    a.href = url
+    a.download = markdownFileName(e.title)
+    a.click()
+    setTimeout(() => URL.revokeObjectURL(url), 10_000)
+  }
 
   // Menu « ⋯ » : se ferme par Échap, clic à côté ou bouton retour Android.
   $effect(() => {
@@ -269,6 +295,7 @@
 
     <header>
       <p class="label">{def.icon} {def.label}</p>
+      {#if notice}<p class="notice" role="status">{notice}</p>{/if}
       <div class="actions">
         {#if opened.editing}
           <span class="save" class:err={opened.save === 'erreur'}>{SAVE_LABEL[opened.save]}</span>
@@ -297,6 +324,11 @@
                   <button role="menuitem" onclick={() => ((menuOpen = false), onAddChild())}>+ Page enfant</button>
                   <button role="menuitem" onclick={() => ((menuOpen = false), (moveOpen = true))}>Déplacer vers…</button>
                   <button role="menuitem" onclick={() => ((menuOpen = false), onMerge(entity.id))}>Fusionner avec…</button>
+                  <hr />
+                  <button role="menuitem" onclick={() => ((menuOpen = false), void copyMarkdown(entity))}>Copier en Markdown</button>
+                  <button role="menuitem" onclick={() => ((menuOpen = false), downloadMarkdown(entity))}>Télécharger .md</button>
+                  <button role="menuitem" onclick={() => ((menuOpen = false), window.print())} title="Imprimante ou « Enregistrer au format PDF »">Imprimer / PDF…</button>
+                  <hr />
                   <button
                     role="menuitem"
                     onclick={() => {
@@ -712,6 +744,31 @@
     border: 1px solid var(--line);
     border-radius: var(--radius);
     box-shadow: 0 6px 18px rgb(0 0 0 / 0.18);
+  }
+  .menu-list hr {
+    width: 100%;
+    margin: 4px 0;
+    border: none;
+    border-top: 1px solid var(--line);
+  }
+  .notice {
+    margin: 0;
+    color: var(--up);
+    font-size: 0.9rem;
+  }
+  /* Impression (Imprimer / PDF, D-M30) : la fiche seule, sans boutons ni ajouts d'édition. */
+  @media print {
+    .view {
+      height: auto;
+      overflow: visible;
+      padding: 0;
+    }
+    .actions,
+    .notice,
+    .add-block,
+    .empty-body {
+      display: none !important;
+    }
   }
   .menu-list button {
     border: none;

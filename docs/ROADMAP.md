@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M8c (Haki, chronologie, recherche dans le journal)** — publiée (v0.9.0), à vérifier par le MJ, comme M8b (v0.8.0) ; ensuite M9. Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.8.0) ; M0 à M8a closes (M8a et D-M27 vérifiées par le MJ le 2026-11-01). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M9 (finitions, exports, 1re release)** — faite dans le navigateur, version 1.0.0 prête (non publiée) ; M8b et M8c vérifiées par le MJ le 2026-11-01 (v0.9.0). Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.8.0) ; M0 à M8a closes (M8a et D-M27 vérifiées par le MJ le 2026-11-01). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -40,9 +40,9 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | M6 | Documents | import image/PDF, visionneuse | — | fait (vérifié par le MJ) |
 | M7 | Bloc de jeu PNJ | StatGrid, ressources, techniques, Haki, catégorie d'adversaire | — | fait (D-M24, D-M25 ; vérifié par le MJ) |
 | M8a | Sessions | campagne unique, liste des sessions, fiche de session (numéro, titre, date, scénario, statut, préparation, résumé), reprise des notes de session importées (D-M22, D-M26) | — | fait (vérifié par le MJ) |
-| M8b | Session en cours | journal dans sa colonne à gauche des onglets, pendant la session (maquette A, D-M26, D-M27), saisie rapide, fiches de la session, entrées automatiques, notes MJ, terminer, remettre à l'état de début (D-M13, D-M15) | M8a | fait (navigateur, D-M28) |
-| M8c | Haki, chronologie, recherche | entrées Haki (D-M9), chronologie des fiches, groupe « Journal » de Ctrl+K (D-M15) | M8b | fait (navigateur, D-M29) |
-| M9 | Finitions | raccourcis, thèmes, exports (Markdown, PDF, documents, D-M16), **1re release** | — | à faire |
+| M8b | Session en cours | journal dans sa colonne à gauche des onglets, pendant la session (maquette A, D-M26, D-M27), saisie rapide, fiches de la session, entrées automatiques, notes MJ, terminer, remettre à l'état de début (D-M13, D-M15) | M8a | fait (D-M28 ; vérifié par le MJ) |
+| M8c | Haki, chronologie, recherche | entrées Haki (D-M9), chronologie des fiches, groupe « Journal » de Ctrl+K (D-M15) | M8b | fait (D-M29 ; vérifié par le MJ) |
+| M9 | Finitions | raccourcis, thèmes, exports (Markdown, PDF, documents, D-M16), **1re release** | — | fait (navigateur, D-M30) ; release 1.0.0 à publier |
 
 Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour pouvoir vérifier le résultat dans l'app ; on peut l'avancer juste après M4 pour travailler sur les vraies données le plus tôt possible.
 
@@ -370,3 +370,10 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Vérifié : check, 203 tests (8 nouveaux), navigateur (import Notion restauré dans la base de dev, serveur sur le port 5185, le 5184 étant occupé) : notes reprises en sessions 1 à 3, session 4 démarrée ; jets d'Osmo (Rois 4, Observation 12 et 60 : effets et meilleurs résultats affichés en direct, PJ retenu, type remis à Événement) ; entrée avec `[[Osmo]]` au clavier ; fiche d'Osmo : récapitulatif (« Observation : 1 meilleur résultat sur 5 (2 jets, session 4) », « Rois : résultat 1–5 obtenu (session 4) · maîtrise atteinte ») et chronologie (4 entrées) ; clic dans la chronologie → entrée surlignée dans la colonne du journal ; Ctrl+K « cle doree » → groupe Journal, extrait surligné ; fin de session (résumé pré-rempli) ; « osmo » → 5 entrées puis « Voir tout (6 entrées) », clic → session 4 ouverte, entrée surlignée dans sa section Journal. Corrigé pendant le test : libellé « Haki : » redondant dans la chronologie et le résumé. Console sans erreur. Non vérifié : disposition étroite (volet Journal ouvert par la chronologie).
 - Version 0.9.0 publiée avec l'accord du MJ (`ec5aa95`, run de publication vert, cache `onepiece-mj-0.9.0-…` en ligne).
 - Reste : vérification par le MJ de la 0.8.0 et de la 0.9.0 ; M9 (finitions, exports D-M16, 1re release).
+
+### Session 24 · 2026-11-01 (M8b et M8c closes, M9 — finitions, version 1.0.0)
+- 0.8.0 et 0.9.0 vérifiées par le MJ avec la liste de tests donnée en fin de M8c (« tout est ok ») : M8b et M8c closes, D-M28 et D-M29 validées. Demande du MJ : après chaque partie, lui donner la liste de ce qu'il doit tester (mémoire du projet).
+- Réponses du MJ avant M9 (**D-M30**) : PDF par l'impression de Chrome ; Markdown copié ou téléchargé ; release 1.0.0 avec tag `mj-v1.0.0` et Release GitHub ; pas d'autre finition.
+- `model/export.ts` (`entityMarkdown`, `bodyMarkdown`, `markdownFileName`, testés) ; `EntityView` : menu « ⋯ » → Copier en Markdown, Télécharger .md, Imprimer / PDF…, feuille d'impression ; `App.svelte` : impression (seul le contenu de l'onglet, thème clair le temps de l'impression), Ctrl+J ; Réglages : aide des raccourcis ; `gameBlock.ts` reprend les types de Haki des règles communes (plus de doublon) ; `.github/release-notes-mj.md`, RELEASE.md (tag `mj-vX.Y.Z`) ; version 1.0.0.
+- Vérifié : check, 206 tests (3 nouveaux), build ; navigateur : menu de la fiche d'Osmo, « Télécharger .md » (fichier « Osmo.md » : propriétés, texte, image en mention) ; rendu d'impression (règles `print` activées à la main : fiche seule, en clair, thème sombre rétabli après) ; Ctrl+J en large (curseur dans la saisie) et en étroit à 800 px (volet Journal ouvert) ; en étroit, un clic dans la chronologie ouvre le volet Journal sur l'entrée — corrigé : le volet Liens restait ouvert par-dessus ; aide des raccourcis. Console sans erreur. Non vérifié : « Copier en Markdown » (refusé par le navigateur intégré, sans focus), la vraie fenêtre d'impression de Chrome.
+- Reste : publication de la 1.0.0, tag et Release GitHub (accord du MJ) ; vérification par le MJ ; icône de Vivre Card (Q-T4).

@@ -141,7 +141,7 @@ Mise en œuvre (M8c, D-M29) : section **Chronologie** du panneau Liens, groupée
 - **Sauvegarder maintenant**, **Télécharger une copie** (navigateur sans accès aux dossiers : rappel rouge si modifications et ≥ 7 jours).
 - **Restaurer un fichier** : remplace toute la base après confirmation (nombre de fiches, date, appareil) ; la base actuelle est copiée dans `historique/` ; le fichier restauré devient la référence (réécrit dans le dossier) ; refuse un fichier d'une version plus récente.
 - **Import Notion** : une seule fois, via un fichier `.opmj` produit par le script (voir [IMPORT_NOTION.md](IMPORT_NOTION.md)), restauré par « Restaurer un fichier… ».
-- **Exports** (Q-M4, D-M16) : une fiche en Markdown (copier / partager) ou en **PDF** mis en forme, prêt à imprimer ; un **document stocké** (PDF, image) ressorti tel quel par la feuille de partage ou dans les fichiers du Chromebook, pour l'imprimer ou l'envoyer.
+- **Exports** (Q-M4, D-M16, D-M30) : menu « ⋯ » d'une fiche : **Copier en Markdown**, **Télécharger .md** (titre, alias, propriétés lisibles, bloc de jeu résumé, étiquettes, texte ; les `[[liens]]` deviennent le nom affiché, les médias une mention) et **Imprimer / PDF…** (feuille d'impression : la fiche seule, en couleurs claires, puis la fenêtre de Chrome : imprimante ou « Enregistrer au format PDF » ; Ctrl+P fait de même). Un **document stocké** (PDF, image) se ressort tel quel par « ⬇ Télécharger ».
 - Volume des médias (Q-M6) : probablement plus de 25 Mo (nombreux PDF de personnages, images de fruits) : le backup Android automatique ne couvre pas tout, la sauvegarde `.opmj` est indispensable.
 
 ## 7. Raccourcis clavier
@@ -153,10 +153,12 @@ Mise en œuvre (M8c, D-M29) : section **Chronologie** du panneau Liens, groupée
 | Ctrl+E | éditer / quitter l'édition |
 | Ctrl+Tab / Ctrl+Maj+Tab | onglet suivant / précédent (app installée ; dans un onglet de Chrome, Chrome les garde) |
 | Ctrl+1 … Ctrl+8, Ctrl+9 | aller à l'onglet n, au dernier onglet (idem) |
-| Ctrl+J | aller à la saisie du journal (en session) |
+| Ctrl+J | aller à la saisie du journal (en session ; ouvre le volet Journal en disposition étroite) |
+| Ctrl+P | imprimer la fiche affichée ou l'enregistrer en PDF (D-M30) |
 | Échap | fermer la fenêtre / la recherche / le menu |
 
 Pas de raccourci pour fermer un onglet : Ctrl+W ferme la fenêtre de Chrome (non interceptable) ; un onglet se ferme par son ✕ ou d'un clic molette.
+Aide : Réglages › **Raccourcis clavier** (M9).
 
 ## 8. Hors périmètre
 

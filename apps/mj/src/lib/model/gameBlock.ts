@@ -1,6 +1,7 @@
 import {
   createResource,
   emptyStats,
+  HAKI_TYPES,
   LIMITS,
   normalizeCustomResources,
   normalizeResource,
@@ -12,6 +13,7 @@ import {
   TRIBUS,
   XP_PAR_ADVERSAIRE,
   type CustomResource,
+  type HakiType,
   type Resource,
   type Skill,
   type Stats,
@@ -24,12 +26,8 @@ import {
 // Humain, Transfert), tribu, rêve, techniques, équipement, inventaire. Rien n'est déduit de la race ou du grade
 // (D-M24) ; Rêve, Ambition et Transfert partent des valeurs des règles, comme sur Vivre Card.
 
-export const HAKI_TYPES = [
-  ['observation', 'Observation'],
-  ['armement', 'Armement'],
-  ['rois', 'Rois'],
-] as const
-export type HakiType = (typeof HAKI_TYPES)[number][0]
+/** Types de Haki : ceux des règles (REGLES §7, packages/core). */
+export { HAKI_TYPES, type HakiType }
 
 export interface HakiState {
   /** Maîtrisé ou non : le MJ décide (REGLES §7). */

@@ -281,7 +281,7 @@ Retours du MJ après la 0.6.0 : le bouton « + Session » disparaissait selon la
 - **M8b** (maquette A, D-M26) : le journal n'a plus de colonne de liste à remplacer ; il aura sa propre colonne à gauche des onglets, affichée seulement pendant une session.
 **Pourquoi** : la colonne de liste prenait 300 px en permanence pour une liste étroite ; en onglet, la liste gagne la largeur (un vrai tableau) et suit le modèle du navigateur déjà adopté pour les fiches (D-M20, D-M21).
 
-### D-M28 · 2026-11-01 · Session en cours : choix de mise en œuvre — *proposée*
+### D-M28 · 2026-11-01 · Session en cours : choix de mise en œuvre — *validée*
 Mise en œuvre de M8b (cahier §5.2), annoncée au MJ avant le code :
 - **une seule session en cours** à la fois ; « En cours » ne s'obtient que par « Démarrer la session » (pas par le statut en édition), qui prend l'instantané ;
 - **instantané** : bloc de jeu et état de **chaque personnage qui a un bloc de jeu** au démarrage (pas seulement ceux du scénario), pour pouvoir remettre n'importe quel PNJ ;
@@ -291,7 +291,7 @@ Mise en œuvre de M8b (cahier §5.2), annoncée au MJ avant le code :
 - **remettre à l'état de début** : depuis la session, PNJ modifiés listés (comparaison avec l'instantané), un bouton par PNJ et « Tout remettre » ; possible pendant et après la session.
 **Pourquoi** : le journal reste lisible (une entrée par coup, pas par clic) et rien de ce qui arrive aux PNJ n'échappe au relevé, sans demander au MJ de déclarer à l'avance les fiches de la session.
 
-### D-M29 · 2026-11-01 · Haki, chronologie, recherche dans le journal : choix de mise en œuvre — *proposée*
+### D-M29 · 2026-11-01 · Haki, chronologie, recherche dans le journal : choix de mise en œuvre — *validée*
 Mise en œuvre de M8c (cahier §5.2, §5.3, §4.5 ; D-M9, D-M15), annoncée au MJ avant le code :
 - **saisie Haki** : bouton « Haki » parmi les types de la saisie rapide ; il remplace le texte libre par un petit formulaire : PJ (fiches Personnage au rôle **PJ**, le dernier choisi reste proposé), type (Observation / Armement / Rois), résultat du D100 (1 à 100), effet de la table affiché en direct, commentaire facultatif. Le texte de l'entrée est **généré et figé** à la saisie (« Osmo · Haki des Rois, D100 = 4 (3–5) : réveil latent · meilleur résultat — commentaire ») : il sert à la recherche, au résumé et à la chronologie ; les données du jet sont gardées à part (colonne `haki`). Table et seuils dans `packages/core/src/rules/haki.ts` (REGLES §7) ;
 - **récapitulatif sur la fiche du PJ** (lecture) : par type lancé, nombre de jets et de meilleurs résultats sur l'objectif (5, ou 1 pour les Rois), sessions concernées ; « maîtrise atteinte : à annoncer au joueur » quand l'objectif est atteint. Rien d'autre sur le PJ (D-T0) ;
@@ -299,3 +299,12 @@ Mise en œuvre de M8c (cahier §5.2, §5.3, §4.5 ; D-M9, D-M15), annoncée au M
 - **ouvrir une entrée** (chronologie, recherche) : session en cours → sa colonne du journal (volet en disposition étroite) descend sur l'entrée et la surligne ; sinon la fiche de la session s'ouvre, dont la **nouvelle section « Journal »** (lecture et édition, sessions non en cours) montre tout le journal et surligne l'entrée. Jusqu'ici le journal d'une session terminée n'était visible nulle part ;
 - **recherche** : table plein texte `journal_index` créée comme `search_index` (hors migrations, même ordre de moteurs, moteur noté dans `meta.journal_search_engine`, `LIKE` à défaut), reconstruite à la restauration ; groupe « Journal » sous les fiches de Ctrl+K, entrées les plus récentes d'abord, 5 puis **« Voir tout (n) »** qui déplie le groupe (50 au plus), navigable au clavier.
 **Pourquoi** : une saisie du jet sans calcul ni table à consulter, un texte lisible partout sans recalcul, et retrouver depuis une fiche ou la recherche ce qui s'est passé en session, y compris après la session.
+
+### D-M30 · 2026-11-01 · Finitions (M9) : PDF par l'impression de Chrome, Markdown copié ou téléchargé, release 1.0.0 — *validée*
+Réponses du MJ avant M9 (choix proposés) :
+- **PDF d'une fiche** : bouton « Imprimer / PDF » ; une feuille d'impression ne garde que la fiche (sans barres, onglets, panneaux ni boutons, couleurs claires), puis la fenêtre d'impression de Chrome (imprimante ou « Enregistrer au format PDF »). Pas de génération de PDF dans l'app (bibliothèque ~1 Mo, rendu moins fidèle). Complète D-M16.
+- **Markdown d'une fiche** : « Copier en Markdown » (presse-papiers) et « Télécharger .md » ; titre, alias, propriétés lisibles, bloc de jeu résumé, texte ; les `[[liens]]` deviennent le nom affiché. Pas de feuille de partage.
+- **Documents stockés** : le bouton « ⬇ Télécharger » de M6 suffit.
+- Raccourcis : **Ctrl+J** (saisie du journal en session) et une **aide des raccourcis** dans les Réglages ; thèmes : ceux d'aujourd'hui (Automatique, Clair, Sombre).
+- **1re release** : version **1.0.0**, publiée comme les autres, plus un tag `mj-v1.0.0` et une Release GitHub (notes des nouveautés, aucun fichier à installer). Pas d'autre finition demandée.
+**Pourquoi** : le PDF de Chrome rend exactement la fiche affichée et marche hors ligne sur le Chromebook sans rien ajouter à l'app ; la release marque la fin du développement prévu de l'appli MJ.

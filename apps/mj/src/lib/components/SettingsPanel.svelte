@@ -5,6 +5,18 @@
   import { getRepository, META_SCHEMA_VERSION, META_THEME } from '../storage/repository'
   import BackupSection from './BackupSection.svelte'
 
+  /** Aide des raccourcis (cahier §7, D-M30). */
+  const SHORTCUTS = [
+    ['Ctrl+K ou /', 'Recherche (fiches et journal)'],
+    ['Ctrl+N', 'Nouvelle fiche'],
+    ['Ctrl+E', 'Modifier / terminer la fiche ou la session'],
+    ['Ctrl+J', 'Saisie du journal (session en cours)'],
+    ['Ctrl+Tab, Ctrl+Maj+Tab', 'Onglet suivant / précédent (app installée)'],
+    ['Ctrl+1 … 8, Ctrl+9', 'Onglet n, dernier onglet (app installée)'],
+    ['Ctrl+P', "Imprimer la fiche ou l'enregistrer en PDF"],
+    ['Échap', 'Fermer la fenêtre, la recherche ou le menu'],
+  ] as const
+
   // Contenu de la fenêtre « Réglages » (roue dentée de la barre latérale) : thème, application (installation,
   // stockage persistant), sauvegarde (dossier Google Drive, restauration : BackupSection), état de la base.
   // Le thème est chargé au démarrage (App.svelte) et enregistré ici.
@@ -65,6 +77,16 @@
 
   <BackupSection />
 
+  <section class="card" aria-labelledby="raccourcis-titre">
+    <h2 class="label" id="raccourcis-titre">Raccourcis clavier</h2>
+    <table class="keys">
+      <tbody>
+        {#each SHORTCUTS as [k, l] (k)}<tr><th><kbd>{k}</kbd></th><td>{l}</td></tr>{/each}
+      </tbody>
+    </table>
+    <p class="muted">Un onglet se ferme par son ✕ ou d'un clic molette (Ctrl+W ferme la fenêtre de Chrome).</p>
+  </section>
+
   <section class="card" aria-labelledby="apropos-titre">
     <h2 class="label" id="apropos-titre">À propos</h2>
     <p>One Piece, version {__APP_VERSION__}</p>
@@ -109,6 +131,29 @@
     border-color: var(--accent);
     color: var(--accent-text);
     font-weight: 600;
+  }
+  .keys {
+    margin-top: 8px;
+    border-collapse: collapse;
+    width: 100%;
+  }
+  .keys th {
+    text-align: left;
+    font-weight: normal;
+    padding: 3px 12px 3px 0;
+    white-space: nowrap;
+    vertical-align: top;
+  }
+  .keys td {
+    padding: 3px 0;
+  }
+  kbd {
+    font-family: inherit;
+    font-size: 0.85rem;
+    padding: 1px 6px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--bg);
   }
   .error {
     margin: 0;
