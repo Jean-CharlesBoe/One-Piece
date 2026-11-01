@@ -1,6 +1,7 @@
 <script lang="ts">
   import { catalog } from '../catalog.svelte'
   import { currentId } from '../model/navigation'
+  import { listLabel, listModeOfTab } from '../model/listTab'
   import { sessionIdOfTab, sessionLabel } from '../model/session'
   import { TYPE_DEFS } from '../model/types'
   import { sessions } from '../sessions.svelte'
@@ -28,7 +29,9 @@
   const items = $derived(
     tabs.nav.tabs.map((_, i) => {
       const id = currentId(tabs.nav, i)
-      // Onglet de session (M8a) ou de fiche.
+      // Onglet de liste (D-M27), de session (M8a) ou de fiche.
+      const lm = id ? listModeOfTab(id) : null
+      if (lm) return { i, ...listLabel(lm) }
       const se = id ? sessions.byId.get(sessionIdOfTab(id) ?? '') : undefined
       if (se) return { i, title: sessionLabel(se), icon: '📖' }
       const e = id ? catalog.byId.get(id) : undefined

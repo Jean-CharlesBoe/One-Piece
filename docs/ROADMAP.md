@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M8a (sessions)** — publiée (v0.6.0), à vérifier par le MJ ; M8 découpée en M8a, M8b, M8c (D-M26). Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.5.1) ; M0 à M7 closes (M7 vérifiée par le MJ sur le PC le 2026-10-26). Ensuite : M8b, M8c, puis M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M8a (sessions)** — publiée (v0.6.0) ; retours du MJ faits (D-M27 : listes dans des onglets, barre latérale réglable, panneaux repliables), version 0.7.0 à publier ; M8 découpée en M8a, M8b, M8c (D-M26). Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.5.1) ; M0 à M7 closes (M7 vérifiée par le MJ sur le PC le 2026-10-26). Ensuite : M8b, M8c, puis M9 (finitions, exports). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -40,7 +40,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | M6 | Documents | import image/PDF, visionneuse | — | fait (vérifié par le MJ) |
 | M7 | Bloc de jeu PNJ | StatGrid, ressources, techniques, Haki, catégorie d'adversaire | — | fait (D-M24, D-M25 ; vérifié par le MJ) |
 | M8a | Sessions | campagne unique, liste des sessions, fiche de session (numéro, titre, date, scénario, statut, préparation, résumé), reprise des notes de session importées (D-M22, D-M26) | — | fait (navigateur) |
-| M8b | Session en cours | journal à la place de la liste (maquette A, D-M26), saisie rapide, fiches de la session, entrées automatiques, notes MJ, terminer, remettre à l'état de début (D-M13, D-M15) | M8a | à faire |
+| M8b | Session en cours | journal dans sa colonne à gauche des onglets, pendant la session (maquette A, D-M26, D-M27), saisie rapide, fiches de la session, entrées automatiques, notes MJ, terminer, remettre à l'état de début (D-M13, D-M15) | M8a | à faire |
 | M8c | Haki, chronologie, recherche | entrées Haki (D-M9), chronologie des fiches, groupe « Journal » de Ctrl+K (D-M15) | M8b | à faire |
 | M9 | Finitions | raccourcis, thèmes, exports (Markdown, PDF, documents, D-M16), **1re release** | — | à faire |
 
@@ -349,3 +349,9 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - `model/session.ts` (Session, normalisation, ligne SQL, libellés, onglet `session:<id>`, reprise des notes : `parseSessionNoteTitle`, `planImportedNotes`) ; repository : `campaignId`, `listSessions`, `saveSession`, `deleteSession` ; `sessions.svelte.ts` ; `SessionView.svelte` (lecture / édition, enregistrement 400 ms, Ctrl+E) ; barre latérale : liste, « + Session », reprise des notes ; onglets de session (titre, icône, rouverts au démarrage).
 - Vérifié : check, 185 tests (5 nouveaux), build ; navigateur (import Notion restauré dans la base de dev) : 4 notes reprises → sessions 1 à 3 terminées, dates, « Idée pour la suite » en préparation de la session 3, notes archivées (15 → 11) ; nouvelle session 4 (édition, titre, date, scénario), édition gardée en changeant d'onglet, Ctrl+E, onglet rouvert après rechargement, lien du scénario, suppression en deux temps (onglet fermé). Console sans erreur.
 - Version 0.6.0 publiée avec l'accord du MJ (`7bb5a4f`, run de publication vert, cache `onepiece-mj-0.6.0-…` en ligne).
+
+### Session 21 · 2026-11-01 (retours du MJ sur la 0.6.0 : disposition)
+- Retours : « + Session » invisible selon la taille de l'écran ; largeur de la barre latérale réglable ; barre latérale et panneau Liens repliables ; question sur la colonne de liste (fenêtre ou onglet). Proposition challengée (fenêtre déconseillée), le MJ retient **la liste dans un onglet** (**D-M27**).
+- Cause du bouton caché : la zone défilante de la barre latérale (grille) s'élargissait au nom le plus long (« Fiche de personnage — … ») et défilait de côté ; corrigé (colonne bornée, nom coupé par …).
+- `model/listTab.ts` (onglets « liste:<type> », testés) ; `EntityList.svelte` réécrite en tableau pleine largeur (colonnes du registre, tri par en-tête, filtres visibles, arbre, état gardé par onglet) ; `disposition.svelte.ts` (largeur, barre latérale et Liens repliés, meta « disposition ») ; `App.svelte` : plus de colonne ni de volet de liste, deux dispositions (large, étroite), colonnes calculées, poignée de redimensionnement (souris, doigt, clavier, double-clic), rails « » « » ; barre latérale : bouton « « », type de l'onglet actif surligné ; onglets de liste dans la barre d'onglets.
+- Vérifié : check, 187 tests (2 nouveaux), build ; navigateur (import restauré dans la base de dev) : onglet Personnages (109 lignes, 7 colonnes, tri par Rôle, filtre La Marine 24 / 109 gardé après un aller-retour sur une fiche), poignée (glisser, borne 420, flèche, double-clic), barre latérale et Liens repliés puis gardés après rechargement, barre latérale à 180 px sans défilement de côté et « + Session » visible, disposition étroite à 800 px (menu ☰ → onglet Lieux). Console sans erreur de l'app.

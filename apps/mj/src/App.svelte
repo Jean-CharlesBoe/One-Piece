@@ -6,7 +6,8 @@
   import { catalog } from './lib/catalog.svelte'
   import BackupBanner from './lib/components/BackupBanner.svelte'
   import Drawer from './lib/components/Drawer.svelte'
-  import EntityList, { type ListMode } from './lib/components/EntityList.svelte'
+  import EntityList from './lib/components/EntityList.svelte'
+  import { listModeOfTab, listTab, type ListMode } from './lib/model/listTab'
   import EntityView from './lib/components/EntityView.svelte'
   import LinksPanel from './lib/components/LinksPanel.svelte'
   import MergeForm from './lib/components/MergeForm.svelte'
@@ -29,23 +30,37 @@
   import { tabs } from './lib/tabs.svelte'
   import { parseSessionNoteTitle, planImportedNotes, sessionIdOfTab, sessionTab, type ImportedNote } from './lib/model/session'
   import { sessions } from './lib/sessions.svelte'
+  import { clampWidth, disposition, SIDEBAR_DEFAULT } from './lib/disposition.svelte'
 
-  // Disposition selon la largeur de la fenêtre (D-M10) :
-  // ≥ 1280 px : barre latérale + liste, fiche, Liens ; 900 à 1279 px : la liste passe en volet ;
-  // < 900 px : la fiche seule (ou la liste), barre latérale et Liens en volets.
-  type Layout = 'trois' | 'deux' | 'une'
-  const wide = matchMedia('(min-width: 1280px)')
+  // Disposition (D-M10, D-M27) : plus de colonne de liste, les listes s'ouvrent dans un onglet.
+  // ≥ 900 px : barre latérale (largeur réglable, repliable), onglets, panneau Liens (repliable) ;
+  // < 900 px : les onglets seuls, barre latérale et Liens en volets.
+  type Layout = 'large' | 'une'
   const medium = matchMedia('(min-width: 900px)')
-  const computeLayout = (): Layout => (wide.matches ? 'trois' : medium.matches ? 'deux' : 'une')
+  const computeLayout = (): Layout => (medium.matches ? 'large' : 'une')
   let layout = $state<Layout>(computeLayout())
 
+  /** Colonnes : barre latérale + poignée (ou rail), onglets, Liens (ou rail) ; une seule en disposition étroite. */
+  const gridColumns = $derived(
+    layout === 'une'
+      ? 'minmax(0, 1fr)'
+      : [
+          disposition.sidebarOpen ? `${disposition.sidebarWidth}px 6px` : '40px',
+          'minmax(0, 1fr)',
+          disposition.linksOpen ? '280px' : '40px',
+        ].join(' '),
+  )
+
+  /** Liste affichée par l'onglet actif, ou null. Sert aussi au type proposé pour une nouvelle fiche. */
+  const currentList = $derived(listModeOfTab(tabs.current ?? ''))
+  /** Dernière liste ouverte (type proposé par « Nouvelle fiche »). */
   let mode = $state<ListMode>('personnage')
+  $effect(() => {
+    if (currentList) mode = currentList
+  })
   let error = $state('')
-  /** Une colonne : la liste est affichée à la place de la fiche (« ← Liste »), les onglets restent ouverts. */
-  let listView = $state(false)
 
   let navOpen = $state(false)
-  let listOpen = $state(false)
   let linksOpen = $state(false)
   let settingsOpen = $state(false)
   let newOpen = $state(false)
@@ -83,6 +98,10 @@
           await opened.close()
           break
         }
+        if (listModeOfTab(id)) {
+          await opened.close()
+          break
+        }
         const sid = sessionIdOfTab(id)
         if (sid) {
           if (sessions.byId.has(sid)) {
@@ -108,14 +127,12 @@
   /** Ouvre la fiche dans un nouvel onglet, ou revient sur son onglet si elle est déjà ouverte (D-M21). */
   async function openEntity(id: string) {
     tabs.open(id)
-    navOpen = listOpen = false
-    listView = false
+    navOpen = false
     await show()
   }
 
   async function activateTab(i: number) {
     tabs.activate(i)
-    listView = false
     await show()
   }
 
@@ -125,7 +142,6 @@
 
   async function cycleTab(delta: number) {
     tabs.cycle(delta)
-    listView = false
     await show()
   }
 
@@ -137,11 +153,29 @@
     if (id && opened.entity?.id !== id) opened.forgetEditing(id)
   }
 
+  /** Glisser la poignée de la barre latérale : nouvelle largeur (bornée), retenue pour cet appareil. */
+  function startResize(e: PointerEvent) {
+    const handle = e.currentTarget as HTMLElement
+    try {
+      handle.setPointerCapture(e.pointerId)
+    } catch {
+      // Pointeur déjà relâché : le glisser continue sans capture.
+    }
+    const left = handle.parentElement!.getBoundingClientRect().left
+    const move = (ev: PointerEvent) => (disposition.sidebarWidth = clampWidth(ev.clientX - left))
+    const up = () => {
+      handle.removeEventListener('pointermove', move)
+      handle.removeEventListener('pointerup', up)
+      disposition.setWidth(disposition.sidebarWidth)
+    }
+    handle.addEventListener('pointermove', move)
+    handle.addEventListener('pointerup', up)
+  }
+
+  /** Clic sur un type, les archives ou les doublons : son onglet de liste (ouvert ou retrouvé, D-M27). */
   function selectMode(m: ListMode) {
     mode = m
-    navOpen = false
-    if (layout === 'deux') listOpen = true
-    if (layout === 'une') listView = true
+    void openEntity(listTab(m))
   }
 
   function newEntity(d: Partial<Draft> = {}) {
@@ -173,7 +207,6 @@
         const label = d.fromLink
         await opened.apply(src => (src.bodyMd = resolveMissing(src.bodyMd, label, e.id)))
       }
-      if (mode !== 'archives' && mode !== 'doublons') mode = type
       await openEntity(e.id)
     } catch (err) {
       fail(err)
@@ -260,10 +293,7 @@
         errors.push(err instanceof Error ? err.message : String(err))
       }
     }
-    if (last) {
-      if (mode !== 'archives' && mode !== 'doublons') mode = 'document'
-      await openEntity(last)
-    }
+    if (last) await openEntity(last)
     // Après l'ouverture (qui efface le message d'erreur précédent).
     error = errors.join(' ')
   }
@@ -348,8 +378,7 @@
 
   // Les volets n'ont plus lieu d'être quand la fenêtre s'élargit.
   $effect(() => {
-    if (layout === 'trois') navOpen = listOpen = linksOpen = false
-    if (layout === 'deux') navOpen = false
+    if (layout === 'large') navOpen = linksOpen = false
   })
 
   /** Champ de saisie, liste déroulante ou éditeur de texte : « / » y reste une lettre. */
@@ -394,7 +423,6 @@
 
   onMount(() => {
     const onResize = () => (layout = computeLayout())
-    wide.addEventListener('change', onResize)
     medium.addEventListener('change', onResize)
     // App en arrière-plan ou fermée : enregistrer sans attendre.
     const onHide = () => {
@@ -413,16 +441,20 @@
     catalog
       .load()
       .then(() => sessions.load())
-      .then(() => tabs.load(id => (sessionIdOfTab(id) ? sessions.byId.has(sessionIdOfTab(id)!) : catalog.byId.has(id))))
+      .then(() =>
+        tabs.load(id =>
+          listModeOfTab(id) ? true : sessionIdOfTab(id) ? sessions.byId.has(sessionIdOfTab(id)!) : catalog.byId.has(id),
+        ),
+      )
       .then(show)
       .catch(fail)
     recents.load().catch(fail)
     media.load().catch(fail)
+    disposition.load().catch(fail)
     // Sauvegarde automatique et relais entre appareils (M4, D-M18).
     backup.start().catch(fail)
 
     return () => {
-      wide.removeEventListener('change', onResize)
       medium.removeEventListener('change', onResize)
       document.removeEventListener('visibilitychange', onHide)
     }
@@ -437,7 +469,7 @@
 
 {#snippet sidebar()}
   <Sidebar
-    selected={mode}
+    selected={currentList}
     onSelect={selectMode}
     onOpen={openEntity}
     onOpenSession={openSession}
@@ -446,17 +478,7 @@
     onImportNotes={importSessionNotes}
     onSettings={() => (settingsOpen = true)}
     onSearch={() => ((navOpen = false), (searchOpen = true))}
-  />
-{/snippet}
-
-{#snippet list()}
-  <EntityList
-    {mode}
-    selectedId={entity?.id ?? null}
-    onOpen={openEntity}
-    onCreate={() => newEntity()}
-    onMerge={(a, b) => startMerge(a, b)}
-    onImport={importFiles}
+    onCollapse={layout === 'large' ? () => disposition.toggleSidebar() : undefined}
   />
 {/snippet}
 
@@ -464,46 +486,72 @@
   <LinksPanel onOpen={openEntity} onAddChild={addChild} />
 {/snippet}
 
-<div class="app {layout}">
-  {#if layout !== 'une'}
-    <div class="col sidebar">{@render sidebar()}</div>
-  {/if}
-  {#if layout === 'trois'}
-    <div class="col list">{@render list()}</div>
+<div class="app {layout}" style:grid-template-columns={gridColumns}>
+  {#if layout === 'large'}
+    {#if disposition.sidebarOpen}
+      <div class="col sidebar">{@render sidebar()}</div>
+      <!-- Poignée : glisser pour régler la largeur (double-clic : largeur par défaut ; flèches au clavier).
+           Séparateur focalisable avec valeur : motif ARIA « window splitter », que Svelte ne reconnaît pas. -->
+      <!-- svelte-ignore a11y_no_noninteractive_tabindex, a11y_no_noninteractive_element_interactions -->
+      <div
+        class="resizer"
+        role="separator"
+        aria-orientation="vertical"
+        aria-label="Largeur de la barre latérale"
+        aria-valuemin={180}
+        aria-valuemax={420}
+        aria-valuenow={disposition.sidebarWidth}
+        tabindex="0"
+        onpointerdown={startResize}
+        ondblclick={() => disposition.setWidth(SIDEBAR_DEFAULT)}
+        onkeydown={e => {
+          if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') {
+            e.preventDefault()
+            disposition.setWidth(disposition.sidebarWidth + (e.key === 'ArrowLeft' ? -10 : 10))
+          }
+        }}
+      ></div>
+    {:else}
+      <div class="rail">
+        <button onclick={() => disposition.toggleSidebar()} aria-label="Ouvrir la barre latérale" title="Ouvrir la barre latérale">»</button>
+        <button onclick={() => (searchOpen = true)} aria-label="Rechercher" title="Rechercher (Ctrl+K)">⌕</button>
+      </div>
+    {/if}
   {/if}
 
   <main class="col main">
-    {#if layout !== 'trois'}
+    {#if layout === 'une'}
       <div class="bar">
-        {#if layout === 'une'}
-          <button onclick={() => (navOpen = true)} aria-label="Menu">☰</button>
-          {#if entity && !listView}<button onclick={() => (listView = true)}>← Liste</button>{/if}
-        {:else}
-          <button onclick={() => (listOpen = true)}>☰ Liste</button>
-        {/if}
+        <button onclick={() => (navOpen = true)} aria-label="Menu">☰</button>
         <span class="spacer"></span>
-        {#if layout === 'une' && entity && !listView}<button onclick={() => (linksOpen = true)}>Liens</button>{/if}
+        {#if entity}<button onclick={() => (linksOpen = true)}>Liens</button>{/if}
       </div>
     {/if}
     <BackupBanner onSettings={() => (settingsOpen = true)} />
-    {#if !(layout === 'une' && listView)}
-      <TabBar
-        compact={layout === 'une'}
-        onActivate={activateTab}
-        onClose={closeTab}
-        onMove={moveTab}
-        onNew={() => (searchOpen = true)}
-      />
-    {/if}
+    <TabBar
+      compact={layout === 'une'}
+      onActivate={activateTab}
+      onClose={closeTab}
+      onMove={moveTab}
+      onNew={() => (searchOpen = true)}
+    />
     {#if error}<p class="error" role="alert">{error}</p>{/if}
     <div class="content">
-      {#if layout === 'une' && (listView || (!entity && !currentSession))}
-        {@render list()}
+      {#if currentList}
+        {#key currentList}
+          <EntityList
+            mode={currentList}
+            onOpen={openEntity}
+            onCreate={() => newEntity()}
+            onMerge={(a, b) => startMerge(a, b)}
+            onImport={importFiles}
+          />
+        {/key}
       {:else if currentSession}
         {#key currentSession}
           <SessionView bind:this={sessionView} id={currentSession} onOpen={openEntity} onDeleted={closeSessionTab} />
         {/key}
-      {:else}
+      {:else if entity || layout === 'large'}
         <EntityView
           onOpen={openEntity}
           onCreateFromLink={label => newEntity({ title: label, type: 'note', fromLink: label })}
@@ -512,17 +560,28 @@
           onDelete={deleteOpened}
           onMerge={id => startMerge(id)}
         />
+      {:else}
+        <p class="hello">Ouvre le menu ☰ pour choisir un type de fiches, ou cherche une fiche (Ctrl+K).</p>
       {/if}
     </div>
   </main>
 
-  {#if layout !== 'une'}
-    <div class="col links">{@render links()}</div>
+  {#if layout === 'large'}
+    {#if disposition.linksOpen}
+      <div class="col links">
+        <button class="collapse-links" onclick={() => disposition.toggleLinks()} aria-label="Replier le panneau Liens" title="Replier le panneau Liens">»</button>
+        {@render links()}
+      </div>
+    {:else}
+      <div class="rail right">
+        <button onclick={() => disposition.toggleLinks()} aria-label="Ouvrir le panneau Liens" title="Ouvrir le panneau Liens">«</button>
+        <span class="rail-label">Liens</span>
+      </div>
+    {/if}
   {/if}
 </div>
 
 <Drawer bind:open={navOpen} label="Navigation">{@render sidebar()}</Drawer>
-<Drawer bind:open={listOpen} label="Liste des fiches">{@render list()}</Drawer>
 <Drawer bind:open={linksOpen} side="right" label="Liens">{@render links()}</Drawer>
 
 <SearchPalette bind:open={searchOpen} onOpen={openEntity} />
@@ -565,11 +624,62 @@
     height: 100dvh;
     overflow: hidden;
   }
-  .app.trois {
-    grid-template-columns: 230px 300px minmax(0, 1fr) 280px;
+  /* Barre latérale (ou rail), poignée, onglets, Liens (ou rail). */
+  .resizer {
+    position: relative;
+    z-index: 2;
+    cursor: col-resize;
+    touch-action: none;
   }
-  .app.deux {
-    grid-template-columns: 230px minmax(0, 1fr) 260px;
+  .resizer:hover,
+  .resizer:focus-visible {
+    background: color-mix(in srgb, var(--accent) 40%, transparent);
+  }
+  .rail {
+    width: 40px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding-top: 8px;
+    border-right: 1px solid var(--line);
+  }
+  .rail.right {
+    border-right: none;
+    border-left: 1px solid var(--line);
+  }
+  .rail button {
+    min-height: 40px;
+    min-width: 34px;
+    padding: 0;
+    border: none;
+    background: none;
+    font-size: 1.1rem;
+  }
+  .rail-label {
+    writing-mode: vertical-rl;
+    color: var(--muted);
+    font-size: 0.85rem;
+    letter-spacing: 0.08em;
+  }
+  .links {
+    position: relative;
+  }
+  .collapse-links {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    min-height: 32px;
+    min-width: 32px;
+    padding: 0;
+    border: none;
+    background: none;
+    color: var(--muted);
+    z-index: 1;
+  }
+  .hello {
+    margin: 20px;
+    color: var(--muted);
   }
   .app.une {
     grid-template-columns: minmax(0, 1fr);
@@ -578,7 +688,6 @@
     min-height: 0;
     min-width: 0;
   }
-  .list,
   .main {
     background: var(--surface);
     border-left: 1px solid var(--line);

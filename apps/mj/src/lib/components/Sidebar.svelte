@@ -6,7 +6,7 @@
   import { tabs } from '../tabs.svelte'
   import BackupStatus from './BackupStatus.svelte'
   import { ENTITY_TYPES, TYPE_DEFS } from '../model/types'
-  import type { ListMode } from './EntityList.svelte'
+  import type { ListMode } from '../model/listTab'
 
   // Barre latérale (cahier MJ §3) : recherche (ouvre la palette, Ctrl+K), types de fiches, doublons, archives,
   // épinglés, récentes, sessions (M8), réglages.
@@ -16,12 +16,14 @@
     onOpen,
     onSettings,
     onSearch,
+    onCollapse,
     onOpenSession,
     onNewSession,
     importableNotes,
     onImportNotes,
   }: {
-    selected: ListMode
+    /** Liste de l'onglet actif (surlignée), ou null. */
+    selected: ListMode | null
     onSelect: (mode: ListMode) => void
     onOpen: (id: string) => void
     onOpenSession: (id: string) => void
@@ -31,6 +33,8 @@
     onImportNotes: () => Promise<void>
     onSettings: () => void
     onSearch: () => void
+    /** Replier la barre latérale (disposition large seulement, D-M27). */
+    onCollapse?: () => void
   } = $props()
 
   const counts = $derived(
@@ -68,7 +72,10 @@
 <nav class="sidebar" aria-label="Navigation">
   <header>
     <h1>One Piece</h1>
-    <button class="gear" onclick={onSettings} aria-label="Réglages">⚙</button>
+    <span class="head-tools">
+      <button class="gear" onclick={onSettings} aria-label="Réglages">⚙</button>
+      {#if onCollapse}<button class="gear" onclick={onCollapse} aria-label="Replier la barre latérale" title="Replier la barre latérale">«</button>{/if}
+    </span>
   </header>
 
   <button class="search" onclick={onSearch} title="Recherche globale (Ctrl+K ou /)">
@@ -238,6 +245,10 @@
     margin: 0;
     font-size: 1.2rem;
   }
+  .head-tools {
+    display: flex;
+    align-items: center;
+  }
   .gear {
     border: none;
     background: none;
@@ -265,7 +276,10 @@
     flex: 1;
     min-height: 0;
     overflow-y: auto;
+    /* Jamais de défilement horizontal : un nom trop long est coupé (…), il n'élargit pas la colonne. */
+    overflow-x: hidden;
     display: grid;
+    grid-template-columns: minmax(0, 1fr);
     align-content: start;
     gap: 16px;
   }
@@ -302,6 +316,7 @@
   }
   .name {
     flex: 1;
+    min-width: 0;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;

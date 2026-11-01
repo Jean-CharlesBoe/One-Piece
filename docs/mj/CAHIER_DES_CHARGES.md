@@ -25,19 +25,20 @@ Deux usages :
 ## 3. Disposition générale
 
 ```
-┌───────────┬──────────────────────────┬──────────────────────┐
-│ Barre     │  Liste (filtrée)         │  Fiche ouverte        │
-│ latérale  │  ou résultats de         │  (lecture / édition)  │
-│           │  recherche               │                       │
-│ Recherche │                          │  + panneau Liens :    │
-│ Types     │                          │  relations, mentionné │
-│ Épinglés  │                          │  dans, chronologie    │
-│ Sessions  │                          │                       │
-│ Sauvegarde│                          │                       │
-└───────────┴──────────────────────────┴──────────────────────┘
+┌───────────┬┬──────────────────────────────────────┬──────────────┐
+│ Barre     ││ Onglets : Personnages │ Drake │ …  + │ Panneau      │
+│ latérale  ││──────────────────────────────────────│ Liens :      │
+│ Recherche ││ onglet de liste (tableau, filtres,   │ relations,   │
+│ Types     ││ tri) ou fiche (lecture / édition)    │ mentionné    │
+│ Épinglés  ││ ou session                           │ dans,        │
+│ Sessions  ││                                      │ chronologie  │
+│ Sauvegarde││                                      │              │
+└───────────┴┴──────────────────────────────────────┴──────────────┘
+  « » replie     ↔ largeur réglable                   « » replie
 ```
-- **Largeur de fenêtre** (D-M10) : ≥ 1280 px → 3 colonnes ci-dessus ; 900 à 1279 px → 2 colonnes, la liste se replie (ouverte à la demande) ; < 900 px → la fiche seule, barre latérale, liste et panneau Liens en volets. Référence de vérification : 1366 × 768.
-- La liste se masque quand on navigue de fiche en fiche (mode deux colonnes).
+- **Listes dans des onglets** (D-M27) : un clic sur un type de la barre latérale (ou Archives, Doublons probables) ouvre son **onglet de liste**, ou y revient. Pleine largeur : tableau (nom et alias, colonnes des propriétés du sous-titre et des filtres, date de modification), **tri** en cliquant un en-tête, filtres par nom et par propriété toujours visibles, vue **Arbre** des lieux et des scénarios ; filtres et tri gardés en passant d'un onglet à l'autre. Un clic sur une ligne ouvre la fiche dans un nouvel onglet (D-M21).
+- **Barre latérale** : largeur réglable en glissant sa bordure (180 à 420 px ; double-clic : largeur par défaut ; flèches au clavier) ; **repliable** (« « ») en un rail de 40 px (« » » pour la rouvrir, ⌕ pour chercher). **Panneau Liens** repliable de même. Largeur et état retenus pour l'appareil.
+- **Largeur de fenêtre** (D-M10, D-M27) : ≥ 900 px → disposition ci-dessus ; < 900 px → les onglets seuls (une liste déroulante), barre latérale et panneau Liens en volets (☰, « Liens »). Référence de vérification : 1366 × 768.
 - **Onglets de fiches** (Q-M1, D-M14, D-M21) : **chaque fiche ouverte a son onglet**. Un clic sur une fiche (liste, recherche, lien du texte, panneau Liens, barre latérale) l'ouvre dans un nouvel onglet, placé juste après l'onglet actif, ou revient sur son onglet si elle est déjà ouverte. **Aucun onglet ne se ferme tout seul** : seulement par son ✕ ou d'un clic molette (ou quand sa fiche est supprimée) ; pas de limite de nombre. Pas d'historique Précédent / Suivant. Barre d'onglets au-dessus de la fiche, **comme dans un navigateur** (D-M20) : onglets côte à côte qui se partagent la largeur et rétrécissent ensemble, d'au moins 40 px de haut ; onglet étroit : début du titre seulement, ✕ sur l'onglet actif ; au-delà de leur largeur minimale, la barre défile (molette ou doigt) en gardant l'onglet actif visible ; on les **réordonne en les glissant** (souris ou doigt) ; **« + »** ouvre la recherche. Onglets rouverts au démarrage. Une fiche laissée **en édition** pour un autre onglet s'y retrouve à son retour (avec son « Annuler ») ; fermer son onglet la rouvrira en lecture. En une colonne, les onglets se replient en liste déroulante.
 - **Souris et doigt** (Q-M1) : le Chromebook s'utilise des deux façons. Cibles d'au moins 40 px, aucune action accessible seulement au survol, appui long = équivalent du clic droit.
 
