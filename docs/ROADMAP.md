@@ -1,6 +1,6 @@
 # Roadmap
 
-Étape en cours : **appli MJ, M9 (finitions, exports, 1re release)** — faite dans le navigateur, version 1.0.0 prête (non publiée) ; M8b et M8c vérifiées par le MJ le 2026-11-01 (v0.9.0). Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.8.0) ; M0 à M8a closes (M8a et D-M27 vérifiées par le MJ le 2026-11-01). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
+Étape en cours : **appli MJ, M9 (finitions, exports, 1re release)** — **1.0.0 publiée** (Release `mj-v1.0.0`), à vérifier par le MJ ; M8b et M8c vérifiées par le MJ le 2026-11-01 (v0.9.0). Appli MJ publiée sur https://jean-charlesboe.github.io/One-Piece/ (v0.8.0) ; M0 à M8a closes (M8a et D-M27 vérifiées par le MJ le 2026-11-01). Vivre Card v0.1.0 est publiée ; il lui reste l'icône (dessin à venir, Q-T4).
 
 Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans Nom, livrable vite aux joueurs), puis l'appli MJ. Les deux branches peuvent avancer en parallèle après C1.
 
@@ -42,7 +42,7 @@ Ordre conseillé : socle commun, puis **l'appli joueur d'abord** (proche de Sans
 | M8a | Sessions | campagne unique, liste des sessions, fiche de session (numéro, titre, date, scénario, statut, préparation, résumé), reprise des notes de session importées (D-M22, D-M26) | — | fait (vérifié par le MJ) |
 | M8b | Session en cours | journal dans sa colonne à gauche des onglets, pendant la session (maquette A, D-M26, D-M27), saisie rapide, fiches de la session, entrées automatiques, notes MJ, terminer, remettre à l'état de début (D-M13, D-M15) | M8a | fait (D-M28 ; vérifié par le MJ) |
 | M8c | Haki, chronologie, recherche | entrées Haki (D-M9), chronologie des fiches, groupe « Journal » de Ctrl+K (D-M15) | M8b | fait (D-M29 ; vérifié par le MJ) |
-| M9 | Finitions | raccourcis, thèmes, exports (Markdown, PDF, documents, D-M16), **1re release** | — | fait (navigateur, D-M30) ; release 1.0.0 à publier |
+| M9 | Finitions | raccourcis, thèmes, exports (Markdown, PDF, documents, D-M16), **1re release** | — | fait (D-M30) ; 1.0.0 publiée, à vérifier par le MJ |
 
 Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour pouvoir vérifier le résultat dans l'app ; on peut l'avancer juste après M4 pour travailler sur les vraies données le plus tôt possible.
 
@@ -376,4 +376,5 @@ Remarque : l'import Notion (M5) arrive après les fiches et la sauvegarde pour p
 - Réponses du MJ avant M9 (**D-M30**) : PDF par l'impression de Chrome ; Markdown copié ou téléchargé ; release 1.0.0 avec tag `mj-v1.0.0` et Release GitHub ; pas d'autre finition.
 - `model/export.ts` (`entityMarkdown`, `bodyMarkdown`, `markdownFileName`, testés) ; `EntityView` : menu « ⋯ » → Copier en Markdown, Télécharger .md, Imprimer / PDF…, feuille d'impression ; `App.svelte` : impression (seul le contenu de l'onglet, thème clair le temps de l'impression), Ctrl+J ; Réglages : aide des raccourcis ; `gameBlock.ts` reprend les types de Haki des règles communes (plus de doublon) ; `.github/release-notes-mj.md`, RELEASE.md (tag `mj-vX.Y.Z`) ; version 1.0.0.
 - Vérifié : check, 206 tests (3 nouveaux), build ; navigateur : menu de la fiche d'Osmo, « Télécharger .md » (fichier « Osmo.md » : propriétés, texte, image en mention) ; rendu d'impression (règles `print` activées à la main : fiche seule, en clair, thème sombre rétabli après) ; Ctrl+J en large (curseur dans la saisie) et en étroit à 800 px (volet Journal ouvert) ; en étroit, un clic dans la chronologie ouvre le volet Journal sur l'entrée — corrigé : le volet Liens restait ouvert par-dessus ; aide des raccourcis. Console sans erreur. Non vérifié : « Copier en Markdown » (refusé par le navigateur intégré, sans focus), la vraie fenêtre d'impression de Chrome.
-- Reste : publication de la 1.0.0, tag et Release GitHub (accord du MJ) ; vérification par le MJ ; icône de Vivre Card (Q-T4).
+- Version 1.0.0 publiée avec l'accord du MJ (`cb093c9`, run de publication vert, cache `onepiece-mj-1.0.0-…` en ligne) ; tag `mj-v1.0.0` et Release GitHub « One Piece (MJ) 1.0.0 ». Le badge « Latest » est laissé à Vivre Card v0.1.0 (la page des Releases sert d'abord aux joueurs) : à refaire à chaque Release du MJ (`--latest=false`).
+- Reste : vérification de la 1.0.0 par le MJ ; icône de Vivre Card (Q-T4).

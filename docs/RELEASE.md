@@ -112,11 +112,11 @@ gh workflow run mj.yml --ref main
 ```
 Mettre d'abord à jour la version dans `apps/mj/package.json` (affichée dans Réglages › À propos). Prérequis, une seule fois : GitHub › Settings › Pages › Source : **GitHub Actions**.
 
-**Release GitHub** (versions marquantes, à partir de 1.0.0, D-M30) : après la publication, poser le tag `mj-vX.Y.Z` sur le commit publié et créer la Release avec les notes de [.github/release-notes-mj.md](../.github/release-notes-mj.md) (aucun fichier joint : l'appli reste sur GitHub Pages) :
+**Release GitHub** (versions marquantes, à partir de 1.0.0, D-M30) : après la publication, poser le tag `mj-vX.Y.Z` sur le commit publié et créer la Release avec les notes de [.github/release-notes-mj.md](../.github/release-notes-mj.md) (aucun fichier joint : l'appli reste sur GitHub Pages). `--latest=false` laisse le badge « Latest » à Vivre Card, pour les joueurs qui ouvrent la page des Releases :
 ```bash
 git tag mj-v1.0.0
 git push origin mj-v1.0.0
-gh release create mj-v1.0.0 --title "One Piece (MJ) 1.0.0" --notes-file .github/release-notes-mj.md
+gh release create mj-v1.0.0 --title "One Piece (MJ) 1.0.0" --notes-file .github/release-notes-mj.md --latest=false
 ```
 
 Après une publication, l'app installée se met à jour d'elle-même : la nouvelle version est téléchargée au premier lancement en ligne et prend effet au lancement suivant.
