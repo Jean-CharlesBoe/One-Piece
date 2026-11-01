@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { clampD100, HAKI_TYPES, hakiEffect, parseIntInput, type HakiType } from '@onepiece/core'
   import { tick } from 'svelte'
   import { catalog } from '../catalog.svelte'
   import { renderMarkdown } from '../markdown'
@@ -10,6 +11,7 @@
   // Journal de la session en cours (M8b, cahier §5.2, maquette A : colonne à gauche des onglets, D-M26, D-M27).
   // Saisie rapide en bas (Entrée, [[ pour lier une fiche), type d'entrée au choix ; entrées automatiques grisées
   // et masquables ; chaque entrée se supprime (deux clics). Un lien ouvre la fiche dans un nouvel onglet.
+  // Type Haki (M8c, D-M9) : PJ, type, résultat du D100 et effet de la table au lieu du texte libre.
   let { onOpen, onFinish, onOpenSession }: { onOpen: (id: string) => void; onFinish: () => Promise<void>; onOpenSession: (id: string) => void } = $props()
 
   let kind = $state<JournalKind>('evenement')
@@ -29,6 +31,42 @@
     if (n > count) void tick().then(() => list?.scrollTo({ top: list.scrollHeight }))
     count = n
   })
+
+  // Entrée demandée (chronologie, recherche) : on y descend et on la surligne quelques secondes.
+  let flash = $state<string | null>(null)
+  $effect(() => {
+    const t = play.target
+    if (!t || t.sessionId !== play.running?.id) return
+    if (play.entries.some(e => e.id === t.entryId && e.kind === 'auto')) hideAuto = false
+    flash = t.entryId
+    void tick().then(() => document.getElementById(`jp-${t.entryId}`)?.scrollIntoView({ block: 'center' }))
+    // Demande servie : oubliée, pour ne pas resurligner l'entrée au prochain affichage.
+    const timer = setTimeout(() => {
+      flash = null
+      if (play.target?.seq === t.seq) play.target = null
+    }, 2500)
+    return () => clearTimeout(timer)
+  })
+
+  // Jet de Haki : PJ (rôle PJ), type, D100 ; le PJ choisi reste proposé pour le jet suivant.
+  const pjs = $derived(catalog.active.filter(e => e.type === 'personnage' && e.props.role === 'PJ'))
+  let pjId = $state('')
+  let hakiType = $state<HakiType>('observation')
+  let d100 = $state('')
+  let comment = $state('')
+  const roll = $derived(parseIntInput(d100))
+  const preview = $derived(roll !== null && roll >= 1 && roll <= 100 ? hakiEffect(hakiType, roll) : null)
+  $effect(() => {
+    if (!pjs.some(p => p.id === pjId)) pjId = pjs[0]?.id ?? ''
+  })
+
+  async function submitHaki() {
+    if (!pjId || !preview || roll === null) return
+    await play.addHaki({ pjId, type: hakiType, resultat: clampD100(roll) }, comment)
+    d100 = ''
+    comment = ''
+    kind = 'evenement'
+  }
 
   async function submit(text: string) {
     await play.add(kind, text)
@@ -79,7 +117,7 @@
     <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -- les liens du texte sont des <a> -->
     <ol class="entries" bind:this={list} onclick={onClick}>
       {#each shown as e (e.id)}
-        <li class:auto={e.kind === 'auto'}>
+        <li id="jp-{e.id}" class:auto={e.kind === 'auto'} class:flash={flash === e.id}>
           <span class="time">{timeLabel(e.at)}</span>
           <div class="text">
             {#if e.kind !== 'evenement' && e.kind !== 'auto'}<span class="kind k-{e.kind}">{kindLabel(e.kind)}</span>{/if}
@@ -101,9 +139,34 @@
           <button role="radio" aria-checked={kind === k} class:on={kind === k} onclick={() => (kind = k)}>{l}</button>
         {/each}
       </div>
-      {#key s.id}
-        <MarkdownEditor value="" selfId="" compact onChange={() => {}} onSubmit={submit} hint="Ce qui se passe… [[ pour lier une fiche · Entrée pour ajouter" />
-      {/key}
+      {#if kind === 'haki'}
+        <form class="haki" onsubmit={ev => (ev.preventDefault(), void submitHaki())}>
+          {#if pjs.length}
+            <label><span class="label">PJ</span>
+              <select bind:value={pjId}>{#each pjs as p (p.id)}<option value={p.id}>{p.title}</option>{/each}</select>
+            </label>
+            <div class="kinds" role="radiogroup" aria-label="Type de Haki">
+              {#each HAKI_TYPES as [k, l] (k)}
+                <button type="button" role="radio" aria-checked={hakiType === k} class:on={hakiType === k} onclick={() => (hakiType = k)}>{l}</button>
+              {/each}
+            </div>
+            <div class="row">
+              <label class="d100"><span class="label">D100</span><input bind:value={d100} inputmode="numeric" maxlength="3" placeholder="1–100" aria-label="Résultat du D100" /></label>
+              <label class="comment"><span class="label">Commentaire</span><input bind:value={comment} maxlength="300" placeholder="facultatif" /></label>
+            </div>
+            <p class="effect" class:best={preview?.best} aria-live="polite">
+              {#if preview}{preview.range} : {preview.effet}{preview.best ? ' · meilleur résultat' : ''}{:else if d100.trim()}Résultat de 1 à 100.{:else}Résultat du D100 lancé par le MJ.{/if}
+            </p>
+            <button class="primary" disabled={!preview}>Ajouter le jet</button>
+          {:else}
+            <p class="effect">Aucun personnage au rôle PJ : renseigne le rôle sur leur fiche.</p>
+          {/if}
+        </form>
+      {:else}
+        {#key s.id}
+          <MarkdownEditor value="" selfId="" compact onChange={() => {}} onSubmit={submit} hint="Ce qui se passe… [[ pour lier une fiche · Entrée pour ajouter" />
+        {/key}
+      {/if}
     </div>
   </section>
 {/if}
@@ -188,6 +251,10 @@
   .entries li:hover {
     background: var(--bg);
   }
+  .entries li.flash {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+    transition: background 0.3s;
+  }
   .entries li.auto {
     color: var(--muted);
     font-size: 0.88rem;
@@ -243,6 +310,36 @@
   .k-note {
     border-color: var(--endurance);
     color: var(--endurance);
+  }
+  .k-haki {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+  .haki {
+    display: grid;
+    gap: 6px;
+  }
+  .haki label {
+    display: grid;
+    gap: 2px;
+  }
+  .haki .row {
+    display: grid;
+    grid-template-columns: 80px minmax(0, 1fr);
+    gap: 6px;
+  }
+  .haki input,
+  .haki select {
+    min-height: 36px;
+  }
+  .effect {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--muted);
+  }
+  .effect.best {
+    color: var(--up);
+    font-weight: 600;
   }
   .del {
     min-height: 28px;

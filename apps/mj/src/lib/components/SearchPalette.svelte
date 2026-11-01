@@ -2,26 +2,37 @@
   import { onBack } from '@onepiece/core'
   import { catalog } from '../catalog.svelte'
   import type { CatalogEntry } from '../model/entity'
+  import { kindLabel, timeLabel } from '../model/journal'
+  import { plainText } from '../model/links'
   import { subtitle } from '../model/props'
   import { rankScore } from '../model/search'
   import { ENTITY_TYPES, TYPE_DEFS } from '../model/types'
   import { recents } from '../recents.svelte'
-  import { getRepository } from '../storage/repository'
+  import { getRepository, type JournalHit } from '../storage/repository'
 
   // Recherche globale (cahier §4.5, Ctrl+K ou « / ») : titres, alias, propriétés et texte, résultats groupés
   // par type avec un extrait surligné ; sans recherche, les fiches récentes. Clavier : ↑ ↓, Entrée ; Échap ferme.
+  // Sous les fiches, le groupe « Journal » (D-M15) : 5 entrées et « Voir tout » ; un clic ouvre la session sur l'entrée.
   let {
     open = $bindable(false),
     onOpen,
+    onOpenEntry,
   }: {
     open: boolean
     onOpen: (id: string) => void
+    onOpenEntry: (sessionId: string, entryId: string) => void
   } = $props()
 
   interface Row {
     entry: CatalogEntry
     snippet: string
   }
+  /** Ligne affichée : une fiche, une entrée du journal ou le bouton « Voir tout ». */
+  type Item = { kind: 'fiche'; row: Row } | { kind: 'journal'; hit: JournalHit } | { kind: 'plus'; count: number }
+  const JOURNAL_SHOWN = 5
+
+  let journal = $state.raw<JournalHit[]>([])
+  let allJournal = $state(false)
 
   let dlg: HTMLDialogElement
   let input = $state<HTMLInputElement | null>(null)
@@ -54,14 +65,19 @@
         const e = catalog.byId.get(id)
         return e && !e.archived ? [{ entry: e, snippet: '' }] : []
       })
+      journal = []
+      allJournal = false
       active = 0
       return
     }
     searching = true
     const t = setTimeout(async () => {
       try {
-        const hits = await (await getRepository()).search(q)
+        const repo = await getRepository()
+        const [hits, jhits] = await Promise.all([repo.search(q), repo.searchJournal(q)])
         if (n !== seq) return
+        journal = jhits
+        allJournal = false
         rows = hits
           .flatMap(h => {
             const e = catalog.byId.get(h.id)
@@ -83,12 +99,24 @@
       .filter(g => g.rows.length)
       .sort((a, b) => rows.indexOf(a.rows[0]) - rows.indexOf(b.rows[0]))
   })
-  /** Ordre de navigation au clavier = ordre affiché. */
-  const flat = $derived(groups.flatMap(g => g.rows))
+  const journalItems = $derived.by((): Item[] => {
+    const shown = allJournal ? journal : journal.slice(0, JOURNAL_SHOWN)
+    const items: Item[] = shown.map(hit => ({ kind: 'journal', hit }))
+    if (shown.length < journal.length) items.push({ kind: 'plus', count: journal.length })
+    return items
+  })
+  /** Ordre de navigation au clavier = ordre affiché (fiches, puis journal). */
+  const flat = $derived<Item[]>([...groups.flatMap(g => g.rows.map(row => ({ kind: 'fiche' as const, row }))), ...journalItems])
+  const indexOf = (pred: (it: Item) => boolean) => flat.findIndex(pred)
 
-  function pick(r: Row) {
+  function pick(it: Item) {
+    if (it.kind === 'plus') {
+      allJournal = true
+      return
+    }
     open = false
-    onOpen(r.entry.id)
+    if (it.kind === 'fiche') onOpen(it.row.entry.id)
+    else onOpenEntry(it.hit.entry.sessionId, it.hit.entry.id)
   }
 
   function onKey(e: KeyboardEvent) {
@@ -125,7 +153,7 @@
         {#each groups as g (g.title)}
           <h3 class="label">{g.title}</h3>
           {#each g.rows as r (r.entry.id)}
-            {@const i = flat.indexOf(r)}
+            {@const i = indexOf(it => it.kind === 'fiche' && it.row === r)}
             {@const sub = subtitle(r.entry, id => catalog.title(id))}
             <button
               id="res-{i}"
@@ -133,8 +161,8 @@
               aria-selected={i === active}
               class:on={i === active}
               onmouseenter={() => (active = i)}
-              onclick={() => pick(r)}
-              onauxclick={e => e.button === 1 && pick(r)}
+              onclick={() => pick(flat[i])}
+              onauxclick={e => e.button === 1 && pick(flat[i])}
             >
               <span class="icon" aria-hidden="true">{TYPE_DEFS[r.entry.type].icon}</span>
               <span class="text">
@@ -152,6 +180,26 @@
             {:else}Aucune fiche ne correspond à « {query.trim()} ».{/if}
           </p>
         {/each}
+        {#if journalItems.length}
+          <h3 class="label">Journal</h3>
+          {#each journalItems as it (it.kind === 'journal' ? it.hit.entry.id : 'plus')}
+            {@const i = flat.indexOf(it)}
+            <button id="res-{i}" role="option" aria-selected={i === active} class:on={i === active} onmouseenter={() => (active = i)} onclick={() => pick(it)}>
+              {#if it.kind === 'journal'}
+                {@const e = it.hit.entry}
+                <span class="icon" aria-hidden="true">📖</span>
+                <span class="text">
+                  <span class="title">Session {it.hit.sessionNumber} · {timeLabel(e.at)}{e.kind !== 'evenement' ? ` · ${kindLabel(e.kind)}` : ''}</span>
+                  <!-- Extrait échappé puis surligné par snippetHtml (model/search.ts). -->
+                  <span class="snip">{#if it.hit.snippet}{@html it.hit.snippet}{:else}{plainText(e.textMd)}{/if}</span>
+                </span>
+              {:else if it.kind === 'plus'}
+                <span class="icon" aria-hidden="true"></span>
+                <span class="text"><span class="more">Voir tout ({it.count} entrées)</span></span>
+              {/if}
+            </button>
+          {/each}
+        {/if}
       </div>
       <p class="hint">↑ ↓ pour choisir · Entrée pour ouvrir · Échap pour fermer</p>
     </div>
@@ -237,6 +285,10 @@
     background: color-mix(in srgb, var(--accent) 35%, transparent);
     color: inherit;
     border-radius: 3px;
+  }
+  .more {
+    color: var(--accent);
+    font-weight: 600;
   }
   .empty {
     margin: 16px 12px;

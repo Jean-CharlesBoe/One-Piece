@@ -1,14 +1,22 @@
 <script lang="ts">
   import { catalog } from '../catalog.svelte'
   import type { CatalogEntry } from '../model/entity'
+  import { kindLabel, timeLabel } from '../model/journal'
+  import { plainText } from '../model/links'
   import { relationIds } from '../model/props'
+  import { play } from '../play.svelte'
   import { fieldOf, TYPE_DEFS } from '../model/types'
   import { opened } from '../opened.svelte'
-  import { getRepository, type Backlink } from '../storage/repository'
+  import { getRepository, type Backlink, type JournalRef } from '../storage/repository'
 
   // Panneau Liens (cahier MJ §4.2) : relations sortantes, rétroliens (par propriété, puis « Mentionné dans »),
-  // pages enfants. La chronologie (journal) arrive avec les sessions (M8).
-  let { onOpen, onAddChild }: { onOpen: (id: string) => void; onAddChild: () => void } = $props()
+  // pages enfants, chronologie (cahier §5.3, M8c) : entrées du journal qui citent la fiche, par session ; un clic
+  // ouvre le journal de la session sur l'entrée.
+  let {
+    onOpen,
+    onAddChild,
+    onOpenEntry,
+  }: { onOpen: (id: string) => void; onAddChild: () => void; onOpenEntry: (sessionId: string, entryId: string) => void } = $props()
 
   const entity = $derived(opened.entity)
   let backlinks = $state<Backlink[]>([])
@@ -27,6 +35,33 @@
         if (opened.entity?.id === id) backlinks = b
       })
       .catch(e => console.error('[onepiece-mj] rétroliens', e))
+  })
+
+  // Chronologie relue à l'ouverture d'une fiche et à chaque modification du journal.
+  let timeline = $state.raw<JournalRef[]>([])
+  $effect(() => {
+    const id = entity?.id
+    void play.version
+    if (!id) {
+      timeline = []
+      return
+    }
+    getRepository()
+      .then(r => r.entityJournal(id))
+      .then(t => {
+        if (opened.entity?.id === id) timeline = t
+      })
+      .catch(e => console.error('[onepiece-mj] chronologie', e))
+  })
+  /** Entrées groupées par session, dans l'ordre des sessions. */
+  const bySession = $derived.by(() => {
+    const out: { key: string; label: string; refs: JournalRef[] }[] = []
+    for (const r of timeline) {
+      const last = out.at(-1)
+      if (last?.key === r.entry.sessionId) last.refs.push(r)
+      else out.push({ key: r.entry.sessionId, label: `Session ${r.sessionNumber}${r.sessionTitle ? ` — ${r.sessionTitle}` : ''}`, refs: [r] })
+    }
+    return out
   })
 
   interface Group {
@@ -122,7 +157,21 @@
 
     <section>
       <h3 class="label">Chronologie</h3>
-      <p class="empty">Les entrées du journal de session apparaîtront ici (étape M8).</p>
+      {#each bySession as g (g.key)}
+        <p class="session">{g.label}</p>
+        <ul class="timeline">
+          {#each g.refs as r (r.entry.id)}
+            <li>
+              <button class:auto={r.entry.kind === 'auto'} onclick={() => onOpenEntry(r.entry.sessionId, r.entry.id)} title="Ouvrir le journal de la session sur cette entrée">
+                <span class="time">{timeLabel(r.entry.at)}</span>
+                <span class="text">{#if r.entry.kind !== 'evenement' && r.entry.kind !== 'auto' && r.entry.kind !== 'haki'}<b>{kindLabel(r.entry.kind)}</b>{' : '}{/if}{plainText(r.entry.textMd)}</span>
+              </button>
+            </li>
+          {/each}
+        </ul>
+      {:else}
+        <p class="empty">Aucune entrée de journal ne cite cette fiche.</p>
+      {/each}
     </section>
   {:else}
     <p class="empty">Les liens de la fiche ouverte s'affichent ici.</p>
@@ -161,6 +210,42 @@
   li a:hover {
     color: var(--accent);
     text-decoration: underline;
+  }
+  .session {
+    margin: 8px 0 2px;
+    font-size: 0.85rem;
+    font-weight: 600;
+  }
+  .timeline button {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr);
+    gap: 6px;
+    width: 100%;
+    min-height: 36px;
+    padding: 4px 4px;
+    border: none;
+    background: none;
+    text-align: left;
+    font-size: 0.88rem;
+    color: var(--text);
+  }
+  .timeline button:hover {
+    background: var(--bg);
+  }
+  .timeline button.auto {
+    color: var(--muted);
+  }
+  .timeline .time {
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+  }
+  .timeline .text {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    overflow-wrap: anywhere;
   }
   .add {
     min-height: 30px;

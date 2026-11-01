@@ -101,3 +101,16 @@ export const SEARCH_INDEX_DDL: Record<Exclude<SearchEngine, 'aucun'>, string> = 
            entity_id, title, aliases, props_text, body_text,
            notindexed=entity_id, tokenize=unicode61 "remove_diacritics=2")`, // FTS4 : pas d'espace autour des « = »
 }
+
+/**
+ * Index plein texte du journal de session (D-M15) : seconde table, créée comme `search_index` (hors migrations,
+ * dérivée, même ordre de moteurs). Texte de l'entrée sans la syntaxe Markdown, liens par leur libellé.
+ */
+export const JOURNAL_INDEX_DDL: Record<Exclude<SearchEngine, 'aucun'>, string> = {
+  fts5: `CREATE VIRTUAL TABLE journal_index USING fts5(
+           entry_id UNINDEXED, text,
+           tokenize = 'unicode61 remove_diacritics 2')`,
+  fts4: `CREATE VIRTUAL TABLE journal_index USING fts4(
+           entry_id, text,
+           notindexed=entry_id, tokenize=unicode61 "remove_diacritics=2")`,
+}

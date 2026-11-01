@@ -225,6 +225,24 @@
     await openEntity(sessionTab(id))
   }
 
+  /**
+   * Entrée du journal demandée (chronologie d'une fiche, recherche, M8c) : session en cours → sa colonne (volet en
+   * disposition étroite) ; sinon la fiche de la session, dont la section Journal descend sur l'entrée.
+   */
+  async function openJournalEntry(sessionId: string, entryId: string) {
+    try {
+      play.reveal(sessionId, entryId)
+      if (play.running?.id === sessionId) {
+        if (layout !== 'large') journalOpen = true
+        return
+      }
+      linksOpen = false
+      await openSession(sessionId)
+    } catch (e) {
+      fail(e)
+    }
+  }
+
   async function newSession() {
     try {
       const s = await sessions.create()
@@ -532,7 +550,7 @@
 {/snippet}
 
 {#snippet links()}
-  <LinksPanel onOpen={openEntity} onAddChild={addChild} />
+  <LinksPanel onOpen={openEntity} onAddChild={addChild} onOpenEntry={openJournalEntry} />
 {/snippet}
 
 <div class="app {layout}" style:grid-template-columns={gridColumns}>
@@ -647,7 +665,7 @@
 <Drawer bind:open={linksOpen} side="right" label="Liens">{@render links()}</Drawer>
 <Drawer bind:open={journalOpen} label="Journal de la session">{@render journal()}</Drawer>
 
-<SearchPalette bind:open={searchOpen} onOpen={openEntity} />
+<SearchPalette bind:open={searchOpen} onOpen={openEntity} onOpenEntry={openJournalEntry} />
 <Sheet bind:open={settingsOpen} title="Réglages"><SettingsPanel /></Sheet>
 <Sheet bind:open={newOpen} title={draft.fromLink ? 'Créer la fiche du lien' : 'Nouvelle fiche'}>
   <NewEntityForm

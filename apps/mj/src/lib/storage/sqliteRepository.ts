@@ -13,11 +13,13 @@ import type { Db, Row } from './db'
 import {
   META_LAST_CHANGE,
   META_SCHEMA_VERSION,
+  META_JOURNAL_ENGINE,
   META_SEARCH_ENGINE,
   type Backlink,
+  type JournalRef,
   type MjRepository,
 } from './repository'
-import { MIGRATIONS, SEARCH_INDEX_DDL, type SearchEngine } from './schema'
+import { JOURNAL_INDEX_DDL, MIGRATIONS, SEARCH_INDEX_DDL, type SearchEngine } from './schema'
 
 async function schemaVersion(db: Db): Promise<number> {
   const t = await db.query(`SELECT name FROM sqlite_master WHERE type = 'table' AND name = 'meta'`)
@@ -101,6 +103,47 @@ export async function ensureSearchIndex(db: Db): Promise<SearchEngine> {
   return engine
 }
 
+async function indexJournalEntry(db: Db, engine: SearchEngine, e: JournalEntry): Promise<void> {
+  if (engine === 'aucun') return
+  await db.run(`DELETE FROM journal_index WHERE entry_id = ?`, [e.id])
+  await db.run(`INSERT INTO journal_index (entry_id, text) VALUES (?, ?)`, [e.id, plainText(e.textMd)])
+}
+
+/** Index du journal (D-M15) : créé s'il manque, comme `search_index` (meilleur moteur accepté), puis rempli. */
+export async function ensureJournalIndex(db: Db): Promise<SearchEngine> {
+  if (await tableExists(db, 'journal_index')) {
+    const r = await db.query(`SELECT value FROM meta WHERE key = ?`, [META_JOURNAL_ENGINE])
+    return r[0]?.value === 'fts5' ? 'fts5' : 'fts4'
+  }
+  let engine: SearchEngine = 'aucun'
+  for (const e of ['fts5', 'fts4'] as const) {
+    try {
+      await db.execute(JOURNAL_INDEX_DDL[e])
+      engine = e
+      break
+    } catch {
+      // moteur absent de cette version de SQLite : essayer le suivant
+    }
+  }
+  await db.run(`INSERT INTO meta (key, value) VALUES (?, ?) ON CONFLICT(key) DO UPDATE SET value = excluded.value`, [
+    META_JOURNAL_ENGINE,
+    engine,
+  ])
+  if (engine !== 'aucun') {
+    for (const row of await db.query(`SELECT * FROM journal_entries`)) {
+      const j = normalizeEntry(row)
+      if (j) await indexJournalEntry(db, engine, j)
+    }
+  }
+  return engine
+}
+
+/** Ligne d'une jointure journal_entries × sessions → entrée et session. */
+function journalRef(row: Row): JournalRef | null {
+  const entry = normalizeEntry(row)
+  return entry ? { entry, sessionNumber: Number(row.s_number) || 0, sessionTitle: String(row.s_title ?? '') } : null
+}
+
 function parse(row: Row): Entity {
   const { entity, warnings } = normalizeEntity(row)
   if (warnings.length) console.warn('[onepiece-mj] corrections au chargement', warnings)
@@ -115,6 +158,7 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
   await db.pragma(`PRAGMA foreign_keys = ON`)
   await migrate(db)
   const engine = await ensureSearchIndex(db)
+  const journalEngine = await ensureJournalIndex(db)
   await db.persist()
 
   async function setMeta(key: string, value: string) {
@@ -301,8 +345,11 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
       await touch()
     },
     async deleteSession(id) {
-      // Entrées du journal : supprimées par la clé étrangère (ON DELETE CASCADE) ; leurs liens, à la main.
+      // Entrées du journal : supprimées par la clé étrangère (ON DELETE CASCADE) ; leurs liens et leur index, à la main.
       await db.run(`DELETE FROM links WHERE from_kind = 'journal' AND from_id IN (SELECT id FROM journal_entries WHERE session_id = ?)`, [id])
+      if (journalEngine !== 'aucun') {
+        await db.run(`DELETE FROM journal_index WHERE entry_id IN (SELECT id FROM journal_entries WHERE session_id = ?)`, [id])
+      }
       await db.run(`DELETE FROM sessions WHERE id = ?`, [id])
       await touch()
     },
@@ -320,12 +367,63 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
         cols.map(c => row[c] ?? null),
       )
       await writeJournalLinks(e)
+      await indexJournalEntry(db, journalEngine, e)
       await touch()
     },
     async deleteJournalEntry(id) {
       await db.run(`DELETE FROM links WHERE from_kind = 'journal' AND from_id = ?`, [id])
+      if (journalEngine !== 'aucun') await db.run(`DELETE FROM journal_index WHERE entry_id = ?`, [id])
       await db.run(`DELETE FROM journal_entries WHERE id = ?`, [id])
       await touch()
+    },
+    async entityJournal(id) {
+      const r = await db.query(
+        `SELECT j.*, s.number AS s_number, s.title AS s_title FROM links l
+           JOIN journal_entries j ON j.id = l.from_id
+           JOIN sessions s ON s.id = j.session_id
+          WHERE l.from_kind = 'journal' AND l.to_id = ?
+          ORDER BY s.number, j.at, j.created_at`,
+        [id],
+      )
+      return r.flatMap(row => journalRef(row) ?? [])
+    },
+    async searchJournal(query, limit = 50) {
+      const match = ftsQuery(query)
+      if (!match) return []
+      const cols = `j.*, s.number AS s_number, s.title AS s_title`
+      if (journalEngine === 'aucun') {
+        // Sans index plein texte : entrées qui contiennent chaque mot (sans tenir compte des accents).
+        const words = searchWords(query)
+        const r = await db.query(
+          `SELECT ${cols} FROM journal_entries j JOIN sessions s ON s.id = j.session_id ORDER BY s.number DESC, j.at DESC`,
+        )
+        return r
+          .filter(row => {
+            const text = plainText(String(row.text_md)).normalize('NFD').replace(/\p{M}/gu, '').toLowerCase()
+            return words.every(w => text.includes(w))
+          })
+          .slice(0, limit)
+          .flatMap(row => {
+            const ref = journalRef(row)
+            return ref ? [{ ...ref, snippet: '' }] : []
+          })
+      }
+      // Extrait de la colonne 1 (text). FTS4 : snippet(table, début, fin, ellipse, colonne, mots) ; FTS5 : colonne d'abord.
+      const snippet =
+        journalEngine === 'fts5'
+          ? `snippet(journal_index, 1, char(1), char(2), '…', 16)`
+          : `snippet(journal_index, char(1), char(2), '…', 1, 16)`
+      const r = await db.query(
+        `SELECT ${cols}, x.snip FROM (SELECT entry_id, ${snippet} AS snip FROM journal_index WHERE journal_index MATCH ?) x
+           JOIN journal_entries j ON j.id = x.entry_id
+           JOIN sessions s ON s.id = j.session_id
+          ORDER BY s.number DESC, j.at DESC LIMIT ?`,
+        [match, limit],
+      )
+      return r.flatMap(row => {
+        const ref = journalRef(row)
+        return ref ? [{ ...ref, snippet: snippetHtml(String(row.snip ?? '')) }] : []
+      })
     },
     async listAssets() {
       return (await db.query(`SELECT * FROM assets ORDER BY created_at`)).flatMap(r => normalizeAsset(r) ?? [])
@@ -374,6 +472,7 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
         await db.pragma('PRAGMA defer_foreign_keys = ON')
         await db.run(`DELETE FROM links`)
         if (engine !== 'aucun') await db.run(`DELETE FROM search_index`)
+        if (journalEngine !== 'aucun') await db.run(`DELETE FROM journal_index`)
         for (const t of ['not_duplicates', 'journal_entries', 'sessions', 'campaigns', 'entities', 'assets']) {
           await db.run(`DELETE FROM ${t}`)
         }
@@ -388,7 +487,10 @@ export async function createSqliteRepository(db: Db, onChange: () => void = () =
         }
         for (const row of data.journal_entries) {
           const j = normalizeEntry(row)
-          if (j) await writeJournalLinks(j)
+          if (j) {
+            await writeJournalLinks(j)
+            await indexJournalEntry(db, journalEngine, j)
+          }
         }
         await db.run('COMMIT')
       } catch (e) {

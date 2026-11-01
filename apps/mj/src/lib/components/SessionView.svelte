@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { onDestroy } from 'svelte'
+  import { onDestroy, tick } from 'svelte'
   import { catalog } from '../catalog.svelte'
   import { renderMarkdown } from '../markdown'
+  import { kindLabel, timeLabel, type JournalEntry } from '../model/journal'
+  import { getRepository } from '../storage/repository'
   import { dayLabel, SESSION_STATUSES, sessionLabel, statusLabel, type Session } from '../model/session'
   import { play } from '../play.svelte'
   import { changedSince, parseSnapshot } from '../model/snapshot'
@@ -11,6 +13,8 @@
   // Fiche d'une session de jeu (M8a, cahier §5.1) : numéro, titre, date, scénario, statut, préparation et résumé.
   // Lecture ou édition (Ctrl+E ou « Modifier »), comme une fiche ; enregistrement 400 ms après la dernière
   // modification. Une session laissée en édition pour un autre onglet s'y retrouve à son retour.
+  // Journal (M8c) : affiché ici une fois la session terminée (pendant la session, il a sa colonne) ; une entrée
+  // demandée depuis la chronologie d'une fiche ou la recherche y est surlignée.
   let {
     id,
     onOpen,
@@ -96,6 +100,30 @@
   const prepHtml = $derived(s && !editing ? renderMarkdown(s.prepMd, exists) : '')
   const summaryHtml = $derived(s && !editing ? renderMarkdown(s.summaryMd, exists) : '')
 
+  // Journal de la session, relu quand il change (entrée supprimée ou ajoutée ailleurs).
+  let journal = $state.raw<JournalEntry[]>([])
+  $effect(() => {
+    void play.version
+    void s?.status
+    getRepository()
+      .then(r => r.listJournal(id))
+      .then(j => (journal = j))
+      .catch(e => console.error('[onepiece-mj] journal', e))
+  })
+  let flash = $state<string | null>(null)
+  $effect(() => {
+    const t = play.target
+    if (!t || t.sessionId !== id || !journal.some(e => e.id === t.entryId)) return
+    flash = t.entryId
+    void tick().then(() => document.getElementById(`js-${t.entryId}`)?.scrollIntoView({ block: 'center' }))
+    // Demande servie : oubliée, pour ne pas resurligner l'entrée au prochain affichage.
+    const timer = setTimeout(() => {
+      flash = null
+      if (play.target?.seq === t.seq) play.target = null
+    }, 2500)
+    return () => clearTimeout(timer)
+  })
+
   function toggleEditing() {
     if (editing) void flush()
     sessions.setEditing(id, !editing)
@@ -126,6 +154,27 @@
     toggleEditing()
   }
 </script>
+
+{#snippet journalSection()}
+  {#if s && s.status !== 'en_cours' && journal.length}
+    <section>
+      <h3 class="label">Journal ({journal.length})</h3>
+      <!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_noninteractive_element_interactions -- les liens du texte sont des <a> -->
+      <ol class="journal" onclick={onBodyClick}>
+        {#each journal as e (e.id)}
+          <li id="js-{e.id}" class:auto={e.kind === 'auto'} class:flash={flash === e.id}>
+            <span class="time">{timeLabel(e.at)}</span>
+            <div>
+              {#if e.kind !== 'evenement' && e.kind !== 'auto'}<span class="kind">{kindLabel(e.kind)}</span>{/if}
+              <!-- eslint-disable-next-line svelte/no-at-html-tags -- HTML nettoyé par DOMPurify (markdown.ts) -->
+              <div class="md">{@html renderMarkdown(e.textMd, exists)}</div>
+            </div>
+          </li>
+        {/each}
+      </ol>
+    </section>
+  {/if}
+{/snippet}
 
 <article class="view">
   {#if !s}
@@ -172,6 +221,7 @@
         <h3 class="label">Résumé</h3>
         {#key `${id}-resume`}<MarkdownEditor value={s.summaryMd} selfId="" onChange={v => s && (s.summaryMd = v)} />{/key}
       </div>
+      {@render journalSection()}
     {:else}
       {#if error}<p class="err" role="alert">{error}</p>{/if}
       {#if otherRunning && s.status === 'prevue'}
@@ -194,6 +244,7 @@
         <!-- eslint-disable-next-line svelte/no-at-html-tags -- HTML nettoyé par DOMPurify (markdown.ts) -->
         {#if s.summaryMd.trim()}<div class="md" role="presentation" onclick={onBodyClick}>{@html summaryHtml}</div>{:else}<p class="muted">Pas encore de résumé.</p>{/if}
       </section>
+      {@render journalSection()}
       {#if s.snapshot}
         <section class="reset">
           <h3 class="label">État de début de session</h3>
@@ -272,6 +323,44 @@
   .md {
     line-height: 1.55;
     overflow-wrap: anywhere;
+  }
+  .journal {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 2px;
+  }
+  .journal li {
+    display: grid;
+    grid-template-columns: 48px minmax(0, 1fr);
+    gap: 8px;
+    padding: 4px 6px;
+    border-radius: 6px;
+  }
+  .journal li.auto {
+    color: var(--muted);
+    font-size: 0.9rem;
+  }
+  .journal li.flash {
+    background: color-mix(in srgb, var(--accent) 22%, transparent);
+  }
+  .journal .md :global(p) {
+    margin: 0;
+  }
+  .time {
+    color: var(--muted);
+    font-size: 0.85rem;
+    padding-top: 2px;
+    font-variant-numeric: tabular-nums;
+  }
+  .kind {
+    display: inline-block;
+    padding: 0 6px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid var(--line);
   }
   .reset ul {
     margin: 4px 0 8px;

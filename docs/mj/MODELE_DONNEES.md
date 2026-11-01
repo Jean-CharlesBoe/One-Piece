@@ -89,7 +89,7 @@ CREATE TABLE journal_entries (
   kind        TEXT NOT NULL DEFAULT 'evenement', -- evenement | combat | decouverte | xp | haki | note | auto
   text_md     TEXT NOT NULL,
   auto        TEXT,                       -- JSON des changements automatiques {entityId, field, from, to}
-  haki        TEXT,                       -- JSON pour kind = 'haki' : {pjId, type: 'observation'|'armement'|'rois', resultat: 1..100}
+  haki        TEXT,                       -- JSON pour kind = 'haki' : {pjId, type: 'observation'|'armement'|'rois', resultat: 1..100} (M8c : normalizeHaki, createHakiEntry ; texte généré par hakiText ; le PJ compte parmi les fiches citées)
   created_at  TEXT NOT NULL, updated_at TEXT NOT NULL
 );
 CREATE INDEX journal_session ON journal_entries(session_id, at);
@@ -126,7 +126,14 @@ Notes :
 - Migration 1 = toutes les tables ci-dessus (code : `apps/mj/src/lib/storage/schema.ts`), sans `search_index`.
 - `search_index` est alimentée par le repository à chaque enregistrement (M0 : titre, alias et Markdown brut ; à partir de M2 : texte Markdown dépouillé, valeurs de propriétés lisibles, titres des relations). Une fiche archivée en est retirée. Sans moteur plein texte (`aucun`), la recherche se fera par `LIKE` sur une colonne normalisée (minuscules, sans accents) [M3].
 - `PRAGMA foreign_keys = ON` à chaque ouverture.
-- Le journal est indexé dans une seconde table FTS si la recherche dans le journal est retenue **[Q-M5]**.
+- Le journal est indexé dans une seconde table FTS (Q-M5, D-M15, M8c), créée comme `search_index` (hors migrations, même ordre de moteurs, moteur dans `meta.journal_search_engine`, `LIKE` à défaut) et reconstruite à la restauration :
+```sql
+CREATE VIRTUAL TABLE journal_index USING fts4(   -- ou fts5
+  entry_id, text,                                 -- text = Markdown dépouillé, liens par leur libellé
+  notindexed=entry_id, tokenize=unicode61 "remove_diacritics=2"
+);
+```
+  Code (M8c) : `ensureJournalIndex`, repository `searchJournal` (entrées les plus récentes d'abord, avec numéro et titre de session) et `entityJournal` (chronologie d'une fiche, par les liens `from_kind = 'journal'`).
 
 ## 3. Registre des types (code, `apps/mj/src/lib/model/types.ts`)
 

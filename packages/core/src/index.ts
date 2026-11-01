@@ -22,6 +22,7 @@ export * from './rules/skills'
 export * from './rules/prime'
 export * from './rules/memos'
 export * from './rules/notebook'
+export * from './rules/haki'
 
 export * from './photo/crop'
 export * from './photo/resize'

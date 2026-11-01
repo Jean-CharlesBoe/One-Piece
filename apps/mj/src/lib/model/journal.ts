@@ -1,4 +1,4 @@
-import { LIMITS, newId, read, STATS } from '@onepiece/core'
+import { clampD100, hakiEffect, hakiLabel, isHakiType, LIMITS, newId, read, STATS, type HakiType } from '@onepiece/core'
 import type { RawRow } from '../backup/format'
 import type { Entity } from './entity'
 import { normalizeGameBlock, type GameBlock } from './gameBlock'
@@ -17,8 +17,8 @@ export const JOURNAL_KINDS = [
   ['auto', 'Auto'],
 ] as const
 export type JournalKind = (typeof JOURNAL_KINDS)[number][0]
-/** Types proposés à la saisie (Haki : M8c ; Auto : ajouté par l'app). */
-export const INPUT_KINDS = JOURNAL_KINDS.filter(([k]) => k !== 'haki' && k !== 'auto')
+/** Types proposés à la saisie (Auto : ajouté par l'app). */
+export const INPUT_KINDS = JOURNAL_KINDS.filter(([k]) => k !== 'auto')
 
 /** Un changement relevé automatiquement : « Fushia : Vitalité 45 → 33 ». */
 export interface AutoChange {
@@ -30,6 +30,13 @@ export interface AutoChange {
   to: string
 }
 
+/** Jet de Haki du MJ (D-M9, REGLES §7) : PJ (fiche de lore), type, résultat du D100. */
+export interface HakiRollData {
+  pjId: string
+  type: HakiType
+  resultat: number
+}
+
 export interface JournalEntry {
   id: string
   sessionId: string
@@ -38,7 +45,7 @@ export interface JournalEntry {
   kind: JournalKind
   textMd: string
   auto: AutoChange | null
-  haki: unknown
+  haki: HakiRollData | null
   createdAt: string
   updatedAt: string
 }
@@ -65,6 +72,14 @@ function normalizeAuto(raw: unknown): AutoChange | null {
   return typeof r.entityId === 'string' && r.entityId ? { entityId: r.entityId, field: s('field'), label: s('label'), from: s('from'), to: s('to') } : null
 }
 
+function normalizeHaki(raw: unknown): HakiRollData | null {
+  const r = read.obj(parseJson(raw))
+  const n = Number(r.resultat)
+  return typeof r.pjId === 'string' && r.pjId && isHakiType(r.type) && Number.isFinite(n)
+    ? { pjId: r.pjId, type: r.type, resultat: clampD100(n) }
+    : null
+}
+
 /** Ligne `journal_entries` (SQL ou modèle) → entrée ; `null` si inutilisable. */
 export function normalizeEntry(raw: unknown): JournalEntry | null {
   const r = read.obj(raw)
@@ -80,7 +95,7 @@ export function normalizeEntry(raw: unknown): JournalEntry | null {
     kind: isKind(r.kind) ? r.kind : 'evenement',
     textMd: read.str(pick('textMd', 'text_md'), LIMITS.textLong),
     auto: normalizeAuto(r.auto),
-    haki: parseJson(r.haki),
+    haki: normalizeHaki(r.haki),
     createdAt: read.date(pick('createdAt', 'created_at')) ?? at,
     updatedAt: read.date(pick('updatedAt', 'updated_at')) ?? at,
   }
@@ -100,15 +115,39 @@ export function entryRow(e: JournalEntry): RawRow {
   }
 }
 
-/** Fiches citées par une entrée : liens `[[ ]]` et fiche d'une entrée automatique (chronologie, M8c). */
-export function entryMentions(e: Pick<JournalEntry, 'textMd' | 'auto'>): string[] {
+/** Fiches citées par une entrée : liens `[[ ]]`, fiche d'une entrée automatique, PJ d'un jet de Haki (chronologie). */
+export function entryMentions(e: Pick<JournalEntry, 'textMd' | 'auto' | 'haki'>): string[] {
   const ids = new Set(wikiLinks(e.textMd).map(l => l.id).filter(id => id !== '?'))
   if (e.auto) ids.add(e.auto.entityId)
+  if (e.haki) ids.add(e.haki.pjId)
   return [...ids]
 }
 
 /** Heure lisible (« 21:04 »). */
 export const timeLabel = (iso: string) => new Date(iso).toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' })
+
+// --- Entrées Haki (M8c, D-M9) ------------------------------------------------------------------------------
+
+const HAKI_OF: Record<HakiType, string> = { observation: "de l'", armement: "de l'", rois: 'des ' }
+
+/**
+ * Texte d'une entrée Haki, figé à la saisie (recherche, résumé, chronologie) :
+ * « [[id|Luffy]] · Haki des Rois, D100 = 4 (3–5) : réveil latent · **meilleur résultat** — commentaire ».
+ */
+export function hakiText(h: HakiRollData, pjTitle: string, comment = ''): string {
+  const r = hakiEffect(h.type, h.resultat)
+  const c = comment.trim()
+  return (
+    `${wikiLink(h.pjId, pjTitle)} · Haki ${HAKI_OF[h.type]}${hakiLabel(h.type)}, D100 = ${clampD100(h.resultat)} (${r.range}) : ${r.effet}` +
+    `${r.best ? ' · **meilleur résultat**' : ''}${c ? ` — ${c}` : ''}`
+  )
+}
+
+export function createHakiEntry(sessionId: string, h: HakiRollData, pjTitle: string, comment = '', at = new Date().toISOString()): JournalEntry {
+  const e = createEntry(sessionId, 'haki', hakiText(h, pjTitle, comment), at)
+  e.haki = { ...h, resultat: clampD100(h.resultat) }
+  return e
+}
 
 // --- Entrées automatiques -----------------------------------------------------------------------------------
 
@@ -189,6 +228,6 @@ export function mergeAuto(
 export function summaryFromJournal(entries: readonly JournalEntry[], withAuto = false): string {
   return entries
     .filter(e => withAuto || e.kind !== 'auto')
-    .map(e => `- ${timeLabel(e.at)} — ${e.kind === 'evenement' || e.kind === 'auto' ? '' : `${kindLabel(e.kind)} : `}${e.textMd.replace(/\n+/g, ' ')}`)
+    .map(e => `- ${timeLabel(e.at)} — ${e.kind === 'evenement' || e.kind === 'auto' || e.kind === 'haki' ? '' : `${kindLabel(e.kind)} : `}${e.textMd.replace(/\n+/g, ' ')}`)
     .join('\n')
 }

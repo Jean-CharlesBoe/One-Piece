@@ -13,6 +13,7 @@
   import { createGameBlock, isHumanRace, type GameBlock } from '../model/gameBlock'
   import AssetView from './AssetView.svelte'
   import GameBlockView from './GameBlockView.svelte'
+  import HakiRecap from './HakiRecap.svelte'
   import ChipsInput from './ChipsInput.svelte'
   import MarkdownEditor from './MarkdownEditor.svelte'
   import MoveForm from './MoveForm.svelte'
@@ -462,6 +463,7 @@
       {/if}
 
       {@render gameBlock(false)}
+      {#if entity.type === 'personnage' && entity.props.role === 'PJ'}<HakiRecap id={entity.id} />{/if}
 
       {#each def.fields.filter(f => f.field.kind === 'asset' && typeof entity.props[f.key] === 'string') as f (f.key)}
         <AssetView id={String(entity.props[f.key])} />

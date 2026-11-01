@@ -40,6 +40,10 @@ export interface MjRepository {
   /** Enregistre l'entrée et ses liens vers les fiches citées (chronologie). */
   saveJournalEntry(entry: JournalEntry): Promise<void>
   deleteJournalEntry(id: string): Promise<void>
+  /** Entrées du journal qui citent la fiche (lien, entrée automatique, jet de Haki), dans l'ordre chronologique (M8c). */
+  entityJournal(id: string): Promise<JournalRef[]>
+  /** Recherche plein texte dans le journal (groupe « Journal » de Ctrl+K, D-M15) ; les plus récentes d'abord. */
+  searchJournal(query: string, limit?: number): Promise<JournalHit[]>
   /** Médias (images, PDF) : la description ; le fichier est dans storage/media.ts. */
   listAssets(): Promise<Asset[]>
   saveAsset(asset: Asset): Promise<void>
@@ -55,8 +59,22 @@ export interface Backlink {
   kind: string
 }
 
+/** Entrée du journal avec sa session (chronologie d'une fiche, recherche). */
+export interface JournalRef {
+  entry: JournalEntry
+  sessionNumber: number
+  sessionTitle: string
+}
+
+export interface JournalHit extends JournalRef {
+  /** Extrait HTML surligné. */
+  snippet: string
+}
+
 export const META_SCHEMA_VERSION = 'schema_version'
 export const META_SEARCH_ENGINE = 'search_engine'
+/** Moteur de l'index du journal (D-M15), choisi comme celui des fiches. */
+export const META_JOURNAL_ENGINE = 'journal_search_engine'
 /** Date de la dernière sauvegarde écrite dans le dossier, ou reprise depuis lui. */
 export const META_LAST_BACKUP = 'last_backup_at'
 /** Identifiant de cette dernière sauvegarde (relais entre appareils). */

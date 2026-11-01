@@ -4,6 +4,8 @@ import { createGameBlock } from './gameBlock'
 import {
   autoText,
   createEntry,
+  createHakiEntry,
+  hakiText,
   entryMentions,
   entryRow,
   gameChanges,
@@ -72,5 +74,25 @@ describe('journal de session', () => {
     expect(text.split('\n')).toHaveLength(2)
     expect(text).toContain('— Arrivée au port')
     expect(text).toContain('— Combat : Drake fuit')
+  })
+})
+
+describe('entrées Haki (M8c)', () => {
+  it('texte : effet de la table, meilleur résultat, commentaire', () => {
+    const h = { pjId: 'p1', type: 'observation' as const, resultat: 12 }
+    expect(hakiText(h, 'Luffy')).toBe("[[p1|Luffy]] · Haki de l'Observation, D100 = 12 (1–20) : +10 Perception, 3 tours · **meilleur résultat**")
+    expect(hakiText({ ...h, type: 'rois', resultat: 80 }, 'Luffy', ' face à Fushia ')).toBe(
+      '[[p1|Luffy]] · Haki des Rois, D100 = 80 (6–100) : rien — face à Fushia',
+    )
+  })
+
+  it('aller-retour en base, PJ dans les fiches citées, données illisibles écartées', () => {
+    const e = createHakiEntry('s1', { pjId: 'p1', type: 'armement', resultat: 150 }, 'Zoro')
+    expect(e.kind).toBe('haki')
+    expect(e.haki).toEqual({ pjId: 'p1', type: 'armement', resultat: 100 })
+    expect(normalizeEntry(entryRow(e))).toEqual(e)
+    expect(entryMentions(e)).toEqual(['p1'])
+    const row = { ...entryRow(e), haki: '{"pjId":"p1","type":"inconnu","resultat":3}' }
+    expect(normalizeEntry(row)?.haki).toBeNull()
   })
 })

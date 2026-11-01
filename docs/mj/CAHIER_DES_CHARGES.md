@@ -87,7 +87,7 @@ Facultatif sur un **PNJ** (bouton « 🎲 Ajouter un bloc de jeu » ; pas sur un
 Les modifications de ressources ou de bonus pendant une session créent automatiquement une entrée de journal (§5.2).
 
 ### 4.5 Navigation et recherche
-- **Recherche globale** (Ctrl+K ou « / ») : titres, alias, propriétés et texte intégral, résultats groupés par type, extrait surligné, ouverture au clavier. Insensible aux accents et à la casse. Sous les fiches, un groupe **« Journal »** : entrées de journal contenant les mots cherchés (« Session 4 · 21:17 — … »), 5 au plus avec « Voir tout » ; un clic ouvre le journal de la session sur l'entrée (Q-M5, D-M15).
+- **Recherche globale** (Ctrl+K ou « / ») : titres, alias, propriétés et texte intégral, résultats groupés par type, extrait surligné, ouverture au clavier. Insensible aux accents et à la casse. Sous les fiches, un groupe **« Journal »** : entrées de journal contenant les mots cherchés (« Session 4 · 21:17 — … »), 5 au plus avec « Voir tout » ; un clic ouvre le journal de la session sur l'entrée (Q-M5, D-M15). « Voir tout (n) » déplie le groupe dans la recherche (D-M29).
 - **Listes par type** avec filtres sur les propriétés (ex. Personnages : rôle, état, faction, alignement ; Lieux : mer) et tri (titre, modification).
 - **Épinglés** : fiches favorites dans la barre latérale.
 - **Récents** : 20 dernières fiches ouvertes.
@@ -123,8 +123,8 @@ Mise en œuvre (M8b, D-M26, D-M27, D-M28) : **▶ Démarrer la session** sur une
 │ [ saisie rapide……… ] ⏎  │                                  │
 └──────────────────────────┴──────────────────────────────────┘
 ```
-- **Saisie rapide** en bas du journal : texte libre avec `[[` (propositions : nom exact, puis noms qui commencent par la saisie) ; Entrée = nouvelle entrée horodatée, Maj+Entrée = nouvelle ligne. Type au choix par boutons : Événement (défaut, repris après chaque entrée), Combat, Découverte, XP, Note MJ ; **Haki** en M8c. Chaque entrée se supprime en deux clics.
-- **Entrée Haki** (D-M9) : PJ concerné (fiche de lore), type (Observation / Armement / Rois), résultat du D100. L'app affiche l'effet de la table (§7 des règles) et indique si c'est un « meilleur résultat ». Sur la fiche du PJ, un petit récapitulatif lit le journal : « Observation : 3 meilleurs résultats ; Rois : résultat 1–5 obtenu (session 4) ». Ce n'est pas une fiche technique du PJ (D-T0) : seulement le relevé des jets du MJ. Quand un Haki est maîtrisé, le MJ le dit au joueur, qui ajoute la compétence sur sa Vivre Card.
+- **Saisie rapide** en bas du journal : texte libre avec `[[` (propositions : nom exact, puis noms qui commencent par la saisie) ; Entrée = nouvelle entrée horodatée, Maj+Entrée = nouvelle ligne. Type au choix par boutons : Événement (défaut, repris après chaque entrée), Combat, Découverte, XP, Note MJ, Haki. Chaque entrée se supprime en deux clics.
+- **Entrée Haki** (D-M9) : PJ concerné (fiche de lore), type (Observation / Armement / Rois), résultat du D100. L'app affiche l'effet de la table (§7 des règles) et indique si c'est un « meilleur résultat ». Sur la fiche du PJ, un petit récapitulatif lit le journal : « Observation : 3 meilleurs résultats ; Rois : résultat 1–5 obtenu (session 4) ». Ce n'est pas une fiche technique du PJ (D-T0) : seulement le relevé des jets du MJ. Mise en œuvre (M8c, D-M29) : le type « Haki » de la saisie rapide ouvre un formulaire (PJ au rôle PJ, type, D100, effet affiché en direct, commentaire facultatif) ; le texte de l'entrée est généré à la saisie ; le récapitulatif (« Haki · jets du MJ ») apparaît sur la fiche du PJ en lecture dès le premier jet. Quand un Haki est maîtrisé, le MJ le dit au joueur, qui ajoute la compétence sur sa Vivre Card.
 - **Fiches de la session** : les onglets ; PNJ et lieux du scénario ouverts au démarrage, toute autre fiche ouverte à la volée (recherche, liens du journal) ; bloc de jeu modifiable en direct. Notes rapides = entrées « Note MJ » liées à la fiche (D-M26).
 - Chaque changement de ressource actuelle (Vitalité, Endurance, Rêve, Ambition, Transfert, ressources supplémentaires), de bonus temporaires ou d'état (ex. PNJ → Mort) d'un PNJ pendant la session **ajoute une entrée automatique** (les maximums et les caracs, réglages de préparation, ne sont pas notés ; une valeur revenue à son point de départ en moins de 10 s efface l'entrée) (regroupée si plusieurs changements en moins de 10 s sur la même ressource) : « 21:17 Drake : Vitalité 60 → 40 », « 21:40 Drake : mort ». Ces lignes sont grisées, masquables par un filtre et supprimables une à une (Q-M3, D-M15).
 - Recherche globale accessible sans quitter l'écran (ouverture dans un panneau latéral).
@@ -132,6 +132,7 @@ Mise en œuvre (M8b, D-M26, D-M27, D-M28) : **▶ Démarrer la session** sur une
 
 ### 5.3 Chronologie des fiches
 Toute entrée de journal qui mentionne une fiche (lien `[[ ]]` ou entrée automatique) apparaît dans la **Chronologie** de cette fiche, avec le numéro de session. C'est ainsi que « les événements notés en session » enrichissent la base de connaissances sans recopie.
+Mise en œuvre (M8c, D-M29) : section **Chronologie** du panneau Liens, groupée par session (« Session 4 — titre »), heure et texte de chaque entrée ; un clic ouvre le journal de la session sur l'entrée (colonne du journal si la session est en cours, sinon section **Journal** de la fiche de session, qui montre tout le journal d'une session terminée).
 
 ## 6. Sauvegarde et import
 

@@ -1,6 +1,15 @@
 import { catalog } from './catalog.svelte'
 import { toCatalogEntry, type Entity } from './model/entity'
-import { createEntry, gameChanges, mergeAuto, summaryFromJournal, type JournalEntry, type JournalKind } from './model/journal'
+import {
+  createEntry,
+  createHakiEntry,
+  gameChanges,
+  mergeAuto,
+  summaryFromJournal,
+  type HakiRollData,
+  type JournalEntry,
+  type JournalKind,
+} from './model/journal'
 import type { Session } from './model/session'
 import { parseSnapshot, restoreItem, takeSnapshot } from './model/snapshot'
 import { sessions } from './sessions.svelte'
@@ -22,6 +31,17 @@ class Play {
   /** Journal de la session en cours, dans l'ordre chronologique. */
   entries = $state.raw<JournalEntry[]>([])
   #loadedFor: string | null = null
+  /**
+   * Entrée à montrer (chronologie d'une fiche, recherche, M8c) : la colonne du journal ou la fiche de session
+   * concernée y descend et la surligne. `seq` change à chaque demande, même pour la même entrée.
+   */
+  target = $state<{ sessionId: string; entryId: string; seq: number } | null>(null)
+  /** Compteur des modifications du journal (chronologie et récapitulatif Haki relus). */
+  version = $state(0)
+
+  reveal(sessionId: string, entryId: string): void {
+    this.target = { sessionId, entryId, seq: (this.target?.seq ?? 0) + 1 }
+  }
 
   /** Recharge le journal quand la session en cours change (lancement, démarrage, fin). */
   async sync(): Promise<void> {
@@ -56,14 +76,26 @@ class Play {
     const s = this.running
     const text = textMd.trim()
     if (!s || !text) return
-    const e = createEntry(s.id, kind, text)
+    await this.#save(createEntry(s.id, kind, text))
+  }
+
+  /** Jet de Haki du MJ (D-M9) : texte généré (effet de la table, meilleur résultat), commentaire facultatif. */
+  async addHaki(h: HakiRollData, comment = ''): Promise<void> {
+    const s = this.running
+    if (!s || !catalog.byId.has(h.pjId)) return
+    await this.#save(createHakiEntry(s.id, h, catalog.title(h.pjId), comment))
+  }
+
+  async #save(e: JournalEntry): Promise<void> {
     await (await getRepository()).saveJournalEntry(e)
     this.entries = [...this.entries, e]
+    this.version++
   }
 
   async remove(id: string): Promise<void> {
     await (await getRepository()).deleteJournalEntry(id)
     this.entries = this.entries.filter(e => e.id !== id)
+    this.version++
   }
 
   /** Fiche enregistrée pendant la session : changements du bloc de jeu ou de l'état → entrées automatiques. */
@@ -81,6 +113,7 @@ class Play {
         await r.saveJournalEntry(save)
         this.entries = [...this.entries.filter(e => e.id !== save.id), save]
       }
+      this.version++
     }
   }
 

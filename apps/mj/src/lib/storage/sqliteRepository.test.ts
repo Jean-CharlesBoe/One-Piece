@@ -2,7 +2,7 @@ import initSqlJs, { type Database } from 'sql.js'
 import { beforeEach, describe, expect, it } from 'vitest'
 import { createAsset } from '../model/asset'
 import { createEntity } from '../model/entity'
-import { createEntry } from '../model/journal'
+import { createEntry, createHakiEntry } from '../model/journal'
 import { createSession } from '../model/session'
 import type { Db } from './db'
 import { META_SCHEMA_VERSION, META_SEARCH_ENGINE } from './repository'
@@ -294,6 +294,66 @@ describe('base MJ', () => {
     await repo.deleteSession(s.id)
     expect(await repo.listJournal(s.id)).toEqual([])
     expect(await journalLinks(db)).toEqual([])
+  })
+
+  it('chronologie : entrées qui citent la fiche (lien, entrée automatique, jet de Haki), avec leur session', async () => {
+    const repo = await createSqliteRepository(db)
+    const drake = createEntity('personnage', 'Drake')
+    const luffy = createEntity('personnage', 'Luffy')
+    await repo.saveEntity(drake)
+    await repo.saveEntity(luffy)
+    const s1 = createSession(await repo.campaignId(), 1)
+    const s2 = { ...createSession(await repo.campaignId(), 2), title: "L'île du Sud" }
+    await repo.saveSession(s1)
+    await repo.saveSession(s2)
+    const auto = createEntry(s2.id, 'auto', `[[${drake.id}|Drake]] : Vitalité 60 → 40`, '2026-11-02T21:00:00.000Z')
+    auto.auto = { entityId: drake.id, field: 'vitalite', label: 'Vitalité', from: '60', to: '40' }
+    const mention = createEntry(s1.id, 'evenement', `[[${drake.id}|Drake]] arrive`, '2026-11-01T21:00:00.000Z')
+    const haki = createHakiEntry(s2.id, { pjId: luffy.id, type: 'rois', resultat: 4 }, 'Luffy', '', '2026-11-02T21:05:00.000Z')
+    for (const e of [auto, mention, haki, createEntry(s1.id, 'evenement', 'Rien à voir')]) await repo.saveJournalEntry(e)
+    const t = await repo.entityJournal(drake.id)
+    expect(t.map(r => [r.sessionNumber, r.entry.id])).toEqual([[1, mention.id], [2, auto.id]])
+    expect(t[1].sessionTitle).toBe("L'île du Sud")
+    const l = await repo.entityJournal(luffy.id)
+    expect(l.map(r => r.entry.haki)).toEqual([{ pjId: luffy.id, type: 'rois', resultat: 4 }])
+  })
+
+  it('recherche dans le journal : index FTS, accents, extrait, récentes d’abord, restauration et suppression', async () => {
+    const repo = await createSqliteRepository(db)
+    expect(await repo.getMeta('journal_search_engine')).toBe('fts4')
+    const s1 = createSession(await repo.campaignId(), 1)
+    const s2 = createSession(await repo.campaignId(), 2)
+    await repo.saveSession(s1)
+    await repo.saveSession(s2)
+    const old = createEntry(s1.id, 'decouverte', 'Une **clé dorée** sous le trône', '2026-11-01T21:00:00.000Z')
+    const recent = createEntry(s2.id, 'evenement', 'La clé ouvre le coffre', '2026-11-02T21:00:00.000Z')
+    await repo.saveJournalEntry(old)
+    await repo.saveJournalEntry(recent)
+    const hits = await repo.searchJournal('CLE')
+    expect(hits.map(h => [h.sessionNumber, h.entry.id])).toEqual([[2, recent.id], [1, old.id]])
+    expect((await repo.searchJournal('doree'))[0].snippet).toContain('<mark>dorée</mark>')
+    expect(await repo.searchJournal('  ')).toEqual([])
+    // Entrée modifiée : l'index suit.
+    await repo.saveJournalEntry({ ...recent, textMd: 'Le coffre est vide' })
+    expect((await repo.searchJournal('cle')).map(h => h.entry.id)).toEqual([old.id])
+    // Restauration dans une autre base : index reconstruit.
+    const other = await createSqliteRepository(sqlJsDb(new SQL.Database()))
+    await other.importData(await repo.exportData())
+    expect((await other.searchJournal('coffre')).map(h => h.entry.id)).toEqual([recent.id])
+    await repo.deleteJournalEntry(old.id)
+    expect(await repo.searchJournal('cle')).toEqual([])
+    await repo.deleteSession(s2.id)
+    expect(await db.query(`SELECT * FROM journal_index`)).toEqual([])
+  })
+
+  it('index du journal reconstruit s’il manque (base créée avant M8c)', async () => {
+    const repo = await createSqliteRepository(db)
+    const s = createSession(await repo.campaignId(), 1)
+    await repo.saveSession(s)
+    await repo.saveJournalEntry(createEntry(s.id, 'evenement', 'Tempête en mer'))
+    raw.run(`DROP TABLE journal_index`)
+    const again = await createSqliteRepository(db)
+    expect(await again.searchJournal('tempete')).toHaveLength(1)
   })
 
   it('réglages (meta)', async () => {
